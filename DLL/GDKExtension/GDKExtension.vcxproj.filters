@@ -23,5 +23,8 @@
     <ClInclude Include="Extension_Interface.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="GDKX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
