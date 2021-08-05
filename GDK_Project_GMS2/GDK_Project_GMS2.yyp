@@ -1,6 +1,6 @@
 {
   "resources": [
-    {"id":{"name":"Extension1","path":"extensions/Extension1/Extension1.yy",},"order":0,},
+    {"id":{"name":"GDKExtension","path":"extensions/GDKExtension/GDKExtension.yy",},"order":0,},
     {"id":{"name":"Script1","path":"scripts/Script1/Script1.yy",},"order":15,},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":0,},
   ],
@@ -19,6 +19,8 @@
     {"name":"Windows UWP","path":"options/windowsuap/options_windowsuap.yy",},
     {"name":"Xbox One","path":"options/xboxone/options_xboxone.yy",},
     {"name":"WebAssembly","path":"options/wasm/options_wasm.yy",},
+    {"name":"PlayStation 5","path":"options/ps5/options_ps5.yy",},
+    {"name":"Xbox Series XS","path":"options/xboxseriesxs/options_xboxseriesxs.yy",},
   ],
   "isDnDProject": false,
   "isEcma": false,

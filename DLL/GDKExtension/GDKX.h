@@ -5,6 +5,10 @@
 
 #define __YYDEFINE_EXTENSION_FUNCTIONS__
 #include "Extension_Interface.h"
+#include "Ref.h"
+#include "YYRValue.h"
+
+#define YYEXPORT __declspec(dllexport)
 
 #ifdef YYXBOX
 #include "../../Files/Object/Object_Class.h"

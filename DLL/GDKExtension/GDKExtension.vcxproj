@@ -226,7 +226,7 @@
       <AdditionalDependencies>xgameruntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) ..\..\GDK_Project_GMS2\extensions\Extension1</Command>
+      <Command>xcopy /y /d /f /i $(OutputPath)*.dll $(ProjectDir)..\..\GDK_Project_GMS2\extensions\Extension1</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -267,7 +267,7 @@
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(TargetPath) ..\..\GDK_Project_GMS2\extensions\Extension1</Command>
+      <Command>xcopy /y /d /f /i $(OutputPath)*.dll $(ProjectDir)..\..\GDK_Project_GMS2\extensions\Extension1</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Gaming.Xbox.XboxOne.x64'" Label="PropertySheets">
@@ -393,10 +393,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GDKX.cpp" />
+    <ClCompile Include="PlayFabPartyManagement.cpp" />
+    <ClCompile Include="UserManagement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Extension_Interface.h" />
     <ClInclude Include="GDKX.h" />
+    <ClInclude Include="PlayFabPartyManagement.h" />
+    <ClInclude Include="Ref.h" />
+    <ClInclude Include="UserManagement.h" />
+    <ClInclude Include="YYRValue.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
