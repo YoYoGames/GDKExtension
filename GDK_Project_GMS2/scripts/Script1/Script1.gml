@@ -1,1 +1,1 @@
-Func( 10 );
+gdk_init();

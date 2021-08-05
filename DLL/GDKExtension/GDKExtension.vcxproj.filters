@@ -18,12 +18,30 @@
     <ClCompile Include="GDKX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PlayFabPartyManagement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserManagement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Extension_Interface.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="GDKX.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="YYRValue.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ref.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayFabPartyManagement.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserManagement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
