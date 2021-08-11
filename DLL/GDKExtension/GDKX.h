@@ -10,6 +10,8 @@
 
 #define YYEXPORT __declspec(dllexport)
 
+#define stricmp	_stricmp
+
 #ifdef YYXBOX
 #include "../../Files/Object/Object_Class.h"
 #else
