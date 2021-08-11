@@ -1,7 +1,6 @@
-#if 0
 #include "GDKX.h"
 #include "PlayFabPartyManagement.h"
-//#include "SessionManagement.h"
+#include "SessionManagement.h"
 #include "UserManagement.h"
 
 /* Defined by Windows headers, conflicts with PartyImpl.h */
@@ -30,7 +29,7 @@
 #define PACKETBUFFER_INACTIVE_USER_TIMEOUT	60 * 1000 * 1000
 
 #ifdef XSM_VERBOSE_TRACE
-#define PARTY_DBG_TRACE(a,...) GDKX::DebugConsoleOutput(a, __VA_ARGS__)
+#define PARTY_DBG_TRACE(a,...) DebugConsoleOutput(a, __VA_ARGS__)
 #else
 #define PARTY_DBG_TRACE(a,...)
 #endif
@@ -2775,4 +2774,3 @@ bool IsPayloadOfSubtype(void* _payload, PlayFabPayloadSubtype _subtype)
 
 	return false;
 }
-#endif

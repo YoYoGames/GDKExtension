@@ -2,6 +2,7 @@
 #define __YY__RUNNER_INTERFACE_H_
 
 #include <stdint.h>
+#include <string.h>
 
 struct RValue;
 class YYObjectBase;
@@ -9,6 +10,8 @@ class CInstance;
 struct YYRunnerInterface;
 typedef void (*TSetRunnerInterface)(const YYRunnerInterface* pRunnerInterface, size_t _functions_size);
 typedef void (*TYYBuiltin)(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
+typedef int int32;
+typedef unsigned int uint32;
 typedef long long int64;
 typedef unsigned long long uint64;
 
@@ -90,6 +93,7 @@ inline void ShowMessage(const char* msg) { g_pYYRunnerInterface->ShowMessage(msg
 inline void* YYAlloc(int _size) { return g_pYYRunnerInterface->YYAlloc(_size); }
 inline void* YYRealloc(void* pOriginal, int _newSize) { return g_pYYRunnerInterface->YYRealloc(pOriginal, _newSize); }
 inline void  YYFree(const void* p) { g_pYYRunnerInterface->YYFree(p); }
+inline const char* YYStrDup(const char* _pS) { char* buf = (char*)(YYAlloc(strlen(_pS) + 1)); strcpy(buf, _pS); return buf; }
 
 // yyget* functions for parsing arguments out of the arg index
 inline bool YYGetBool(const RValue* _pBase, int _index) { return g_pYYRunnerInterface->YYGetBool(_pBase, _index); }
