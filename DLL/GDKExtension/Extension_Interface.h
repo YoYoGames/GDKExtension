@@ -56,6 +56,8 @@ struct YYRunnerInterface
 	void (*SET_RValue)(RValue* _pDest, RValue* _pV, YYObjectBase* _pPropSelf, int _index);
 	bool (*GET_RValue)(RValue* _pRet, RValue* _pV, YYObjectBase* _pPropSelf, int _index, bool fPrepareArray, bool fPartOfSet);
 	void (*COPY_RValue)(RValue* _pDest, const RValue* _pSource);
+	int (*KIND_RValue)(const RValue* _pValue);
+	void (*YYCreateString)(RValue* _pVal, const char* _pS);
 
 	// finding and runnine user scripts from name
 	int (*Script_Find_Id)(const char* name);
@@ -80,6 +82,10 @@ struct YYRunnerInterface
 	bool (*DsMapAddDouble)(int _index, const char* _pKey, double value);
 	bool (*DsMapAddString)(int _index, const char* _pKey, const char* pVal);
 	bool (*DsMapAddInt64)(int _index, const char* _pKey, int64 value);
+
+	// buffer access
+	const void* (*BufferGetContent)(int _index);
+	int (*BufferGetContentSize)(int _index);
 
 	// variables
 	volatile bool* pLiveConnection;
@@ -128,6 +134,8 @@ inline int HASH_RValue(const RValue* _pValue) { return g_pYYRunnerInterface->HAS
 inline void SET_RValue(RValue* _pDest, RValue* _pV, YYObjectBase* _pPropSelf, int _index) { return g_pYYRunnerInterface->SET_RValue(_pDest, _pV, _pPropSelf, _index); }
 inline bool GET_RValue(RValue* _pRet, RValue* _pV, YYObjectBase* _pPropSelf, int _index, bool fPrepareArray = false, bool fPartOfSet = false) { return g_pYYRunnerInterface->GET_RValue(_pRet, _pV, _pPropSelf, _index, fPrepareArray, fPartOfSet); }
 inline void COPY_RValue(RValue* _pDest, const RValue* _pSource) { g_pYYRunnerInterface->COPY_RValue(_pDest, _pSource); }
+inline int KIND_RValue(const RValue* _pValue) { return g_pYYRunnerInterface->KIND_RValue(_pValue); }
+inline void YYCreateString(RValue* _pVal, const char* _pS) { g_pYYRunnerInterface->YYCreateString(_pVal, _pS); }
 
 // finding and runnine user scripts from name
 inline int Script_Find_Id(char* name) { return g_pYYRunnerInterface->Script_Find_Id(name); }
@@ -154,6 +162,10 @@ inline void CreateAsyncEventWithDSMap(int _map, int _event) { return g_pYYRunner
 inline bool DsMapAddDouble(int _index, const char* _pKey, double value) { return g_pYYRunnerInterface->DsMapAddDouble(_index, _pKey, value); }
 inline bool DsMapAddString(int _index, const char* _pKey, const char* pVal) { return g_pYYRunnerInterface->DsMapAddString(_index, _pKey, pVal); }
 inline bool DsMapAddInt64(int _index, const char* _pKey, int64 value) { return g_pYYRunnerInterface->DsMapAddInt64(_index, _pKey, value); }
+
+// buffer access
+inline const void* BufferGetContent(int _index) { return g_pYYRunnerInterface->BufferGetContent(_index); }
+inline int BufferGetContentSize(int _index) { return g_pYYRunnerInterface->BufferGetContentSize(_index); }
 
 #define g_LiveConnection	(*g_pYYRunnerInterface->pLiveConnection)
 #define g_HTTP_ID			(*g_pYYRunnerInterface->pHTTP_ID)

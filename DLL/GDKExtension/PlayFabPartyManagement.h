@@ -60,7 +60,7 @@ public:
 	static int DeserialiseNetworkDescriptor(const char* _input, Party::PartyNetworkDescriptor* _networkDescriptor);
 	static const char* GetUserEntityID(uint64_t _user_id);
 	static uint64_t GetUserFromEntityID(const char* _entityID);
-	static int SendPacket(uint64_t _user_id, const char* _networkID, const char* _targetEntityID, void* _pBuff, int _size, bool _reliable);	
+	static int SendPacket(uint64_t _user_id, const char* _networkID, const char* _targetEntityID, const void* _pBuff, int _size, bool _reliable);	
 	static int LeaveNetwork(const char* _networkID);
 
 	static int MuteRemoteUser(uint64_t _local_user, uint64_t _remote_user, bool _mute);
@@ -104,7 +104,7 @@ public:
 	static void RemoveBufferedPacketsForNetwork(const char* _networkID);
 
 private:
-	static int SendLoopbackPacket(const char* entityID, const char* _targetEntityID, void* _pBuff, int _size);
+	static int SendLoopbackPacket(const char* entityID, const char* _targetEntityID, const void* _pBuff, int _size);
 
 	static bool ShouldBuffer(const char* _networkID, const char* _sendingEntityID);
 	static void BufferPacket(const char* _networkID, const char* _sendingEntityID, const char* _receivingEntityID, const void* _messageBuffer, uint32_t _messageSize);
