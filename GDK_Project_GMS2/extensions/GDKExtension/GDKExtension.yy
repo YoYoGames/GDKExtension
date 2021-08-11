@@ -20,10 +20,12 @@
         {"externalName":"","kind":1,"help":"gdk_init()","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"gdk_init","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"","kind":1,"help":"gdk_update()","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"gdk_update","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"","kind":1,"help":"gdk_quit()","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"gdk_quit","tags":[],"resourceType":"GMExtensionFunction",},
+        {"externalName":"F_XboxOneShowAccountPicker","kind":1,"help":"xboxone_show_account_picker( arg0, arg1 )","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_show_account_picker","tags":[],"resourceType":"GMExtensionFunction",},
       ],"constants":[],"ProxyFiles":[],"copyToTargets":64,"order":[
         {"name":"gdk_init","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"gdk_update","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"gdk_quit","path":"extensions/GDKExtension/GDKExtension.yy",},
+        {"name":"xboxone_show_account_picker","path":"extensions/GDKExtension/GDKExtension.yy",},
       ],"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMExtensionFile",},
     {"filename":"Party.dll","origname":"","init":"","final":"","kind":1,"uncompress":false,"functions":[],"constants":[],"ProxyFiles":[],"copyToTargets":-1,"order":[],"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMExtensionFile",},
     {"filename":"PartyXboxLive.dll","origname":"","init":"","final":"","kind":1,"uncompress":false,"functions":[],"constants":[],"ProxyFiles":[],"copyToTargets":-1,"order":[],"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMExtensionFile",},
