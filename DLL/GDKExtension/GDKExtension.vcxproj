@@ -402,14 +402,24 @@ cmake --build ..\json-c\x64\build --target INSTALL</Command>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AdvertiseSession.cpp" />
+    <ClCompile Include="CreateSession.cpp" />
+    <ClCompile Include="FindSession.cpp" />
     <ClCompile Include="GDKX.cpp" />
+    <ClCompile Include="JoinSession.cpp" />
+    <ClCompile Include="MigrateHost.cpp" />
     <ClCompile Include="PlayFabPartyManagement.cpp" />
     <ClCompile Include="SessionManagement.cpp" />
     <ClCompile Include="UserManagement.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AdvertiseSession.h" />
+    <ClInclude Include="CreateSession.h" />
     <ClInclude Include="Extension_Interface.h" />
+    <ClInclude Include="FindSession.h" />
     <ClInclude Include="GDKX.h" />
+    <ClInclude Include="JoinSession.h" />
+    <ClInclude Include="MigrateHost.h" />
     <ClInclude Include="PlayFabPartyManagement.h" />
     <ClInclude Include="Ref.h" />
     <ClInclude Include="UserManagement.h" />
