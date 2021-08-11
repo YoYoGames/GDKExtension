@@ -346,3 +346,39 @@ void GUIDtoString(GUID* _guid, char* _outstring)
 		_guid->Data4[4], _guid->Data4[5], _guid->Data4[6], _guid->Data4[7]);
 }
 
+YYEXPORT
+void F_XboxOneShowAccountPicker(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
+{
+	Result.kind = VALUE_REAL;
+	Result.val = -1;
+
+	XUserAddOptions options = XUserAddOptions::None;
+	if (argc == 0)
+	{
+		// UWP-style account picker
+	}
+	else
+	{
+		if ((argc < 2) || (arg[0].kind != VALUE_REAL) || (arg[1].kind != VALUE_REAL))
+		{
+			YYError("xboxone_show_account_picker() - invalid arguments", false);
+			Result.val = -1;
+			return;
+		}
+
+		int optionsval = YYGetInt32(arg, 1);
+		if (optionsval == 1)
+			options = XUserAddOptions::AllowGuests;
+	}
+
+	int ret = XUM::AddUser(options, true);
+	if (ret < 0)
+	{
+		DebugConsoleOutput("xboxone_show_account_picker() failed\n");
+		Result.val = ret;
+	}
+	else
+	{
+		Result.val = 0;
+	}
+}

@@ -226,12 +226,12 @@ struct XUM_AutoMutex
 {
 	XUM_AutoMutex()
 	{
-		XUM::mutex.lock();
+		//XUM::mutex.lock();
 	}
 
 	~XUM_AutoMutex()
 	{
-		XUM::mutex.unlock();
+		//XUM::mutex.unlock();
 	}
 };
 
