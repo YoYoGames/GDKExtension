@@ -194,7 +194,16 @@ protected:
 	virtual void SignalMemberJoined(uint64_t _user_id, const char* _entityID, bool _reportConnection);
 
 protected:
-	XSMtaskBase() { taskType = XSMTT_None; state = XSMTS_Unstarted; state_starttime = -1; waiting = false; user_id = 0; /*session = nullptr; */ network = NULL; requestid = -1; }
+	XSMtaskBase() { 
+		taskType = XSMTT_None; 
+		state = XSMTS_Unstarted; 
+		state_starttime = -1; 
+		waiting = false; 
+		user_id = 0; 
+		/*session = nullptr; */ 
+		network = NULL; 
+		requestid = -1; 
+	}
 };
 
 extern const double MATCHMAKING_SESSION;
@@ -298,17 +307,6 @@ public:
 	static void OnPlayFabPartyChange(
 		const Party::PartyStateChange* _change
 	);
-//#if defined( WIN_UAP ) || (defined(XBOX_LIVE_VER) && XBOX_LIVE_VER>=1508) || (defined(_XDK_VER) && (_XDK_VER >= 0x38390431))
-//	static void OnSessionChanged(
-//		XUMuser^ _user,
-//		Microsoft::Xbox::Services::Multiplayer::MultiplayerSessionChangeEventArgs^ arg
-//		);
-//#else
-//	static void OnSessionChanged(
-//        Platform::Object^ object, 
-//        Microsoft::Xbox::Services::RealTimeActivity::RealTimeActivityMultiplayerSessionChangeEventArgs^ arg
-//        );
-//#endif
 
 	static void LockMutex();
 	static void UnlockMutex();
@@ -320,9 +318,6 @@ public:
 
 	static XblFormattedSecureDeviceAddress* GetDeviceAddress() { return &deviceAddress; }
 
-	//static Platform::String^ GetSessionName(Microsoft::Xbox::Services::Multiplayer::MultiplayerSession^ _session);
-
-	//static void SignalMemberJoined(Microsoft::Xbox::Services::Multiplayer::MultiplayerSessionMember^ _member, SecureDeviceAssociation^ _assoc, XSMsession^ _session);	
 	static void SignalMemberJoined(uint64_t _user_id, const char* _entityID, XSMsession* _session, bool _reportConnection);
 	static void SignalMemberLeft(uint64_t _user_id, XSMsession* _session);
 
@@ -333,12 +328,9 @@ private:
 	static void ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _updatedsession);
 	static void ProcessQueuedEvents();
 
-	//static Windows::Foundation::Collections::IVector<XSMsession^> ^cachedSessions;
-	//static Windows::Foundation::Collections::IVector<XSMtaskBase^> ^tasks;
 	static std::vector<XSMsession*> *cachedSessions;
 	static std::vector<XSMtaskBase*> *tasks;
 
-	//static Windows::Foundation::Collections::IVector<SessionChangedRecord^> ^sessionChangedRecords;
 	static std::vector<SessionChangedRecord*> *sessionChangedRecords;
 
 	static int currSessionID;	
@@ -386,5 +378,11 @@ struct XSM_Event_AutoMutex
 extern char* g_XboxSCID;		// we need this in a bunch of places
 
 char* XuidToString(uint64_t _xuid);
+
+#if defined(XSM_VERBOSE_TRACE)
+#define XSM_VERBOSE_OUTPUT( msg, ...)	DebugConsoleOutput( msg, __VA_ARGS__ )
+#else 
+#define XSM_VERBOSE_OUTPUT( msg, ...)	
+#endif
 
 #endif // SESSIONMANAGEMENT_H

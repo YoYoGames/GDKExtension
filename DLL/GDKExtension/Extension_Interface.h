@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #ifndef __YY__RUNNER_INTERFACE_H_
 #define __YY__RUNNER_INTERFACE_H_
 
@@ -174,7 +180,7 @@ inline int BufferGetContentSize(int _index) { return g_pYYRunnerInterface->Buffe
 #endif
 
 
-
+/*
 #define YY_HAS_FUNCTION(interface, interface_size, function) \
 	(interface_size >= (offsetof(GameMaker_RunnerInterface, function) + sizeof(GameMaker_RunnerInterface::function)) && interface->function != NULL)
 
@@ -185,6 +191,6 @@ inline int BufferGetContentSize(int _index) { return g_pYYRunnerInterface->Buffe
 		interface->DebugConsoleOutput("This extension may not be compatible with this version of GameMaker\n"); \
 		return false; \
 	}
-
+*/
 
 #endif

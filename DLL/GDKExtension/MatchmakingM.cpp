@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #include "pch.h"
 
 #include <inttypes.h>
@@ -16,32 +22,6 @@
 #include "SessionManagement.h"
 #include "UserManagement.h"
 
-#if 0
-#include "yoyo_ipad_defines.h"
-#include "../YoYo_Functions.h"
-#include "../../Base/String_Resource.h"
-#include "../../Code/Code_Main.h"
-#include "../../Code/Code_Function.h"
-#include "../../Code/Code_Constant.h"
-#include "../../Code/Code_Error.h"
-#include "../../Graphics/Graphics_Window.h"
-#include "../../IO/LoadSave.h"
-#include "../../Graphics_API/Graphics_Perf.h"
-#include "../../Graphics_API/Graphics.h"
-#include "../../Support/Support_Data_Structures.h"
-#include "../../Support/Support_Various.h"
-#include "../../Sprite/Sprite_Class.h"
-#include "../../Buffer/Buffer_Manager.h"
-#include "Files/Run/Run_Global.h"
-#include "Files/Sprite/Sprite_Main.h"
-#include "Files/Function/YoYo_InAppPurchases.h"
-#include "Files/IO/Gamepad_Class.h"
-#include "Files/Sprite/Sprite_Main.h"
-
-#include "GDKRunner\GDKRunner\UserManagement.h"
-#include "Multiplayer/SessionManagement.h"
-#include "Multiplayer/SecureConnectionManager.h"
-#endif
 
 extern int GetGamepadIndex(const APP_LOCAL_DEVICE_ID* _id);
 extern APP_LOCAL_DEVICE_ID GetGamepadDeviceID(int _index);
@@ -243,10 +223,6 @@ void F_XboxOneMatchmakingCreate(RValue& Result, CInstance* selfinst, CInstance* 
 		return;
 	}
 #endif
-
-	// temp
-	//Platform::String^ templatename = ConvertCharArrayToManagedString( "MatchTicketSession" );
-	//Platform::String^ hoppername = ConvertCharArrayToManagedString( "MatchTicketHopper" );
 
 	// Enable multiplayer subscriptions
 	//user->EnableMultiplayerSubscriptions();

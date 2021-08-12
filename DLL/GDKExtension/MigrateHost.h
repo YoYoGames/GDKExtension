@@ -1,3 +1,8 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
 #ifndef MIGRATEHOST_H
 #define MIGRATEHOST_H
 
@@ -13,11 +18,14 @@ enum
 class XSMtaskMigrateHost : public XSMtaskBase
 {
 public:	
-	//Platform::String^ sdaTemplateName;
 	const char* hopperName;
 	const char* matchAttributes;
 
-	XSMtaskMigrateHost() { taskType = XSMTT_MigrateHost; /*sdaTemplateName = nullptr;*/ hopperName = NULL; matchAttributes = NULL; }
+	XSMtaskMigrateHost() { 
+		taskType = XSMTT_MigrateHost; 
+		hopperName = NULL; 
+		matchAttributes = NULL; 
+	} // end constructor
 	
 	virtual void Process() override;
 	virtual void ProcessSessionChanged(xbl_session_ptr _updatedsession) override;

@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #include "GDKX.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -57,24 +63,10 @@ void F_XboxOneGetUserCount(RValue& Result, CInstance* selfinst, CInstance* other
 	Result.kind = VALUE_REAL;
 	Result.val = 0;
 
-#ifdef _GAMING_XBOX
 	int numusers = 0;
 	XUM::GetUsers(numusers);
 
 	Result.val = numusers;
-#else
-
-#if defined XBOX_SERVICES	
-	XUM_LOCK_MUTEX
-		//auto users = Windows::Xbox::System::User::Users;
-		auto users = XUM::GetUsers();
-
-	int size = users->Size;
-
-	Result.val = size;
-#endif
-
-#endif
 }
 
 YYEXPORT
@@ -89,7 +81,6 @@ void F_XboxOneGetUser(RValue& Result, CInstance* selfinst, CInstance* otherinst,
 		return;
 	}
 
-#ifdef _GAMING_XBOX
 	int numusers = 0;
 	XUMuser** users = XUM::GetUsers(numusers);
 
@@ -105,29 +96,6 @@ void F_XboxOneGetUser(RValue& Result, CInstance* selfinst, CInstance* otherinst,
 	// Unfortunately can't use the proper 64bit value type as the user needs to compare against a value to check for success, and this literal will be interpreted as a double (and currently the types on each side of a comparison need to match)
 	uint64 id = users[index]->XboxUserIdInt;
 	Result.v64 = id;
-#else
-
-#if defined XBOX_SERVICES
-	XUM_LOCK_MUTEX
-		//auto users = Windows::Xbox::System::User::Users;
-		auto users = XUM::GetUsers();
-	int size = users->Size;
-
-	int index = YYGetInt32(arg, 0);
-
-	if ((index < 0) || (index >= size))
-	{
-		rel_csol.Output("xboxone_get_user() - index %d out of range\n", index);
-		return;
-	}
-
-	// Hmmm - hate packing a 64bit value into a variable that is only 64bits on certain platforms (it works as these functions are all only on Xbox One) :/
-	// Unfortunately can't use the proper 64bit value type as the user needs to compare against a value to check for success, and this literal will be interpreted as a double (and currently the types on each side of a comparison need to match)
-	uint64 id = users->GetAt(index)->XboxUserIdInt;
-	Result.v64 = id;
-#endif
-
-#endif
 }
 
 YYEXPORT
@@ -141,7 +109,6 @@ void F_XboxOneGetActivatingUser(RValue& Result, CInstance* selfinst, CInstance* 
 		YYError("xboxone_get_activating_user() - doesn't take any arguments", false);
 		return;
 	}
-#ifdef _GAMING_XBOX
 	XUM_LOCK_MUTEX;
 	XUserLocalId user = XUM::GetActivatingUser();
 	XUMuser* xuser = XUM::GetUserFromLocalId(user);
@@ -149,20 +116,6 @@ void F_XboxOneGetActivatingUser(RValue& Result, CInstance* selfinst, CInstance* 
 		return;
 
 	Result.v64 = xuser->XboxUserIdInt;
-#else
-
-#if defined XBOX_SERVICES	
-	auto user = XUM::GetActivatingUser();
-	if (user == nullptr)
-	{
-		return;
-	}
-
-	uint64 val = stringtoui64(user->XboxUserId);
-	Result.v64 = val;
-#endif
-
-#endif
 }
 
 YYEXPORT
@@ -172,28 +125,6 @@ void F_XboxOneAgeGroupForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 	Result.val = -1;
 
 
-#if defined XBOX_SERVICES /* XDK */
-	XUM_LOCK_MUTEX
-		//auto users = Windows::Xbox::System::User::Users;
-		auto users = XUM::GetUsers();
-	int size = users->Size;
-
-	uint64 id = (uint64)YYGetInt64(arg, 0); // don't do any rounding on this
-
-	for (int i = 0; i < size; i++)
-	{
-		auto user = users->GetAt(i);
-		if (user->XboxUserIdInt == id)
-		{
-#ifdef WIN_UAP
-			Result.val = 0.0;		// agegroup_unknown
-#else
-			Result.val = (double)(user->AgeGroup);
-#endif
-			return;
-		}
-	}
-#elif defined _GAMING_XBOX /* GDK */
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 
 	XUM_LOCK_MUTEX
@@ -202,14 +133,12 @@ void F_XboxOneAgeGroupForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 	if (user != NULL)
 	{
 		Result.val = (double)(user->AgeGroup);
-		return;
 	}
 	else {
 		Result.val = 0.0;		// agegroup_unknown
+		DebugConsoleOutput("xboxone_agegroup_for_user() - user not found", false);
 	}
-#endif
 
-	DebugConsoleOutput("xboxone_agegroup_for_user() - user not found", false);
 }
 
 YYEXPORT
@@ -220,7 +149,6 @@ void F_XboxOnePadForUser(RValue& Result, CInstance* selfinst, CInstance* otherin
 
 	int padindex = YYGetInt32(arg, 1);
 
-#ifdef _GAMING_XBOX
 	XUM_LOCK_MUTEX;
 
 	int numusers = 0;
@@ -254,78 +182,8 @@ void F_XboxOnePadForUser(RValue& Result, CInstance* selfinst, CInstance* otherin
 			}
 		}
 	}
-#else
-
-#if defined XBOX_SERVICES
-	XUM_LOCK_MUTEX
-		//auto users = Windows::Xbox::System::User::Users;
-		auto users = XUM::GetUsers();
-	int size = users->Size;
-
-	uint64 id = (uint64)YYGetInt64(arg, 0);
-
-	for (int i = 0; i < size; i++)
-	{
-		auto user = users->GetAt(i);
-		if (user->XboxUserIdInt == id)
-		{
-#ifndef WIN_UAP
-			if (user->Controllers != nullptr)
-			{
-				int numcontrollers = user->Controllers->Size;
-				int currpadindex = 0;
-
-				// Get first valid gamepad			
-				for (int j = 0; j < numcontrollers; j++)
-				{
-					auto controller = user->Controllers->GetAt(j);
-					//if (controller->Type == "IGamepad")
-					{
-						uint64 cont_id = controller->Id;
-
-						// Find controller in our list					
-#define DEFAULT_GAMEPAD_COUNT	(8)
-						extern uint64 g_padIds[DEFAULT_GAMEPAD_COUNT];
-						auto pads = Windows::Xbox::Input::Gamepad::Gamepads;
-						int padsize = pads->Size;
-						int numgmpads = GMGamePad::GamePadCount();
-						int maxpads = yymin(padsize, numgmpads);
-
-						for (int k = 0; k < maxpads; k++)
-						{
-							// There's a one-to-one mapping of controllers to GMGamePad objects
-							if (g_padIds[k] == cont_id)
-							{
-								if (currpadindex == padindex)
-								{
-									Result.val = k;
-									return;	// found one
-								}
-
-								currpadindex++;		// step through valid pads
-								break;
-							}
-						}
-					}
-				}
-
-				// No valid pad found
-				return;
-			}
-			else
-#endif			
-			{
-				// No pads found
-				return;
-			}
-		}
-	}
-#endif
-
-#endif // !_GAMING_XBOX
 	// No valid user found
 	DebugConsoleOutput("xboxone_pad_for_user() - user not found", false);
-	return;
 }
 
 YYEXPORT

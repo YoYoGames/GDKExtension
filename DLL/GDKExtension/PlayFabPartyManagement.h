@@ -1,7 +1,12 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #ifndef PLAYFABPARTYMANAGEMENT_H
 #define PLAYFABPARTYMANAGEMENT_H
 
-//#include <pch.h>
 #include <memory>
 #include <stdint.h>
 #include <string>
