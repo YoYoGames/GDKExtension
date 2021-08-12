@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #ifndef JOINSESSION_H
 #define JOINSESSION_H
 
@@ -19,11 +25,14 @@ enum
 class XSMtaskJoinSession : public XSMtaskBase
 {
 public:
-	//Platform::String^ sdaTemplateName;
 	const char* sessionHandle;
 	xbl_session_ptr joinSession;		
 
-	XSMtaskJoinSession() { taskType = XSMTT_JoinSession; sessionHandle = NULL; reFindingHost = false; }
+	XSMtaskJoinSession() { 
+		taskType = XSMTT_JoinSession; 
+		sessionHandle = NULL; 
+		reFindingHost = false; 
+	} // end constructor
 	
 	virtual void Process() override;
 	virtual void ProcessSessionChanged(xbl_session_ptr _updatedsession) override;
