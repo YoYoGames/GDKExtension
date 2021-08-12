@@ -328,24 +328,6 @@ void F_XboxOnePadForUser(RValue& Result, CInstance* selfinst, CInstance* otherin
 	return;
 }
 
-int g_findSessionTimeout = 60;
-
-void GUIDtoString(GUID* _guid, char* _outstring)
-{
-	if (_guid == NULL)
-		return;
-
-	if (_outstring == NULL)
-		return;
-
-	// See https://stackoverflow.com/questions/1672677/print-a-guid-variable/1672698
-	//sprintf(_outstring, "%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
-	sprintf(_outstring, "%08lx-%04hx-%04hx-%02hhx%02hhx-%02hhx%02hhx%02hhx%02hhx%02hhx%02hhx",
-		_guid->Data1, _guid->Data2, _guid->Data3,
-		_guid->Data4[0], _guid->Data4[1], _guid->Data4[2], _guid->Data4[3],
-		_guid->Data4[4], _guid->Data4[5], _guid->Data4[6], _guid->Data4[7]);
-}
-
 YYEXPORT
 void F_XboxOneShowAccountPicker(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {

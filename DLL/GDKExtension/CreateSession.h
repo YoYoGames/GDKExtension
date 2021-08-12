@@ -1,6 +1,8 @@
 #ifndef CREATESESSION_H
 #define CREATESESSION_H
 
+#include "SessionManagement.h"
+
 #ifdef YYXBOX
 //#define XBOX_SERVICES
 #endif

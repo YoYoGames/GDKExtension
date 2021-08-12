@@ -407,6 +407,7 @@ cmake --build ..\json-c\x64\build --target INSTALL</Command>
     <ClCompile Include="FindSession.cpp" />
     <ClCompile Include="GDKX.cpp" />
     <ClCompile Include="JoinSession.cpp" />
+    <ClCompile Include="MatchmakingM.cpp" />
     <ClCompile Include="MigrateHost.cpp" />
     <ClCompile Include="PlayFabPartyManagement.cpp" />
     <ClCompile Include="SessionManagement.cpp" />

@@ -1699,7 +1699,7 @@ uint64_t PlayFabPartyManager::GetUserFromEntityID(const char* _entityID)
 	return 0;
 }
 
-int PlayFabPartyManager::SendPacket(uint64_t _user_id, const char* _networkID, const char* _targetEntityID, void* _pBuff, int _size, bool _reliable)
+int PlayFabPartyManager::SendPacket(uint64_t _user_id, const char* _networkID, const char* _targetEntityID, const void* _pBuff, int _size, bool _reliable)
 {
 	if (_pBuff == NULL)
 	{
@@ -1873,7 +1873,7 @@ int PlayFabPartyManager::SendPacket(uint64_t _user_id, const char* _networkID, c
 	return 0;
 }
 
-int PlayFabPartyManager::SendLoopbackPacket(const char* entityID, const char* _targetEntityID, void* _pBuff, int _size)
+int PlayFabPartyManager::SendLoopbackPacket(const char* entityID, const char* _targetEntityID, const void* _pBuff, int _size)
 {
 	// FIXME
 
