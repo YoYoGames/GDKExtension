@@ -90,7 +90,7 @@ XUserLocalId XUM::saveDataUser = XUserNullUserLocalId;
 RefCountedGameSaveProvider* XUM::MachineStorage = nullptr;
 unsigned int XUM::MachineStorageStatus = CSSTATUS_INVALID;
 int XUM::MachineStorageError = 0;
-Mutex XUM::mutex( "XUM" );
+HYYMUTEX XUM::mutex = NULL;
 int XUM::currRequestID = 0;
 XTaskQueueHandle XUM::m_taskQueue = NULL;
 bool XUM::m_userAddInProgress = false;
@@ -682,12 +682,12 @@ void XUM::SetupMachineStorage()
 
 void XUM::LockMutex()
 {
-	mutex.Lock();
+	YYMutexLock(mutex);
 }
 
 void XUM::UnlockMutex()
 {
-	mutex.Unlock();
+	YYMutexUnlock(mutex);
 }
 
 int XUM::GetNextRequestID()
@@ -707,6 +707,8 @@ int XUM::GetNextRequestID()
 
 void XUM::Init()
 {
+	mutex = YYMutexCreate("XUM");
+
 	currRequestID = 0;
 
 	// Create a task queue that will process in the background on system threads and fire callbacks on a thread we choose in a serialized order

@@ -42,9 +42,6 @@
     <ClCompile Include="MigrateHost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mutex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Extension_Interface.h">
@@ -78,9 +75,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MigrateHost.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mutex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
