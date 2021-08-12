@@ -1,26 +1,15 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #include "GDKX.h"
 #include "SessionManagement.h"
-//#include <collection.h> 
-//#include "Files/Support/Support_Data_Structures.h"
-//#include "Files/Support/Support_Various.h"
 #include "SecureConnectionManager.h"
 #include <ppltasks.h>
 
 // TODO: hoist some of the common functionality out into functions that we can share between different types of tasks
-
-
-//using namespace Windows::Foundation;
-//#ifndef WIN_UAP
-//using namespace Windows::Xbox::System;
-//#endif
-//using namespace Microsoft::Xbox::Services;
-//using namespace Microsoft::Xbox::Services::Multiplayer;
-//using namespace Microsoft::Xbox::Services::Matchmaking;
-//using namespace Concurrency;
-
-//extern void CreateAsynEventWithDSMap(int dsmapindex, int event_index);
-//extern uint64 stringtoui64(Platform::String^ _string, char* _pTempBuffToUse=NULL);
-//extern "C" void dsMapAddInt64(int _dsMap, char* _key, int64 _value);
 
 bool g_DBG_ishost_2 = true;
 
@@ -35,9 +24,7 @@ void XSMtaskJoinSession::SignalFailure()
 
 	CreateAsyncEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 
-#ifdef XSM_VERBOSE_TRACE
-	DebugConsoleOutput("joinsession failed: request id %d\n", requestid);
-#endif
+	XSM_VERBOSE_OUTPUT("joinsession failed: request id %d\n", requestid);
 	
 	SetState(XSMTS_Finished);
 }
@@ -53,9 +40,7 @@ void XSMtaskJoinSession::SignalNoSessionsFound()
 
 	CreateAsyncEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 
-#ifdef XSM_VERBOSE_TRACE
-	DebugConsoleOutput("joinsession no sessions found: request id %d\n", requestid);
-#endif
+	XSM_VERBOSE_OUTPUT("joinsession no sessions found: request id %d\n", requestid);
 	
 	SetState(XSMTS_Finished);
 }
@@ -167,15 +152,11 @@ void XSMtaskJoinSession::Process()
 	{
 		case XSMTS_JoinSession_FoundSession:
 		{
-#ifdef XSM_V		DebugConsoleOutput("Join in state %s\n", names[state - 1]);
-			("joinsession (XSMTS_JoinSession_FoundSession): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_FoundSession): request id %d\n", requestid);
 			if (joinSession == NULL)
 			{
 
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_FoundSession) matched session invalid: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_FoundSession) matched session invalid: request id %d\n", requestid);
 
 				// uh-oh
 				SetState(XSMTS_FailureCleanup);
@@ -188,9 +169,7 @@ void XSMtaskJoinSession::Process()
 				//SecureDeviceAssociationTemplate^ sdaTemplate = SecureDeviceAssociationTemplate::GetTemplateByName(sdaTemplateName);
 				XSM::AddSession(session/*, sdaTemplate*/, NULL, NULL);;
 
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_FoundSession) matched session valid: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_FoundSession) matched session valid: request id %d\n", requestid);
 				
 				// Nuke our old session
 				XSM::DeleteSessionGlobally(oldsession);																		
@@ -208,9 +187,7 @@ void XSMtaskJoinSession::Process()
 
 		case XSMTS_JoinSession_ProcessUpdatedSession:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("joinsession (XSMTS_JoinSession_ProcessUpdatedSession): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_ProcessUpdatedSession): request id %d\n", requestid);
 			res = XblMultiplayerSessionCurrentUserSetStatus(session->session_handle, XblMultiplayerSessionMemberStatus::Active);
 			if (FAILED(res))
 			{
@@ -241,9 +218,7 @@ void XSMtaskJoinSession::Process()
 						// Delete any existing entity ID that's stored in the session (which will exist if this user was in the session previously)							
 						if (pUser == NULL)
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("findsession (XSMTS_FindSession_ProcessUpdatedSession): error: PlayFab local user was NULL\n");
-#endif
+							XSM_VERBOSE_OUTPUT("findsession (XSMTS_FindSession_ProcessUpdatedSession): error: PlayFab local user was NULL\n");
 							res = E_FAIL;
 
 							SetState(XSMTS_FailureCleanup);
@@ -284,18 +259,14 @@ void XSMtaskJoinSession::Process()
 								self->session = session;
 								XSM::AddSession(session/*, sdaTemplate*/, NULL, NULL);
 
-#ifdef XSM_VERBOSE_TRACE
-								DebugConsoleOutput("joinsession (XSMTS_JoinSession_ProcessUpdatedSession) write session succeeded: request id %d\n", self->requestid);
-#endif
+								XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_ProcessUpdatedSession) write session succeeded: request id %d\n", self->requestid);
 
 								XSM::OnSessionChanged(self->user_id, session);
 							}
 							else
 							{
 								// Handle failure
-#ifdef XSM_VERBOSE_TRACE
-								DebugConsoleOutput("joinsession (XSMTS_JoinSession_ProcessUpdatedSession) write session failed: request id %d\n", self->requestid);
-#endif
+								XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_ProcessUpdatedSession) write session failed: request id %d\n", self->requestid);
 								self->SetState(XSMTS_JoinSession_FailureToWrite);
 								self->waiting = false;
 							}
@@ -307,9 +278,7 @@ void XSMtaskJoinSession::Process()
 
 				if (FAILED(res))
 				{
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("joinsession (XSMTS_JoinSession_ProcessUpdatedSession) write session failed: request id %d\n", requestid);
-#endif
+					XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_ProcessUpdatedSession) write session failed: request id %d\n", requestid);
 					SetState(XSMTS_JoinSession_FailureToWrite);
 					waiting = false;
 				}
@@ -325,16 +294,12 @@ void XSMtaskJoinSession::Process()
 
 		case XSMTS_JoinSession_SetHost:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost): request id %d\n", requestid);
-#endif			
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost): request id %d\n", requestid);
 			// First check to see if the host has already been set
 			const XblMultiplayerSessionProperties* props = XblMultiplayerSessionSessionProperties(session->session_handle);
 			if (props == NULL)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) couldn't get session properties: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) couldn't get session properties: request id %d\n", requestid);
 
 				// uh-oh
 				SetState(XSMTS_FailureCleanup);
@@ -356,9 +321,7 @@ void XSMtaskJoinSession::Process()
 					res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 					if (FAILED(res))
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
 					}
 					else
 					{
@@ -403,9 +366,7 @@ void XSMtaskJoinSession::Process()
 					res = XblMultiplayerSessionHostCandidates(session->session_handle, &hostDeviceTokens, &hostDeviceTokensCount);
 					if (FAILED(res))
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) couldn't get host candidates list 0x%08x: request id %d\n", res, requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) couldn't get host candidates list 0x%08x: request id %d\n", res, requestid);
 					}					
 
 					if (hostDeviceTokensCount == 0)
@@ -420,9 +381,7 @@ void XSMtaskJoinSession::Process()
 						res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 						if (FAILED(res))
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
 						}
 
 						// Find the user in the member list						
@@ -458,9 +417,7 @@ void XSMtaskJoinSession::Process()
 						res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 						if (FAILED(res))
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
 						}
 
 						// Need to get the device token of the current user so we can see if it's in the host candidates list											
@@ -539,18 +496,14 @@ void XSMtaskJoinSession::Process()
 										//self->SetState(XSMTS_JoinSession_ReportMatchSetup);
 										self->waiting = false;
 
-#ifdef XSM_VERBOSE_TRACE
-										DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) write session succeeded: request id %d\n", self->requestid);
-#endif
+										XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) write session succeeded: request id %d\n", self->requestid);
 
 										XSM::OnSessionChanged(self->user_id, session);
 									}
 									else
 									{
 										// Handle failure
-#ifdef XSM_VERBOSE_TRACE
-										DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) write session failed: request id %d\n", self->requestid);
-#endif														
+										XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) write session failed: request id %d\n", self->requestid);
 
 										HRESULT res;
 										XUMuser* pUser = XUM::GetUserFromId(self->user_id);
@@ -562,9 +515,7 @@ void XSMtaskJoinSession::Process()
 
 										if ((pUser == NULL) || (xbl_context == NULL))
 										{
-#ifdef XSM_VERBOSE_TRACE
-											DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) user (%d) for session has been lost: request id %d\n", self->user_id, self->requestid);
-#endif	
+											XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) user (%d) for session has been lost: request id %d\n", self->user_id, self->requestid);
 											self->SetState(XSMTS_JoinSession_FailureToWrite);
 											self->waiting = false;
 										}
@@ -614,9 +565,7 @@ void XSMtaskJoinSession::Process()
 													}
 													else
 													{
-#ifdef XSM_VERBOSE_TRACE
-														DebugConsoleOutput("findsession (XSMTS_FindSession_SetHost) get session failed 0x%08x: request id %d\n", res, self->requestid);
-#endif
+														XSM_VERBOSE_OUTPUT("findsession (XSMTS_FindSession_SetHost) get session failed 0x%08x: request id %d\n", res, self->requestid);
 														self->SetState(XSMTS_FailureCleanup);
 														self->waiting = false;
 													}
@@ -629,9 +578,7 @@ void XSMtaskJoinSession::Process()
 											res = XblMultiplayerGetSessionAsync(xbl_context, sessref, newasyncBlock);
 											if (FAILED(res))
 											{
-#ifdef XSM_VERBOSE_TRACE
-												DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) get session failed 0x%08x: request id %d\n", res, self->requestid);
-#endif
+												XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) get session failed 0x%08x: request id %d\n", res, self->requestid);
 												self->SetState(XSMTS_FailureCleanup);
 												self->waiting = false;
 
@@ -650,9 +597,7 @@ void XSMtaskJoinSession::Process()
 
 						if (FAILED(res))
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("joinsession (XSMTS_JoinSession_SetHost) write session failed: request id %d\n", requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_SetHost) write session failed: request id %d\n", requestid);
 							SetState(XSMTS_JoinSession_FailureToWrite);
 							waiting = false;
 						}
@@ -670,9 +615,7 @@ void XSMtaskJoinSession::Process()
 
 		case XSMTS_JoinSession_ReportMatchSetup:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("joinsession (XSMTS_JoinSession_ReportMatchSetup): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_ReportMatchSetup): request id %d\n", requestid);
 
 			if (reFindingHost == false)
 			{
@@ -688,9 +631,7 @@ void XSMtaskJoinSession::Process()
 
 		case XSMTS_JoinSession_GetInitialMemberDetails:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("joinsession (XSMTS_JoinSession_GetInitialMemberDetails): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_GetInitialMemberDetails): request id %d\n", requestid);
 
 #if 0
 			// We can't set up any connections at the moment, so skip this bit
@@ -703,9 +644,7 @@ void XSMtaskJoinSession::Process()
 			const XblMultiplayerSessionProperties* props = XblMultiplayerSessionSessionProperties(session->session_handle);
 			if (props == NULL)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) couldn't get session properties: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) couldn't get session properties: request id %d\n", requestid);
 				SetState(XSMTS_FailureCleanup);
 				return;
 			}
@@ -715,9 +654,7 @@ void XSMtaskJoinSession::Process()
 			res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) XblMultiplayerSessionMembers() failed with error 0x%08x: request id %d\n", res, requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) XblMultiplayerSessionMembers() failed with error 0x%08x: request id %d\n", res, requestid);
 				SetState(XSMTS_FailureCleanup);
 				return;
 			}
@@ -727,9 +664,7 @@ void XSMtaskJoinSession::Process()
 
 			if (IsHost)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) IsHost=true : request id %d\n", requestid);
-#endif				
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) IsHost=true : request id %d\n", requestid);
 				// Iterate through the member list for the session
 				// Do not return the current user
 				// Return other users that share the same device token as the current user (these will be on the same machine) but indicate that they are local
@@ -768,9 +703,7 @@ void XSMtaskJoinSession::Process()
 			}
 			else
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) IsHost=false : request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) IsHost=false : request id %d\n", requestid);
 				// Wait for a secure device association to be set up with the host
 				// At the moment we're enforcing a star topology so all clients can only communicate with the host
 				// Need a timeout here in case there's some sort of problem
@@ -783,9 +716,7 @@ void XSMtaskJoinSession::Process()
 				// First check that there actually is a host
 				if (props->HostDeviceToken.Value[0] == '\0')				
 				{					
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) No host found in session : request id %d\n", requestid);
-#endif
+					XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) No host found in session : request id %d\n", requestid);
 					// Set state back to SetHost
 					SetState(XSMTS_JoinSession_SetHost);
 					reFindingHost = true;
@@ -798,9 +729,7 @@ void XSMtaskJoinSession::Process()
 
 					if (host_id == 0)
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("findsession (XSMTS_JoinSession_GetInitialMemberDetails) host connection failed : request id %d\n", requestid);
-#endif						
+						XSM_VERBOSE_OUTPUT("findsession (XSMTS_JoinSession_GetInitialMemberDetails) host connection failed : request id %d\n", requestid);
 						SetState(XSMTS_FailureCleanup);
 						waiting = false;
 					}
@@ -828,9 +757,7 @@ void XSMtaskJoinSession::Process()
 						}
 					}
 
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) received host connection : request id %d\n", requestid);
-#endif
+					XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) received host connection : request id %d\n", requestid);
 
 					// That's it
 					SetState(XSMTS_JoinSession_Completed);
@@ -878,18 +805,14 @@ void XSMtaskJoinSession::Process()
 
 						MemoryManager::Free(entityID);
 
-#ifdef XSM_VERBOSE_TRACE
-						dbg_csol.Output("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) received host connection : request id %d\n", requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) received host connection : request id %d\n", requestid);
 						// That's it
 						SetState(XSMTS_JoinSession_Completed);
 						waiting = false;
 					}
 					else
 					{
-#ifdef XSM_VERBOSE_TRACE
-						dbg_csol.Output("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) host connection failed : request id %d\n", requestid);
-#endif						
+						XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_GetInitialMemberDetails) host connection failed : request id %d\n", requestid);
 						SetState(XSMTS_FailureCleanup);
 						waiting = false;										
 					}
@@ -901,25 +824,19 @@ void XSMtaskJoinSession::Process()
 
 		case XSMTS_JoinSession_Completed:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("joinsession (XSMTS_JoinSession_Completed): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_Completed): request id %d\n", requestid);
 
 			SetState(XSMTS_Finished);
 		} break;
 
 		case XSMTS_JoinSession_NoSessionsFound:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("joinsession (XSMTS_JoinSession_NoSessionsFound): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_NoSessionsFound): request id %d\n", requestid);
 			// Leave the session
 			res = XblMultiplayerSessionLeave(session->session_handle);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_NoSessionsFound) couldn't leave session: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_NoSessionsFound) couldn't leave session: request id %d\n", requestid);
 				// Not sure if there's anything else I can do at this point
 			}
 
@@ -944,9 +861,7 @@ void XSMtaskJoinSession::Process()
 
 						XSM::DeleteSessionGlobally(self->session);
 
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("joinsession (XSMTS_JoinSession_NoSessionsFound) write succeeded: request id %d\n", self->requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_NoSessionsFound) write succeeded: request id %d\n", self->requestid);
 					}
 
 					delete asyncBlock;
@@ -958,9 +873,7 @@ void XSMtaskJoinSession::Process()
 
 				XSM::DeleteSessionGlobally(session);
 
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_NoSessionsFound) write failed: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_NoSessionsFound) write failed: request id %d\n", requestid);
 			}
 			else
 			{
@@ -970,16 +883,12 @@ void XSMtaskJoinSession::Process()
 
 		case XSMTS_FailureCleanup:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("joinsession (XSMTS_FailureCleanup): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_FailureCleanup): request id %d\n", requestid);
 			// Leave the session
 			res = XblMultiplayerSessionLeave(session->session_handle);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_FailureCleanup) exception (0x%08x): request id %d\n", res, requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_FailureCleanup) exception (0x%08x): request id %d\n", res, requestid);
 				// Not sure if there's anything else I can do at this point
 			}
 
@@ -1004,9 +913,7 @@ void XSMtaskJoinSession::Process()
 
 						XSM::DeleteSessionGlobally(self->session);
 
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("joinsession (XSMTS_FailureCleanup) write succeeded: request id %d\n", self->requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("joinsession (XSMTS_FailureCleanup) write succeeded: request id %d\n", self->requestid);
 					}
 
 					delete asyncBlock;
@@ -1018,9 +925,7 @@ void XSMtaskJoinSession::Process()
 
 				XSM::DeleteSessionGlobally(session);
 
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_FailureCleanup) write failed: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_FailureCleanup) write failed: request id %d\n", requestid);
 			}
 			else
 			{
@@ -1030,15 +935,11 @@ void XSMtaskJoinSession::Process()
 
 		case XSMTS_JoinSession_FailureToWrite:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("joinsession (XSMTS_JoinSession_FailureToWrite): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_FailureToWrite): request id %d\n", requestid);
 			SignalDestroyed();
 
 			XSM::DeleteSessionGlobally(session);			
 
-			//XSMsession^ xsmsession = XSM::GetSession(session);
-			//XSM::DeleteSession(xsmsession->id);			
 		} break;
 	}
 }
@@ -1046,7 +947,6 @@ void XSMtaskJoinSession::Process()
 void XSMtaskJoinSession::ProcessSessionChanged(xbl_session_ptr _updatedsession)
 {	
 	// Some common stuff
-	HRESULT res;
 	XUMuser* pUser = XUM::GetUserFromId(user_id);
 	XblContextHandle xbl_context = NULL;
 	if (pUser != NULL)
@@ -1070,24 +970,18 @@ void XSMtaskJoinSession::ProcessSessionChanged(xbl_session_ptr _updatedsession)
 
 		case XSMTS_JoinSession_QOS:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("joinsession (XSMTS_JoinSession_QOS): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_QOS): request id %d\n", requestid);
 			// Compare the old and new sessions
 			//MultiplayerSessionChangeTypes changes = MultiplayerSession::CompareMultiplayerSessions( _updatedsession, session );
 
 			if ((changes & XblMultiplayerSessionChangeTypes::InitializationStateChange) == XblMultiplayerSessionChangeTypes::InitializationStateChange)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("joinsession (XSMTS_JoinSession_QOS) initialisation state change: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_QOS) initialisation state change: request id %d\n", requestid);
 
 				const XblMultiplayerSessionInitializationInfo* initInfo = XblMultiplayerSessionGetInitializationInfo(_updatedsession->session_handle);
 				if (initInfo == NULL)
 				{
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("joinsession (XSMTS_JoinSession_QOS) couldn't get initialisation info: request id %d\n", requestid);
-#endif
+					XSM_VERBOSE_OUTPUT("joinsession (XSMTS_JoinSession_QOS) couldn't get initialisation info: request id %d\n", requestid);
 					SetState(XSMTS_FailureCleanup);
 					waiting = false;
 				}
@@ -1099,9 +993,7 @@ void XSMtaskJoinSession::ProcessSessionChanged(xbl_session_ptr _updatedsession)
 						SetState(XSMTS_JoinSession_SetHost);
 						waiting = false;
 
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("QOS completed\n", requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("QOS completed\n", requestid);
 					}
 					else
 					{
@@ -1112,44 +1004,32 @@ void XSMtaskJoinSession::ProcessSessionChanged(xbl_session_ptr _updatedsession)
 						{
 						case XblMultiplayerInitializationStage::None:
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("stage None\n", requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("stage None\n", requestid);
 						} break;
 
 						case XblMultiplayerInitializationStage::Unknown:
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("stage Unknown\n", requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("stage Unknown\n", requestid);
 						} break;
 
 						case XblMultiplayerInitializationStage::Joining:
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("stage Joining\n", requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("stage Joining\n", requestid);
 						} break;
 
 						case XblMultiplayerInitializationStage::Measuring:
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("stage Measuring\n", requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("stage Measuring\n", requestid);
 						} break;
 
 						case XblMultiplayerInitializationStage::Evaluating:
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("stage Evaluating\n", requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("stage Evaluating\n", requestid);
 						} break;
 
 						case XblMultiplayerInitializationStage::Failed:
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("stage Failed\n", requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("stage Failed\n", requestid);
 						} break;
 						}
 					}

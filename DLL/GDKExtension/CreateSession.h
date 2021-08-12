@@ -1,11 +1,13 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #ifndef CREATESESSION_H
 #define CREATESESSION_H
 
 #include "SessionManagement.h"
-
-#ifdef YYXBOX
-//#define XBOX_SERVICES
-#endif
 
 enum
 {
@@ -26,7 +28,12 @@ public:
 	//Party::PartyNetwork* network;
 	//char invitationIdentifier[Party::c_maxInvitationIdentifierStringLength + 1];
 
-	XSMtaskCreateSession() { taskType = XSMTT_CreateSession; hopperName = NULL; matchAttributes = NULL; /*network = NULL;*/ }
+	XSMtaskCreateSession() { 
+		taskType = XSMTT_CreateSession; 
+		hopperName = NULL; 
+		matchAttributes = NULL; 
+		/*network = NULL;*/ 
+	} // end constructor
 	virtual ~XSMtaskCreateSession();
 	
 	virtual void Process() override;

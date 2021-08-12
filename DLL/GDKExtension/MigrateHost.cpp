@@ -1,27 +1,19 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #include "GDKX.h"
 #include "SessionManagement.h"
-//#include <collection.h> 
-//#include "Files/Support/Support_Data_Structures.h"
-//#include "Files/Support/Support_Various.h"
 #include "SecureConnectionManager.h"
 #include <ppltasks.h>
 
 // TODO: hoist some of the common functionality out into functions that we can share between different types of task
 
 
-//using namespace Windows::Foundation;
-//#ifndef WIN_UAP
-//using namespace Windows::Xbox::System;
-//#endif
-//using namespace Microsoft::Xbox::Services;
-//using namespace Microsoft::Xbox::Services::Multiplayer;
-//using namespace Microsoft::Xbox::Services::Matchmaking;
 using namespace Concurrency;
 
-//extern void CreateAsynEventWithDSMap(int dsmapindex, int event_index);
-
-//extern uint64 stringtoui64(Platform::String^ _string, char* _pTempBuffToUse = NULL);
-//extern "C" void dsMapAddInt64(int _dsMap, char* _key, int64 _value);
 
 extern bool g_DBG_ishost;
 
@@ -36,9 +28,7 @@ void XSMtaskMigrateHost::SignalFailure()
 
 	CreateAsyncEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 
-#ifdef XSM_VERBOSE_TRACE
-	DebugConsoleOutput("migratehost failed: request id %d\n", requestid);
-#endif
+	XSM_VERBOSE_OUTPUT("migratehost failed: request id %d\n", requestid);
 	
 	SetState(XSMTS_Finished);
 }
@@ -88,7 +78,7 @@ void XSMtaskMigrateHost::SignalHostChanged()
 
 	int dsMapIndex = CreateDsMap(5, "id",(double)MATCHMAKING_SESSION,(void *)NULL,
 	"status", 0.0, "session_owner_changed",
-	"sessionid", (double) (session != nullptr) ? sess->id : -1.0, NULL,	
+	"sessionid", (double) (sess != nullptr) ? sess->id : -1.0, NULL,	
 	"correlationid", (double)0, pCorrelationID,
 	"error", 0.0, NULL);				
 
@@ -137,16 +127,12 @@ void XSMtaskMigrateHost::Process()
 	{
 		case XSMTS_MigrateHost_SetHost:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost): request id %d\n", requestid);
-#endif		
+			XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost): request id %d\n", requestid);
 			// First check to see if the host is actually in the session
 			const XblMultiplayerSessionProperties* props = XblMultiplayerSessionSessionProperties(session->session_handle);
 			if (props == NULL)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) couldn't get session properties: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) couldn't get session properties: request id %d\n", requestid);
 
 				// uh-oh
 				SetState(XSMTS_FailureCleanup);
@@ -164,9 +150,7 @@ void XSMtaskMigrateHost::Process()
 					res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 					if (FAILED(res))
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
 					}
 					else
 					{
@@ -196,9 +180,7 @@ void XSMtaskMigrateHost::Process()
 					res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 					if (FAILED(res))
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
 					}
 					else
 					{
@@ -240,9 +222,7 @@ void XSMtaskMigrateHost::Process()
 					res = XblMultiplayerSessionHostCandidates(session->session_handle, &hostDeviceTokens, &hostDeviceTokensCount);
 					if (FAILED(res))
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) couldn't get host candidates list 0x%08x: request id %d\n", res, requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) couldn't get host candidates list 0x%08x: request id %d\n", res, requestid);
 					}					
 
 					if (hostDeviceTokensCount == 0)
@@ -257,9 +237,7 @@ void XSMtaskMigrateHost::Process()
 						res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 						if (FAILED(res))
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
 						}
 						else
 						{
@@ -297,9 +275,7 @@ void XSMtaskMigrateHost::Process()
 						res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 						if (FAILED(res))
 						{
-#ifdef XSM_VERBOSE_TRACE
 							DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) couldn't get session member list 0x%08x: request id %d\n", res, requestid);
-#endif
 						}
 
 						// Need to get the device token of the current user so we can see if it's in the host candidates list											
@@ -377,18 +353,14 @@ void XSMtaskMigrateHost::Process()
 										self->SetState(XSMTS_MigrateHost_NotifyHostChanged);
 										self->waiting = false;
 
-#ifdef XSM_VERBOSE_TRACE
-										DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) write session succeeded: request id %d\n", self->requestid);
-#endif
+										XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) write session succeeded: request id %d\n", self->requestid);
 
 										XSM::OnSessionChanged(self->user_id, session);
 									}
 									else
 									{
 										// Handle failure
-#ifdef XSM_VERBOSE_TRACE
-										DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) write session failed: request id %d\n", self->requestid);
-#endif												
+										XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) write session failed: request id %d\n", self->requestid);
 
 										HRESULT res;
 										XUMuser* pUser = XUM::GetUserFromId(self->user_id);
@@ -400,9 +372,7 @@ void XSMtaskMigrateHost::Process()
 
 										if ((pUser == NULL) || (xbl_context == NULL))
 										{
-#ifdef XSM_VERBOSE_TRACE
-											DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) user (%d) for session has been lost: request id %d\n", self->user_id, self->requestid);
-#endif	
+											XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) user (%d) for session has been lost: request id %d\n", self->user_id, self->requestid);
 											self->SetState(XSMTS_FailureCleanup);
 											self->waiting = false;
 										}
@@ -452,9 +422,7 @@ void XSMtaskMigrateHost::Process()
 													}
 													else
 													{
-#ifdef XSM_VERBOSE_TRACE
-														DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) get session failed 0x%08x: request id %d\n", res, self->requestid);
-#endif
+														XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) get session failed 0x%08x: request id %d\n", res, self->requestid);
 														self->SetState(XSMTS_FailureCleanup);
 														self->waiting = false;
 													}
@@ -467,9 +435,7 @@ void XSMtaskMigrateHost::Process()
 											res = XblMultiplayerGetSessionAsync(xbl_context, sessref, newasyncBlock);
 											if (FAILED(res))
 											{
-#ifdef XSM_VERBOSE_TRACE
-												DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) get session failed 0x%08x: request id %d\n", res, self->requestid);
-#endif
+												XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) get session failed 0x%08x: request id %d\n", res, self->requestid);
 												self->SetState(XSMTS_FailureCleanup);
 												self->waiting = false;
 
@@ -492,9 +458,7 @@ void XSMtaskMigrateHost::Process()
 						}
 						else
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("migratehost (XSMTS_MigrateHost_SetHost) write session failed: request id %d\n", requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_SetHost) write session failed: request id %d\n", requestid);
 							SetState(XSMTS_MigrateHost_FailureToWrite);
 							waiting = false;
 						}
@@ -509,9 +473,7 @@ void XSMtaskMigrateHost::Process()
 		{
 			// If we notify here, it gives all session participants a chance to reconfigure themselves (i.e. for the new host to create a listen socket) before new connections are established
 			// Unfortunately, if the new host is the last to know there's a possibility that clients attempting to connect to it will time out - just need to make timeouts long enough to avoid this
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("migratehost (XSMTS_MigrateHost_NotifyHostChanged): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_NotifyHostChanged): request id %d\n", requestid);
 			// Signal that the host has migrated
 			SignalHostChanged();
 
@@ -525,18 +487,14 @@ void XSMtaskMigrateHost::Process()
 		
 		case XSMTS_MigrateHost_EstablishConnections:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("migratehost (XSMTS_MigrateHost_EstablishConnections): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_EstablishConnections): request id %d\n", requestid);
 			// If we're the host, we want to set up secure device associations to all the other machines in the session
 			// If we're one of the clients, we want to wait until we have a secure device association from the host before continuing
 
 			const XblMultiplayerSessionProperties* props = XblMultiplayerSessionSessionProperties(session->session_handle);
 			if (props == NULL)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("migratehost (XSMTS_MigrateHost_EstablishConnections) couldn't get session properties: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_EstablishConnections) couldn't get session properties: request id %d\n", requestid);
 				SetState(XSMTS_FailureCleanup);
 				return;
 			}
@@ -546,9 +504,7 @@ void XSMtaskMigrateHost::Process()
 			res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("migratehost (XSMTS_MigrateHost_EstablishConnections) XblMultiplayerSessionMembers() failed with error 0x%08x: request id %d\n", res, requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_EstablishConnections) XblMultiplayerSessionMembers() failed with error 0x%08x: request id %d\n", res, requestid);
 				SetState(XSMTS_FailureCleanup);
 				return;
 			}
@@ -558,9 +514,7 @@ void XSMtaskMigrateHost::Process()
 
 			if (IsHost)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) IsHost=true : request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) IsHost=true : request id %d\n", requestid);
 				
 				// Iterate through the member list for the session
 				// Do not return the current user
@@ -600,9 +554,7 @@ void XSMtaskMigrateHost::Process()
 			}
 			else
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) IsHost=false : request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) IsHost=false : request id %d\n", requestid);
 				// Wait for a secure device association to be set up with the host
 				// At the moment we're enforcing a star topology so all clients can only communicate with the host
 				// Need a timeout here in case there's some sort of problem
@@ -615,9 +567,7 @@ void XSMtaskMigrateHost::Process()
 				// First check that there actually is a host
 				if (props->HostDeviceToken.Value[0] == '\0')				
 				{
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) No host found in session : request id %d\n", requestid);
-#endif
+					XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) No host found in session : request id %d\n", requestid);
 					// Set state back to SetHost
 					SetState(XSMTS_MigrateHost_SetHost);
 					waiting = false;
@@ -629,9 +579,7 @@ void XSMtaskMigrateHost::Process()
 
 					if (host_id == 0)
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("findsession (XSMTS_MigrateHost_GetInitialMemberDetails) host connection failed : request id %d\n", requestid);
-#endif						
+						XSM_VERBOSE_OUTPUT("findsession (XSMTS_MigrateHost_GetInitialMemberDetails) host connection failed : request id %d\n", requestid);
 						SetState(XSMTS_FailureCleanup);
 						waiting = false;
 					}
@@ -659,9 +607,7 @@ void XSMtaskMigrateHost::Process()
 						}
 					}
 
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("joinsession (XSMTS_MigrateHost_GetInitialMemberDetails) received host connection : request id %d\n", requestid);
-#endif
+					XSM_VERBOSE_OUTPUT("joinsession (XSMTS_MigrateHost_GetInitialMemberDetails) received host connection : request id %d\n", requestid);
 
 					// That's it
 					SetState(XSMTS_MigrateHost_Completed);
@@ -706,18 +652,14 @@ void XSMtaskMigrateHost::Process()
 
 						MemoryManager::Free(entityID);
 
-#ifdef XSM_VERBOSE_TRACE
-						dbg_csol.Output("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) received host connection : request id %d\n", requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) received host connection : request id %d\n", requestid);
 						// That's it
 						SetState(XSMTS_MigrateHost_Completed);
 						waiting = false;
 					}
 					else
 					{
-#ifdef XSM_VERBOSE_TRACE
-						dbg_csol.Output("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) host connection failed : request id %d\n", requestid);
-#endif						
+						XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_GetInitialMemberDetails) host connection failed : request id %d\n", requestid);
 						SetState(XSMTS_FailureCleanup);
 						waiting = false;										
 					}
@@ -732,9 +674,7 @@ void XSMtaskMigrateHost::Process()
 
 		case XSMTS_MigrateHost_Completed:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("migratehost (XSMTS_MigrateHost_Completed): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_Completed): request id %d\n", requestid);
 
 			bool IsHost = XSM::IsUserHost(user_id, session);
 			if (IsHost)
@@ -759,16 +699,12 @@ void XSMtaskMigrateHost::Process()
 
 		case XSMTS_FailureCleanup:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("migratehost (XSMTS_FailureCleanup): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("migratehost (XSMTS_FailureCleanup): request id %d\n", requestid);
 			// Leave the session
 			res = XblMultiplayerSessionLeave(session->session_handle);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("migratehost (XSMTS_MigrateHost_FailureCleanup) couldn't leave session: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_FailureCleanup) couldn't leave session: request id %d\n", requestid);
 				// Not sure if there's anything else I can do at this point
 			}
 
@@ -791,9 +727,7 @@ void XSMtaskMigrateHost::Process()
 
 						XSM::DeleteSessionGlobally(self->session);
 
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("migratehost (XSMTS_MigrateHost_FailureCleanup) write succeeded: request id %d\n", self->requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_FailureCleanup) write succeeded: request id %d\n", self->requestid);
 					}
 
 					delete asyncBlock;
@@ -805,9 +739,7 @@ void XSMtaskMigrateHost::Process()
 
 				XSM::DeleteSessionGlobally(session);
 
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("migratehost (XSMTS_MigrateHost_FailureCleanup) write failed: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_FailureCleanup) write failed: request id %d\n", requestid);
 			}
 			else
 			{
@@ -817,15 +749,11 @@ void XSMtaskMigrateHost::Process()
 
 		case XSMTS_MigrateHost_FailureToWrite:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("migratehost (XSMTS_MigrateHost_FailureToWrite): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("migratehost (XSMTS_MigrateHost_FailureToWrite): request id %d\n", requestid);
 			SignalDestroyed();
 
 			XSM::DeleteSessionGlobally(session);			
 
-			//XSMsession^ xsmsession = XSM::GetSession(session);
-			//XSM::DeleteSession(xsmsession->id);			
 		} break;
 	}
 }

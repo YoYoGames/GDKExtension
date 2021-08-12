@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #ifndef ADVERTISESESSION_H
 #define ADVERTISESESSION_H
 
@@ -15,9 +21,14 @@ public:
 	char* hopperName;
 	char* matchAttributes;
 	XblCreateMatchTicketResponse ticketResponse;
-	//Microsoft::Xbox::Services::Matchmaking::CreateMatchTicketResponse^ ticketResponse;	
 
-	XSMtaskAdvertiseSession() { taskType = XSMTT_AdvertiseSession; hopperName = NULL; matchAttributes = NULL; ZeroMemory(&ticketResponse, sizeof(XblCreateMatchTicketResponse)); }
+	XSMtaskAdvertiseSession() { 
+		taskType = XSMTT_AdvertiseSession; 
+		hopperName = NULL; 
+		matchAttributes = NULL; 
+		ZeroMemory(&ticketResponse, sizeof(XblCreateMatchTicketResponse)); 
+	} // end constructor
+
 	virtual ~XSMtaskAdvertiseSession();
 	
 	virtual void Process() override;
