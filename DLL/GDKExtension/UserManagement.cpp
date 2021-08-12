@@ -8,6 +8,7 @@
 #include <xsapi-c/services_c.h>
 #include <inttypes.h>
 
+
 #if !defined(WIN_UAP) && !defined(NO_SECURE_CONNECTION) && YY_CHAT
 #include "Multiplayer/GameChat2IntegrationLayer.h"
 #endif
@@ -89,7 +90,7 @@ XUserLocalId XUM::saveDataUser = XUserNullUserLocalId;
 RefCountedGameSaveProvider* XUM::MachineStorage = nullptr;
 unsigned int XUM::MachineStorageStatus = CSSTATUS_INVALID;
 int XUM::MachineStorageError = 0;
-std::mutex XUM::mutex;
+Mutex XUM::mutex( "XUM" );
 int XUM::currRequestID = 0;
 XTaskQueueHandle XUM::m_taskQueue = NULL;
 bool XUM::m_userAddInProgress = false;
@@ -681,12 +682,12 @@ void XUM::SetupMachineStorage()
 
 void XUM::LockMutex()
 {
-	mutex.lock();
+	mutex.Lock();
 }
 
 void XUM::UnlockMutex()
 {
-	mutex.unlock();
+	mutex.Unlock();
 }
 
 int XUM::GetNextRequestID()

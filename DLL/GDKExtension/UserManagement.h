@@ -2,7 +2,8 @@
 #define USERMANAGEMENT_H
 
 //#include <pch.h>
-#include <mutex>
+#include "mutex.h"
+#include <memory>
 #include <unordered_map>
 #include <stddef.h>
 #include <stdint.h>
@@ -199,7 +200,7 @@ private:
 	static unsigned int MachineStorageStatus;
 	static int MachineStorageError;		
 
-	static std::mutex mutex;
+	static Mutex mutex;
 
 	static int currRequestID;
 
@@ -226,12 +227,12 @@ struct XUM_AutoMutex
 {
 	XUM_AutoMutex()
 	{
-		//XUM::mutex.lock();
+		XUM::mutex.Lock();
 	}
 
 	~XUM_AutoMutex()
 	{
-		//XUM::mutex.unlock();
+		XUM::mutex.Unlock();
 	}
 };
 
