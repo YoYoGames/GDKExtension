@@ -2,7 +2,6 @@
 #define __YY__RUNNER_INTERFACE_H_
 
 #include <stdint.h>
-#include <string.h>
 
 struct RValue;
 class YYObjectBase;
@@ -10,10 +9,12 @@ class CInstance;
 struct YYRunnerInterface;
 typedef void (*TSetRunnerInterface)(const YYRunnerInterface* pRunnerInterface, size_t _functions_size);
 typedef void (*TYYBuiltin)(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-typedef int int32;
-typedef unsigned int uint32;
 typedef long long int64;
 typedef unsigned long long uint64;
+typedef int32_t int32;
+typedef uint32_t uint32;
+
+typedef void* HYYMUTEX;
 
 struct YYRunnerInterface
 {
@@ -28,6 +29,7 @@ struct YYRunnerInterface
 	void* (*YYAlloc)(int _size);
 	void* (*YYRealloc)(void* pOriginal, int _newSize);
 	void  (*YYFree)(const void* p);
+	const char* (*YYStrDup)(const char* _pS);
 
 	// yyget* functions for parsing arguments out of the arg index
 	bool (*YYGetBool)(const RValue* _pBase, int _index);
@@ -65,6 +67,12 @@ struct YYRunnerInterface
 	// timing
 	int64(*Timing_Time)(void);
 
+	// mutex handling
+	HYYMUTEX(*YYMutexCreate)(const char* _name);
+	void (*YYMutexDestroy)(HYYMUTEX hMutex);
+	void (*YYMutexLock)(HYYMUTEX hMutex);
+	void (*YYMutexUnlock)(HYYMUTEX hMutex);
+
 	// ds map manipulation for 
 	void (*CreateAsyncEventWithDSMap)(int _map, int _event);
 	int (*CreateDsMap)(int _num, ...);
@@ -93,7 +101,7 @@ inline void ShowMessage(const char* msg) { g_pYYRunnerInterface->ShowMessage(msg
 inline void* YYAlloc(int _size) { return g_pYYRunnerInterface->YYAlloc(_size); }
 inline void* YYRealloc(void* pOriginal, int _newSize) { return g_pYYRunnerInterface->YYRealloc(pOriginal, _newSize); }
 inline void  YYFree(const void* p) { g_pYYRunnerInterface->YYFree(p); }
-inline const char* YYStrDup(const char* _pS) { char* buf = (char*)(YYAlloc(strlen(_pS) + 1)); strcpy(buf, _pS); return buf; }
+inline const char* YYStrDup(const char* _pS) { return g_pYYRunnerInterface->YYStrDup(_pS); }
 
 // yyget* functions for parsing arguments out of the arg index
 inline bool YYGetBool(const RValue* _pBase, int _index) { return g_pYYRunnerInterface->YYGetBool(_pBase, _index); }
@@ -132,6 +140,12 @@ inline bool  Code_Function_Find(char* name, int* ind) { return g_pYYRunnerInterf
 
 // timing
 inline int64 Timing_Time(void) { return g_pYYRunnerInterface->Timing_Time(); }
+
+// mutex functions
+inline HYYMUTEX YYMutexCreate(const char* _name) { return g_pYYRunnerInterface->YYMutexCreate(_name); }
+inline void YYMutexDestroy(HYYMUTEX hMutex) { g_pYYRunnerInterface->YYMutexDestroy(hMutex); }
+inline void YYMutexLock(HYYMUTEX hMutex) { g_pYYRunnerInterface->YYMutexLock(hMutex); }
+inline void YYMutexUnlock(HYYMUTEX hMutex) { g_pYYRunnerInterface->YYMutexUnlock(hMutex); }
 
 // ds map manipulation for 
 inline void CreateAsyncEventWithDSMap(int _map, int _event) { return g_pYYRunnerInterface->CreateAsyncEventWithDSMap(_map, _event); }
