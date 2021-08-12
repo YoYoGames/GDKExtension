@@ -408,6 +408,7 @@ cmake --build ..\json-c\x64\build --target INSTALL</Command>
     <ClCompile Include="GDKX.cpp" />
     <ClCompile Include="JoinSession.cpp" />
     <ClCompile Include="MigrateHost.cpp" />
+    <ClCompile Include="mutex.cpp" />
     <ClCompile Include="PlayFabPartyManagement.cpp" />
     <ClCompile Include="SessionManagement.cpp" />
     <ClCompile Include="UserManagement.cpp" />
@@ -420,6 +421,7 @@ cmake --build ..\json-c\x64\build --target INSTALL</Command>
     <ClInclude Include="GDKX.h" />
     <ClInclude Include="JoinSession.h" />
     <ClInclude Include="MigrateHost.h" />
+    <ClInclude Include="mutex.h" />
     <ClInclude Include="PlayFabPartyManagement.h" />
     <ClInclude Include="Ref.h" />
     <ClInclude Include="UserManagement.h" />
