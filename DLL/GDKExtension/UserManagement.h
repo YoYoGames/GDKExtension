@@ -1,8 +1,12 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #ifndef USERMANAGEMENT_H
 #define USERMANAGEMENT_H
 
-//#include <pch.h>
-//#include "mutex.h"
 #include "GDKX.h"
 
 #include <memory>
@@ -14,7 +18,6 @@
 #include <xsapi-c\services_c.h>
 #include <xuser.h>
 #include <XGameSave.h>
-// #include "yoyo_types.h"
 
 #include "Party.h"
 #include "PartyXboxLive.h"
@@ -69,7 +72,6 @@ enum class XUMuserPlayFabState : uint32_t
 class XUMuser
 {
 private:
-	//Microsoft::Xbox::Services::XboxLiveContext^ _XboxLiveContext;	
 	XblContextHandle _XboxLiveContext;
 public:
 	XUMuser();
@@ -93,7 +95,6 @@ public:
 	char DisplayName[XBL_DISPLAY_NAME_CHAR_SIZE];
 	uint32_t GamerScore;
 	//int32 Reputation;
-	//Platform::String ^XboxUserId;	
 	uint64_t XboxUserIdInt;
 	XUserLocalId LocalId;
 	int MultiSubRefCount;
@@ -168,9 +169,6 @@ public:
 	static XUserLocalId GetActivatingUser();
 	static void SetSaveDataUser(XUserLocalId _user);
 	static XUserLocalId GetSaveDataUser();
-#if 0
-	static XUMuser^ GetUserFromSessionMember(Microsoft::Xbox::Services::Multiplayer::MultiplayerSessionMember^ _member);
-#endif
 	static XUMuser* GetUserFromId(uint64_t id);
 	static XUMuser* GetUserFromLocalId(XUserLocalId _id);
 
@@ -239,10 +237,5 @@ struct XUM_AutoMutex
 };
 
 #define XUM_LOCK_MUTEX XUM_AutoMutex __xum_automutex;
-
-
-//extern char*ConvertFromWideCharToUTF8(const wchar_t* _pText, char* _pBuffToUse=NULL);
-//extern Platform::String^ ConvertCharArrayToManagedString(const char* srcString);
-//extern wchar_t* ConvertFromUTF8ToWideChar(const char * _pChar);
 
 #endif // USERMANAGEMENT_H

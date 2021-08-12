@@ -1,24 +1,20 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #include "GDKX.h"
 #include "SessionManagement.h"
-//#include <collection.h> 
-// #include "Files/Support/Support_Data_Structures.h"
 #include "SecureConnectionManager.h"
-// #include "Files/Support/Support_Various.h"
 #include <ppltasks.h>
-// #include "Files/Networking/yySocket.h"
-// #include "Files/Networking/Networking_Manager.h"
 #include "DirectXHelper.h"
-// #include <Files/Run/Run_Global.h>
 #include <json-c/json.h>
 #include <objbase.h>
 #include <XGameInvite.h>
 
 #if !defined(WIN_UAP) && !defined(NO_SECURE_CONNECTION) && YY_CHAT
 #include "Multiplayer/GameChat2IntegrationLayer.h"
-#endif
-
-#ifdef WIN_UAP
-Platform::String^ Windows::Xbox::Services::XboxLiveConfiguration::primaryserviceconfigid = nullptr;
 #endif
 
 #define QUEUE_CHANGED_EVENTS
@@ -35,12 +31,6 @@ int64 g_xboxLaunchUser = 0;
 bool g_shouldSendEventForInvite = false;
 
 using namespace Windows::Foundation;
-//#ifndef WIN_UAP
-//using namespace Windows::Xbox::System;
-//#endif
-//using namespace Microsoft::Xbox::Services;
-//using namespace Microsoft::Xbox::Services::Multiplayer;
-//using namespace Microsoft::Xbox::Services::Matchmaking;
 using namespace Concurrency;
 using namespace Party;
 
@@ -200,15 +190,11 @@ const char* GetSessionUserProperty(xbl_session_ptr _session, uint64 _user_id, co
 			}
 		}
 
-#ifdef XSM_VERBOSE_TRACE
-		DebugConsoleOutput("GetSessionUserProperty(): User %lld not found in session\n", _user_id);
-#endif
+		XSM_VERBOSE_OUTPUT("GetSessionUserProperty(): User %lld not found in session\n", _user_id);
 		return NULL;
 	}
 
-#ifdef XSM_VERBOSE_TRACE
-	DebugConsoleOutput("GetSessionUserProperty(): Couldn't get member list for session\n");
-#endif
+	XSM_VERBOSE_OUTPUT("GetSessionUserProperty(): Couldn't get member list for session\n");
 
 	return NULL;
 }
@@ -226,51 +212,6 @@ HRESULT DeleteSessionProperty(xbl_session_ptr _session, const char* _name)
 	return res;
 }
 
-#if 0
-Platform::String^ DecodeBase64StringToString(Platform::String^ _srcString)
-{
-	extern void base64_decode(const char* _encoded_string, size_t _out_len, char* _pBuffer, bool _add_null);
-	char *pBASE64 = ConvertFromWideCharToUTF8((wchar_t*)(_srcString->Data()));
-	int src_len = strlen( pBASE64 );
-	int filesize = ((src_len*3)/4) + 4;
-	char* pFileBuffer = (char*)MemoryManager::Alloc( filesize,__FILE__,__LINE__  );
-	base64_decode( pBASE64, filesize, pFileBuffer, false );
-
-
-	Platform::String^ resString = ConvertCharArrayToManagedString(pFileBuffer);
-
-	YYFree(pFileBuffer);
-	YYFree(pBASE64);
-
-	return resString;
-}
-#endif
-
-#if 0
-void OnChatSessionJoined(Platform::String^ _xbid, Platform::String^ _remoteAddress)
-{
-#if !defined(WIN_UAP) && !defined(NO_SECURE_CONNECTION) && YY_CHAT
-	if(g_XboxOneGameChatEnabled)
-	{
-		// Notify chat integration layer
-		GameChat2IntegrationLayer::Get()->OnSessionMemberJoined(_xbid, _remoteAddress);
-	}
-#endif
-
-	/*
-	// Async event for chat member joined
-	int dsMapIndex = CreateDsMap(5, "id", (double)MATCHMAKING_SESSION, (void *)NULL,
-		"status", 0.0, "session_chat_player_joined",
-		"sessionid", (double)((sess != nullptr) ? sess->id : -1.0), NULL,
-		"requestid", (double)requestid, NULL,
-		"error", (double)error, NULL);
-
-	dsMapAddPtr(dsMapIndex, "userid", (intptr_t)userID);
-
-	CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_SOCIAL);
-	*/
-}
-#endif
 
 XSMsession::~XSMsession()
 {
@@ -292,9 +233,7 @@ void XSMtaskBase::SignalFailure()
 
 	CreateAsyncEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 
-#ifdef XSM_VERBOSE_TRACE
-	DebugConsoleOutput("%s failed: request id %d\n", g_XSMTaskNames[taskType], requestid);
-#endif
+	XSM_VERBOSE_OUTPUT("%s failed: request id %d\n", g_XSMTaskNames[taskType], requestid);
 	
 	SetState(XSMTS_Finished);
 }
@@ -311,105 +250,11 @@ void XSMtaskBase::SignalDestroyed()
 
 	CreateAsyncEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
 
-#ifdef XSM_VERBOSE_TRACE
-	DebugConsoleOutput("%s session destroyed: request id %d, session id %d\n", g_XSMTaskNames[taskType], requestid, sess != nullptr ? sess->id : -1);
-#endif
+	XSM_VERBOSE_OUTPUT("%s session destroyed: request id %d, session id %d\n", g_XSMTaskNames[taskType], requestid, sess != nullptr ? sess->id : -1);
 	
 	SetState(XSMTS_Finished);
 }
 
-#if 0
-void XSMtaskBase::SignalMemberJoined(MultiplayerSessionMember^ _member, SecureDeviceAssociation^ _assoc)
-{	
-	// Get IP and port
-	int error = 0;
-
-	char* pHostIP = NULL;
-	if ((_assoc != nullptr) && (_assoc->RemoteHostName->RawName != nullptr))
-	{
-		pHostIP = ConvertFromWideCharToUTF8((wchar_t*)(_assoc->RemoteHostName->RawName->Data()));
-	}
-	else
-	{
-		error = -1;
-	}
-
-	int hostPort = 0;
-	if ((_assoc != nullptr) && (_assoc->RemotePort != nullptr))
-	{
-		char* pHostPort = ConvertFromWideCharToUTF8((wchar_t*)(_assoc->RemotePort->Data()));
-		if (pHostPort != NULL)
-		{
-			hostPort = atoi(pHostPort);
-		}
-		else
-		{
-			error = -1;
-		}
-		YYFree(pHostPort);
-	}
-	else
-	{
-		error = -1;
-	}
-
-	// Convert xbox live id to a uint64
-	uint64 userID = 0;
-	if (_member != nullptr)
-	{
-		userID = stringtoui64(_member->XboxUserId);
-	}
-	else
-	{
-		error = -1;
-	}
-
-#ifndef DISABLE_GAME_CHAT
-	// Add remote user to chat
-	if (error != -1)
-	{
-		OnChatSessionJoined(_member->XboxUserId, _assoc->RemoteHostName->RawName);
-	}
-#endif
-
-	XSMsession^ sess = XSM::GetSession(session);
-
-	// Fire off a session_player_joined event
-	int dsMapIndex = CreateDsMap(5, "id",(double)MATCHMAKING_SESSION,(void *)NULL,
-	"status", 0.0, "session_player_joined",
-	"sessionid", (double) ((sess != nullptr) ? sess->id : -1.0), NULL,		
-	"requestid", (double) requestid, NULL,
-	"error", (double)error, NULL);				
-
-	// Add user id
-	DsMapAddInt64(dsMapIndex, "userid", userID);
-
-	CreateAsyncEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
-
-	// Now fire off a connection_info event
-	dsMapIndex = CreateDsMap(7, "id",(double)MATCHMAKING_SESSION,(void *)NULL,
-	"status", 0.0, "connection_info",
-	"sessionid", (double) ((sess != nullptr) ? sess->id : -1.0), NULL,		
-	"address", 0.0, pHostIP != NULL ? pHostIP : "",
-	"port", (double)hostPort, NULL,	
-	"requestid", (double) requestid, NULL,
-	"error", (double)error, NULL);				
-
-	// Add user id
-	DsMapAddInt64(dsMapIndex, "userid", userID);
-
-	CreateAsyncEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
-
-#ifdef XSM_VERBOSE_TRACE
-	Platform::String^ sessionName = XSM::GetSessionName(session);
-	char pStringBuff[256];
-	ConvertFromWideCharToUTF8((wchar_t*)(sessionName->Data()), pStringBuff);
-	DebugConsoleOutput("%s member joined: session id %s, request id %d, user id %I64u, IP %s, port %d\n", g_XSMTaskNames[taskType], pStringBuff, requestid, userID, pHostIP != NULL ? pHostIP : "", hostPort);
-#endif
-
-	YYFree(pHostIP);
-}
-#endif
 
 void XSMtaskBase::SignalMemberJoined(uint64 _user_id, const char* _entityID, bool _reportConnection)
 {
@@ -704,8 +549,8 @@ void XSM::ProcessQueuedEvents()
 
 	LockEventMutex();
 
-	int numrecords = sessionChangedRecords->size();
-	for (int i = 0; i < numrecords; i++)
+	size_t numrecords = sessionChangedRecords->size();
+	for (size_t i = 0; i < numrecords; i++)
 	{
 		recList->push_back(sessionChangedRecords->at(i));
 	}
@@ -797,26 +642,20 @@ void XSM::ProcessQueuedEvents()
 								}
 								else
 								{
-#ifdef XSM_VERBOSE_TRACE
-									DebugConsoleOutput("ProcessQueuedEvents() branch doesn't match returned session: session name %s\n", rec->args.SessionReference.SessionName);
-#endif
+									XSM_VERBOSE_OUTPUT("ProcessQueuedEvents() branch doesn't match returned session: session name %s\n", rec->args.SessionReference.SessionName);
 								}
 
 
 							}
 							else
 							{
-#ifdef XSM_VERBOSE_TRACE
-								DebugConsoleOutput("ProcessQueuedEvents() couldn't get session info: session name %s\n", rec->args.SessionReference.SessionName);
-#endif
+								XSM_VERBOSE_OUTPUT("ProcessQueuedEvents() couldn't get session info: session name %s\n", rec->args.SessionReference.SessionName);
 							}
 						}
 					}
 					else
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("ProcessQueuedEvents() get session failed 0x%08x: session name %s\n", res, rec->args.SessionReference.SessionName);
-#endif
+						XSM_VERBOSE_OUTPUT("ProcessQueuedEvents() get session failed 0x%08x: session name %s\n", res, rec->args.SessionReference.SessionName);
 					}
 
 					delete rec;
@@ -826,9 +665,7 @@ void XSM::ProcessQueuedEvents()
 				HRESULT res = XblMultiplayerGetSessionAsync(xbl_context, &(rec->args.SessionReference), asyncBlock);
 				if (FAILED(res))
 				{
-#ifdef XSM_VERBOSE_TRACE
 					DebugConsoleOutput("ProcessQueuedEvents() XblMultiplayerGetSessionAsync failed 0x%08x: session name %s\n", res, rec->args.SessionReference.SessionName);
-#endif
 					
 					delete asyncBlock;
 					delete rec;
@@ -857,8 +694,8 @@ XSMsession* XSM::GetSession(uint32 _id)
 {
 	XSM_LOCK_MUTEX
 
-	int count = cachedSessions->size();
-	for(int i = 0; i < count; i++)
+	size_t count = cachedSessions->size();
+	for(size_t i = 0; i < count; i++)
 	{
 		if (cachedSessions->at(i)->id == _id)
 		{
@@ -869,35 +706,6 @@ XSMsession* XSM::GetSession(uint32 _id)
 	return NULL;
 }
 
-#if 0
-void normalizeSessionName(Platform::String ^ref, char *output)
-{
-	char sb[256];
-	ConvertFromWideCharToUTF8((wchar_t*)(ref->Data()), sb);
-
-    char ch;
-    int i, ii;
-
-	char *before = output;
-
-    for (i=0; i<strlen(sb); i++) 
-	{
-        if (((int)sb[i]) == '%')
-		{
-            sscanf(&sb[i+1], "%2x", &ii);
-            ch=static_cast<char>(ii);
-            *output++ = ch;
-            i=i+2;
-        }
-		else
-		{
-            *output++ = sb[i];
-        }
-    }
-
-	*output = '\0';
-}
-#endif
 
 bool AreSessionsRefsEqual(const XblMultiplayerSessionReference *ref, const XblMultiplayerSessionReference *ref2)
 {
@@ -979,8 +787,8 @@ XSMsession* XSM::GetSession(xbl_session_ptr _session)
 {
 	XSM_LOCK_MUTEX
 	
-	int count = cachedSessions->size();
-	for(int i = 0; i < count; i++)
+	size_t count = cachedSessions->size();
+	for(size_t i = 0; i < count; i++)
 	{
 		XSMsession* cachedSess = cachedSessions->at(i);		
 
@@ -997,8 +805,8 @@ XSMsession* XSM::GetSession(uint64 _user_id, XblMultiplayerSessionReference* _se
 {
 	XSM_LOCK_MUTEX	
 
-	int count = cachedSessions->size();
-	for(int i = 0; i < count; i++)
+	size_t count = cachedSessions->size();
+	for(size_t i = 0; i < count; i++)
 	{
 		XSMsession* cachedSess = cachedSessions->at(i);		
 		const XblMultiplayerSessionReference* cachedSessRef = XblMultiplayerSessionSessionReference(cachedSess->session->session_handle);
@@ -1078,8 +886,8 @@ void XSM::DeleteSession(uint32 _id)
 {	
 	XSM_LOCK_MUTEX
 
-	int count = cachedSessions->size();
-	for(int i = 0; i < count; i++)
+	size_t count = cachedSessions->size();
+	for(size_t i = 0; i < count; i++)
 	{
 		if (cachedSessions->at(i)->id == _id)
 		{
@@ -1094,8 +902,8 @@ void XSM::DeleteSession(xbl_session_ptr _session)
 {
 	XSM_LOCK_MUTEX
 
-	int count = cachedSessions->size();
-	for(int i = 0; i < count; i++)
+	size_t count = cachedSessions->size();
+	for(size_t i = 0; i < count; i++)
 	{
 		if (AreSessionsEqual(cachedSessions->at(i)->session, _session))
 		{
@@ -1122,39 +930,6 @@ void XSM::DeleteSession(xbl_session_ptr _session)
 	}
 }
 
-#if 0
-void XSM::ReplaceSession(MultiplayerSession^ _srcsession, MultiplayerSession^ _newsession)
-{
-	XSM_LOCK_MUTEX
-
-	int count = cachedSessions->Size;
-	int i;
-	for(i = 0; i < count; i++)
-	{
-		XSMsession ^sess = cachedSessions->GetAt(i);
-		if (AreSessionsEqual(sess->session->SessionReference, _srcsession->SessionReference) &&
-			sess->session->CurrentUser->XboxUserId->Equals(_srcsession->CurrentUser->XboxUserId))
-		{
-			sess->session = _newsession;
-
-			// Reset change number?
-			sess->changenumber = 0;
-		}
-	}
-
-	// Now run through the task list and replace any sessions there that match _srcsession
-	count = tasks->Size;
-	for(i = 0; i < count; i++)
-	{
-		XSMtaskBase^ xsmtask = tasks->GetAt(i);
-		if (AreSessionsEqual(xsmtask->session->SessionReference, _srcsession->SessionReference) &&
-			xsmtask->session->CurrentUser->XboxUserId->Equals(_srcsession->CurrentUser->XboxUserId))
-		{
-			xsmtask->session = _newsession;
-		}
-	}
-}
-#endif
 
 uint64 XSM::GetSessionUserIDFromGamerTag(const char* _gamerTag)
 {
@@ -1392,13 +1167,6 @@ XblDeviceToken XSM::GetUserDeviceToken(uint64 _user_id, xbl_session_ptr _session
 	return emptytoken;
 }
 
-#if 0
-Collections::IVector<XSMtaskBase^> ^XSM::GetTasks()
-{
-	return tasks;
-}
-#endif
-
 void XSM::AddTask(XSMtaskBase* _context)
 {
 	tasks->push_back(_context);
@@ -1410,9 +1178,9 @@ void XSM::DeleteSessionGlobally(xbl_session_ptr _session)
 	// Loop through all contexts and call their delete handler
 	XSM_LOCK_MUTEX
 	
-	int count = tasks->size();
+	size_t count = tasks->size();
 
-	int i;
+	size_t i;
 	for(i = 0; i < count; i++)
 	{
 		XSMtaskBase* xsmtask = tasks->at(i);
@@ -1435,23 +1203,6 @@ void XSM::DeleteSessionGlobally(xbl_session_ptr _session)
 	DeleteSession(_session);
 }
 
-#if 0
-Platform::String^ XSM::GetSessionName(Microsoft::Xbox::Services::Multiplayer::MultiplayerSession^ _session)
-{
-	Platform::String^ sessionName = nullptr;
-	if ((_session != nullptr) && (_session->SessionReference != nullptr) && (_session->SessionReference->SessionName != nullptr))
-	{
-		sessionName = _session->SessionReference->SessionName;
-	}
-	else
-	{
-		sessionName = ref new Platform::String(L"None");		
-	}
-
-	return sessionName;
-}
-#endif
-
 char* XSM::GetSessionName(xbl_session_ptr _session, char* _pBuffToUse)
 {
 	const XblMultiplayerSessionReference* ref = NULL;
@@ -1472,92 +1223,6 @@ char* XSM::GetSessionName(xbl_session_ptr _session, char* _pBuffToUse)
 	return _pBuffToUse;
 }
 
-#if 0
-void XSM::SignalMemberJoined(MultiplayerSessionMember^ _member, SecureDeviceAssociation^ _assoc, XSMsession^ _session)
-{	
-	// Get IP and port
-	int error = 0;
-
-	char* pHostIP = NULL;
-	if ((_assoc != nullptr) && (_assoc->RemoteHostName->RawName != nullptr))
-	{
-		pHostIP = ConvertFromWideCharToUTF8((wchar_t*)(_assoc->RemoteHostName->RawName->Data()));
-	}
-	else
-	{
-		error = -1;
-	}
-
-	int hostPort = 0;
-	if ((_assoc != nullptr) && (_assoc->RemotePort != nullptr))
-	{
-		char* pHostPort = ConvertFromWideCharToUTF8((wchar_t*)(_assoc->RemotePort->Data()));
-		if (pHostPort != NULL)
-		{
-			hostPort = atoi(pHostPort);
-		}
-		else
-		{
-			error = -1;
-		}
-		::YYFree(pHostPort);
-	}
-	else
-	{
-		error = -1;
-	}
-
-	// Convert xbox live id to a uint64
-	uint64 userID = 0;
-	if (_member != nullptr)
-	{
-		userID = stringtoui64(_member->XboxUserId);
-	}
-	else
-	{
-		error = -1;
-	}	
-
-#ifndef DISABLE_GAME_CHAT
-	// Add remote user to chat
-	if (error != -1)
-	{
-		OnChatSessionJoined(_member->XboxUserId, _assoc->RemoteHostName->RawName);
-	}
-#endif
-
-	// Fire off a session_player_joined event
-	int dsMapIndex = CreateDsMap(4, "id",(double)MATCHMAKING_SESSION,(void *)NULL,
-	"status", 0.0, "session_player_joined",
-	"sessionid", (double) ((_session != nullptr) ? _session->id : -1.0), NULL,			
-	"error", (double)error, NULL);				
-
-	// Add user id
-	DsMapAddInt64(dsMapIndex, "userid", userID);
-
-	CreateAsyncEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
-
-	// Now fire off a connection_info event
-	dsMapIndex = CreateDsMap(6, "id",(double)MATCHMAKING_SESSION,(void *)NULL,
-	"status", 0.0, "connection_info",
-	"sessionid", (double) ((_session != nullptr) ? _session->id : -1.0), NULL,		
-	"address", 0.0, pHostIP != NULL ? pHostIP : "",
-	"port", (double)hostPort, NULL,		
-	"error", (double)error, NULL);				
-
-	// Add user id
-	DsMapAddInt64(dsMapIndex, "userid", userID);
-
-	CreateAsyncEventWithDSMap(dsMapIndex,EVENT_OTHER_SOCIAL);
-
-#ifdef XSM_VERBOSE_TRACE
-	char stringbuff[256];
-	DebugConsoleOutput("Member joined session: session id %s, user id %I64u, IP %s, port %d\n", GetSessionName(_session->session, stringbuff), userID, pHostIP != NULL ? pHostIP : "", hostPort);
-#endif
-
-	::YYFree(pHostIP);
-}
-#endif
 
 void XSM::SignalMemberJoined(uint64 _user_id, const char* _entityID, XSMsession* _session, bool _reportConnection)
 {	
@@ -1832,58 +1497,6 @@ namespace XboxOneChat
 #endif
 
 
-#if 0
-
-void CreateChatConnectionForSessionMember(MultiplayerSessionMember ^_member)
-{
-#if !defined(WIN_UAP) && !defined(NO_SECURE_CONNECTION) && YY_CHAT
-
-	if (_member->SecureDeviceAddressBase64 == nullptr)
-		return;
-
-	SecureDeviceAddress^ address = SecureDeviceAddress::FromBase64String(_member->SecureDeviceAddressBase64);
-	SecureDeviceAssociationTemplate^ sdaTemplate = SecureDeviceAssociationTemplate::GetTemplateByName(L"GameChatTraffic");
-	SecureConnection^ securecon = SCM::CreateConnection(address, sdaTemplate);
-
-	DebugConsoleOutput("<<CHAT>> TRYING TO ESTABLISH CONNECTION TO CLIENT %S:%d\n", address->ToString()->Data(), sdaTemplate->AcceptorSocketDescription->BoundPortRangeLower);
-
-	create_task( [_member, address, sdaTemplate]
-	{
-		bool finished = false;
-
-		while(!finished)
-		{
-			// Create remove list
-			Platform::Collections::Vector<Platform::String^>^ toRemove = ref new Platform::Collections::Vector<Platform::String^>();
-
-			SecureConnection ^conn = SCM::GetConnection(address, sdaTemplate);
-
-			if (conn == nullptr)
-			{
-				// Something odd happened - just bail
-				DebugConsoleOutput("<<CHAT>> CONNECTION REQUEST TO CLIENT %S:%d DELETED BEFORE IT COULD BE COMPLETED\n", address->ToString()->Data(), sdaTemplate->AcceptorSocketDescription->BoundPortRangeLower);
-				finished = true;
-			}
-			else if ((conn->GetState() == SC_CreateState_Created) || (conn->GetState() == SC_CreateState_Destroying) || (conn->GetState() == SC_CreateState_Destroyed) || (conn->GetState() == SC_CreateState_CreationFailed))
-			{
-				if (conn->GetState() == SC_CreateState_Created)
-				{
-					// inform the voice chat
-					//GameChat2IntegrationLayer::Get()->OnSecureDeviceAssocationConnectionEstablished(_member->XboxUserId, conn->association->RemoteHostName->RawName);
-					DebugConsoleOutput("<<CHAT>> ESTABLISHED CONNECTION TO CLIENT %S:%S\n", conn->association->RemoteHostName->RawName->Data(), conn->association->RemotePort->Data());
-				}
-
-				// All other states are failures so don't report any connection info
-				finished = true;
-			}
-
-			::Sleep(33);		// yield the thread
-		}
-	});
-#endif
-}
-
-#endif
 
 void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _updatedsession)
 {
@@ -1902,18 +1515,14 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 	res = XblMultiplayerSessionMembers(_session->session->session_handle, &oldMemberList, &oldMemberCount);
 	if (FAILED(res))
 	{
-#ifdef XSM_VERBOSE_TRACE
-		DebugConsoleOutput("XSM::ProcessMemberListChanged: XblMultiplayerSessionMembers() couldn't get old member list: error 0x%08x\n", res);
-#endif
+		XSM_VERBOSE_OUTPUT("XSM::ProcessMemberListChanged: XblMultiplayerSessionMembers() couldn't get old member list: error 0x%08x\n", res);
 		return;
 	}
 
 	res = XblMultiplayerSessionMembers(_updatedsession->session_handle, &newMemberList, &newMemberCount);
 	if (FAILED(res))
 	{
-#ifdef XSM_VERBOSE_TRACE
-		DebugConsoleOutput("XSM::ProcessMemberListChanged: XblMultiplayerSessionMembers() couldn't get new member list: error 0x%08x\n", res);
-#endif
+		XSM_VERBOSE_OUTPUT("XSM::ProcessMemberListChanged: XblMultiplayerSessionMembers() couldn't get new member list: error 0x%08x\n", res);
 		return;
 	}
 
@@ -2019,18 +1628,14 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 	const XblMultiplayerSessionProperties* props = XblMultiplayerSessionSessionProperties(_updatedsession->session_handle);
 	if (props == NULL)
 	{
-#ifdef XSM_VERBOSE_TRACE
-		DebugConsoleOutput("XSM::ProcessMemberListChanged: XblMultiplayerSessionSessionProperties() returned NULL\n");
-#endif
+		XSM_VERBOSE_OUTPUT("XSM::ProcessMemberListChanged: XblMultiplayerSessionSessionProperties() returned NULL\n");
 		return;
 	}
 
 	const XblMultiplayerSessionMember* currentuser = XblMultiplayerSessionCurrentUser(_updatedsession->session_handle);
 	if (currentuser == NULL)
 	{
-#ifdef XSM_VERBOSE_TRACE
-		DebugConsoleOutput("XSM::ProcessMemberListChanged: XblMultiplayerSessionCurrentUser() returned NULL\n");
-#endif
+		XSM_VERBOSE_OUTPUT("XSM::ProcessMemberListChanged: XblMultiplayerSessionCurrentUser() returned NULL\n");
 		return;
 	}
 
@@ -2078,9 +1683,7 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 		const XblMultiplayerSessionProperties* oldprops = XblMultiplayerSessionSessionProperties(_session->session->session_handle);
 		if (oldprops == NULL)
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("XSM::ProcessMemberListChanged: XblMultiplayerSessionSessionProperties() returned NULL\n");
-#endif
+			XSM_VERBOSE_OUTPUT("XSM::ProcessMemberListChanged: XblMultiplayerSessionSessionProperties() returned NULL\n");
 			return;
 		}
 
@@ -2089,9 +1692,7 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 		if (oldprops->HostDeviceToken.Value[0] == '\0')
 		{
 			// Okay, no host was set previously, so we don't need to do anything here
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("No host found in original session\n");
-#endif			
+			XSM_VERBOSE_OUTPUT("No host found in original session\n");
 		}
 		else
 		{
@@ -2139,9 +1740,7 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 		const XblMultiplayerSessionMember* host = NULL;
 		if (props->HostDeviceToken.Value[0] == '\0')
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("No host found in updated session\n");
-#endif			
+			XSM_VERBOSE_OUTPUT("No host found in updated session\n");
 		}
 		else
 		{
@@ -2186,9 +1785,7 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 		const XblMultiplayerSessionProperties* oldprops = XblMultiplayerSessionSessionProperties(_session->session->session_handle);
 		if (oldprops == NULL)
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("XSM::ProcessMemberListChanged: XblMultiplayerSessionSessionProperties() returned NULL\n");
-#endif
+			XSM_VERBOSE_OUTPUT("XSM::ProcessMemberListChanged: XblMultiplayerSessionSessionProperties() returned NULL\n");
 			return;
 		}
 
@@ -2197,9 +1794,7 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 		if (oldprops->HostDeviceToken.Value[0] == '\0')
 		{
 			// Okay, no host was set previously, so we don't need to do anything here
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("No host found in original session\n");
-#endif			
+			XSM_VERBOSE_OUTPUT("No host found in original session\n");
 		}
 		else
 		{
@@ -2259,9 +1854,7 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 		const XblMultiplayerSessionMember* host = NULL;
 		if (props->HostDeviceToken.Value[0] == '\0')		
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("No host found in updated session\n");
-#endif			
+			XSM_VERBOSE_OUTPUT("No host found in updated session\n");
 		}
 		else
 		{
@@ -2281,18 +1874,14 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 
 			if (host == NULL)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("Host not one of the newly added players : session id %d, session name %s\n", _session->id, GetSessionName(_session->session, stringbuff));
-#endif		
+				XSM_VERBOSE_OUTPUT("Host not one of the newly added players : session id %d, session name %s\n", _session->id, GetSessionName(_session->session, stringbuff));
 			}
 			else
 			{
 				if (stricmp(host->DeviceToken.Value, currentuser->DeviceToken.Value) == 0)
 				{
 					// If the host is on the current machine, don't trigger a session joined event
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("Host is on this machine - not reporting new connection : session id %d, session name %s\n", _session->id, GetSessionName(_session->session, stringbuff));
-#endif					
+					XSM_VERBOSE_OUTPUT("Host is on this machine - not reporting new connection : session id %d, session name %s\n", _session->id, GetSessionName(_session->session, stringbuff));
 				}
 				else
 				{
@@ -2310,9 +1899,7 @@ void XSM::ProcessMemberListChanged(XSMsession* _session, xbl_session_ptr _update
 
 					YYFree(entityID);
 
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("Received host connection : session id %d, session name %s\n", _session->id, GetSessionName(_session->session, stringbuff));
-#endif					
+					XSM_VERBOSE_OUTPUT("Received host connection : session id %d, session name %s\n", _session->id, GetSessionName(_session->session, stringbuff));
 				}
 
 			}
@@ -2358,10 +1945,10 @@ XSM::OnSessionChanged(
 	XSM_LOCK_MUTEX
 
 	// Iterate through the task list and do work based on the type and state of each task object
-	int count = tasks->size();
+	size_t count = tasks->size();
 
 	bool dbg_processed = false;
-	int i;
+	size_t i;
 	for(i = 0; i < count; i++)
 	{
 		XSMtaskBase* xsmtask = tasks->at(i);
@@ -2422,8 +2009,6 @@ XSM::OnSessionChanged(
 	XblMultiplayerSessionChangeEventArgs args
     )
 {		
-#if 1
-
 #ifdef QUEUE_CHANGED_EVENTS
 
 	XSM_LOCK_EVENT_MUTEX
@@ -2433,158 +2018,6 @@ XSM::OnSessionChanged(
 	newRecord->args = args;
 
 	sessionChangedRecords->push_back(newRecord);		
-#endif
-
-#else
-#ifdef XSM_VERBOSE_TRACE
-	DebugConsoleOutput("Received session changed event\n");
-#endif
-
-#if defined( WIN_UAP ) || (defined(XBOX_LIVE_VER) && XBOX_LIVE_VER>=1508) || (defined(_XDK_VER) && (_XDK_VER >= 0x38390431))
-	// Should be able to do this on Xbox too
-	XUMuser^ xumuser = _user;
-#else
-	// Extract user from object var
-	RealTimeActivity::RealTimeActivityService^ serv = nullptr;
-	if (object->GetType()->FullName->Equals(RealTimeActivity::RealTimeActivityService::typeid->FullName))
-	{
-		serv = (RealTimeActivity::RealTimeActivityService^)object;
-	}
-
-	if (serv == nullptr)
-		return;	// just bail
-
-	User^ user = serv->User;
-
-	XUMuser^ xumuser = nullptr;
-	XUM::LockMutex();
-	Collections::IVector<XUMuser^> ^users = XUM::GetUsers();
-	for(int i = 0; i < users->Size; i++)
-	{
-		if (users->GetAt(i)->user->Equals(user))
-		{
-			xumuser = users->GetAt(i);
-			break;
-		}
-	}
-
-	XUM::UnlockMutex();		// may need to move this unlock further down (there's a possibility that the contents of the user object may be modified externally
-#endif
-
-	if (xumuser == nullptr)
-		return;
-
-#ifdef QUEUE_CHANGED_EVENTS
-	XSM_LOCK_EVENT_MUTEX
-#else
-
-	// See if we've already processed this
-	//MultiplayerSession^ argsession = ref new MultiplayerSession(xumuser->GetXboxLiveContext(), arg->SessionReference);
-	XSMsession^ xsmsession = GetSession(xumuser, arg->SessionReference);
-
-	if ((xsmsession == nullptr)
-#ifndef WIN_UAP
-		// Doesn't exist for UAPs
-		|| (arg->ChangeNumber <= xsmsession->changenumber)
-#endif
-		)
-		return;	// we've already processed this change (or alternatively these callbacks are getting triggered out of order - I don't think this should matter though)
-#endif
-
-	// Get updated session (so we don't have to do it in every event handler)
-	MultiplayerSession^ newSession = nullptr;
-	bool argsSessionComplete = false;
-						
-	try
-	{
-		auto asyncGetCurrentSession = xumuser->GetXboxLiveContext()->MultiplayerService->GetCurrentSessionAsync(arg->SessionReference);
-		asyncGetCurrentSession->Completed = ref new AsyncOperationCompletedHandler<MultiplayerSession^> (
-			[&argsSessionComplete, &newSession] (IAsyncOperation<MultiplayerSession^>^ a, Windows::Foundation::AsyncStatus status )
-		{
-			switch(a->ErrorCode.Value)
-			{
-			case S_OK:
-				{
-					newSession = a->GetResults();
-
-#ifdef XSM_VERBOSE_TRACE
-					char* pSessionName = NULL;
-					if (newSession != nullptr)
-					{
-						pSessionName = ConvertFromWideCharToUTF8((wchar_t*)(newSession->SessionReference->SessionName->Data()));
-					}
-					else
-					{
-						pSessionName = (char*)::MemoryManager::Alloc(5);
-						strcpy(pSessionName, "None");
-					}
-																
-					DebugConsoleOutput("Session changed event: session name %s\n", pSessionName);
-					::YYFree(pSessionName);
-#endif
-				}
-				break;
-			default:
-				{
-
-				}
-				break;
-			}
-			argsSessionComplete = true;
-		});
-	}
-	catch(Platform::Exception^ ex)
-	{
-		DebugConsoleOutput("Exception - 0x%08x %s\n", ex->HResult, ex->Message);
-	}
-
-	while(!argsSessionComplete);
-
-#ifdef WIN_UAP
-	if ((newSession == nullptr) || (xsmsession->changenumber > newSession->ChangeNumber))
-	{
-		DebugConsoleOutput("session changed but we still have a later version... %d > %d\n", xsmsession->changenumber, newSession ? newSession->ChangeNumber : -1);
-	}
-#else
-	if ((newSession == nullptr) || (arg->ChangeNumber > newSession->ChangeNumber))
-	{
-		DebugConsoleOutput("session changed but this still isn't the latest version... %d > %d\n", arg->ChangeNumber, newSession ? newSession->ChangeNumber : -1);
-	}
-#endif
-
-	if (newSession == nullptr)
-		return;
-
-#ifdef QUEUE_CHANGED_EVENTS
-	SessionChangedRecord^ newRecord = ref new SessionChangedRecord();
-	newRecord->user = xumuser;
-	newRecord->sessionRef = arg->SessionReference;
-	newRecord->newsession = newSession;	
-#ifdef WIN_UAP
-	newRecord->changeNumber = newSession->ChangeNumber;
-#else
-	newRecord->changeNumber = arg->ChangeNumber;
-#endif
-
-	sessionChangedRecords->Append(newRecord);	// must be kept in order
-
-	// Finally, return (we want to do the processing on the main thread)
-	return;
-#endif
-
-	OnSessionChanged(xumuser->user, newSession);	
-
-	// Right, check for different conditions - TBD
-
-#ifndef QUEUE_CHANGED_EVENTS
-	// Finally, update the change number
-#ifdef WIN_UAP
-	xsmsession->changenumber = newSession->ChangeNumber;
-#else
-	xsmsession->changenumber = arg->ChangeNumber;
-#endif
-#endif
-
 #endif
 }
 
@@ -2598,9 +2031,9 @@ void XSM::OnPlayFabPartyXblChange(
 
 	// Iterate through the task list and dispatch this change to each of them
 	// Don't do any filtering based on session etc as not all the change structures include them - let the tasks sort them out
-	int count = tasks->size();
+	size_t count = tasks->size();
 
-	int i;
+	size_t i;
 	for (i = 0; i < count; i++)
 	{
 		XSMtaskBase* xsmtask = tasks->at(i);
@@ -2626,9 +2059,9 @@ void XSM::OnPlayFabPartyChange(
 
 	// Iterate through the task list and dispatch this change to each of them
 	// Don't do any filtering based on session etc as not all the change structures include them - let the tasks sort them out
-	int count = tasks->size();
+	size_t count = tasks->size();
 
-	int i;
+	size_t i;
 	for (i = 0; i < count; i++)
 	{
 		XSMtaskBase* xsmtask = tasks->at(i);
@@ -2713,9 +2146,7 @@ void XSMtaskBase::Process()
 			char descriptorString[c_maxSerializedNetworkDescriptorStringLength + 1];
 			if (PlayFabPartyManager::SerialiseNetworkDescriptor(&networkDescriptor, descriptorString) < 0)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession) couldn't serialise network descriptor: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession) couldn't serialise network descriptor: request id %d\n", requestid);
 				SetState(XSMTS_FailureCleanup);
 				return;
 			}
@@ -2723,9 +2154,7 @@ void XSMtaskBase::Process()
 			res = SetSessionProperty("networkdescriptor", descriptorString);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession) couldn't write session property: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession) couldn't write session property: request id %d\n", requestid);
 				SetState(XSMTS_FailureCleanup);
 				return;
 			}
@@ -2733,9 +2162,7 @@ void XSMtaskBase::Process()
 			res = SetSessionProperty("invite", invitationIdentifier);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession) couldn't write session property: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession) couldn't write session property: request id %d\n", requestid);
 				SetState(XSMTS_FailureCleanup);
 				return;
 			}
@@ -2743,9 +2170,7 @@ void XSMtaskBase::Process()
 #if 0
 			if ((pUser == NULL) || (pUser->playfabLocalUser == NULL))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession): error: PlayFab local user was NULL\n");
-#endif
+				XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession): error: PlayFab local user was NULL\n");
 				res = E_FAIL;
 
 				SetState(XSMTS_FailureCleanup);
@@ -2756,9 +2181,7 @@ void XSMtaskBase::Process()
 				const char* entityID = PlayFabPartyManager::GetUserEntityID(user_id);
 				if (entityID == NULL)
 				{
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession): error: Couldn't get user's entity ID\n");
-#endif
+					XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession): error: Couldn't get user's entity ID\n");
 					res = E_FAIL;
 
 					SetState(XSMTS_FailureCleanup);
@@ -2769,9 +2192,7 @@ void XSMtaskBase::Process()
 
 					if (SetSessionProperty(xuidstring, entityID) < 0)
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession): error: Couldn't set session property\n");
-#endif
+						XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession): error: Couldn't set session property\n");
 						res = E_FAIL;
 
 						SetState(XSMTS_FailureCleanup);
@@ -2799,9 +2220,7 @@ void XSMtaskBase::Process()
 						{
 							// Process multiplayer session handle
 							xbl_session_ptr session = std::make_shared<xbl_session>(sessionHandle);
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession) write succeeded: request id %d\n", self->requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession) write succeeded: request id %d\n", self->requestid);
 							self->SetState(XSMTS_ConnectToPlayFabNetwork);
 
 							XSM::OnSessionChanged(0, session);
@@ -2811,9 +2230,7 @@ void XSMtaskBase::Process()
 						else
 						{
 							// Handle failure
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession) write failed: request id %d\n", self->requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession) write failed: request id %d\n", self->requestid);
 							self->SetState(XSMTS_FailureCleanup);
 							self->waiting = false;
 						}
@@ -2828,9 +2245,7 @@ void XSMtaskBase::Process()
 			}
 			else
 			{
-#ifdef XSM_VERBOSE_TRACE
 				DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession) write failed: request id %d\n", requestid);
-#endif
 
 				SetState(XSMTS_FailureCleanup);
 				waiting = false;
@@ -2850,16 +2265,12 @@ void XSMtaskBase::Process()
 				{
 					if (temp_networkdescriptor == NULL)
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("(XSMTS_GetPlayFabNetworkDetailsAndConnect) couldn't get network descriptor from session: request id %d\n", requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("(XSMTS_GetPlayFabNetworkDetailsAndConnect) couldn't get network descriptor from session: request id %d\n", requestid);
 					}
 
 					if (temp_invite == NULL)
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("(XSMTS_GetPlayFabNetworkDetailsAndConnect) couldn't get invitation from session: request id %d\n", requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("(XSMTS_GetPlayFabNetworkDetailsAndConnect) couldn't get invitation from session: request id %d\n", requestid);
 					}
 
 					SetState(XSMTS_FailureCleanup);					
@@ -2895,9 +2306,7 @@ void XSMtaskBase::Process()
 
 			if (PlayFabPartyManager::DeserialiseNetworkDescriptor(temp_networkdescriptor, &networkDescriptor) < 0)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("(XSMTS_GetPlayFabNetworkDetailsAndConnect) couldn't deserialise network descriptor: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("(XSMTS_GetPlayFabNetworkDetailsAndConnect) couldn't deserialise network descriptor: request id %d\n", requestid);
 
 				YYFree(temp_networkdescriptor);
 				YYFree(temp_invite);
@@ -2967,9 +2376,7 @@ void XSMtaskBase::Process()
 		{
 			if ((pUser == NULL) || (pUser->playfabLocalUser == NULL))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession): error: PlayFab local user was NULL\n");
-#endif
+				XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession): error: PlayFab local user was NULL\n");
 				res = E_FAIL;
 
 				SetState(XSMTS_FailureCleanup);
@@ -2980,9 +2387,7 @@ void XSMtaskBase::Process()
 				const char* entityID = PlayFabPartyManager::GetUserEntityID(user_id);
 				if (entityID == NULL)
 				{
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession): error: Couldn't get user's entity ID\n");
-#endif
+					XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession): error: Couldn't get user's entity ID\n");
 					res = E_FAIL;
 
 					SetState(XSMTS_FailureCleanup);
@@ -2994,9 +2399,7 @@ void XSMtaskBase::Process()
 					//if (SetSessionProperty(xuidstring, entityID) < 0)
 					if (SetSessionCurrentUserProperty("entityID", entityID) < 0)
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession): error: Couldn't set session property\n");
-#endif
+						XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession): error: Couldn't set session property\n");
 						res = E_FAIL;
 
 						SetState(XSMTS_FailureCleanup);
@@ -3025,9 +2428,7 @@ void XSMtaskBase::Process()
 							{
 								// Process multiplayer session handle
 								xbl_session_ptr session = std::make_shared<xbl_session>(sessionHandle);
-#ifdef XSM_VERBOSE_TRACE
-								DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession) write succeeded: request id %d\n", self->requestid);
-#endif
+								XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession) write succeeded: request id %d\n", self->requestid);
 								self->SetState(XSMTS_ConnectionToPlayFabNetworkCompleted);
 
 								XSM::OnSessionChanged(0, session);
@@ -3037,9 +2438,7 @@ void XSMtaskBase::Process()
 							else
 							{
 								// Handle failure
-#ifdef XSM_VERBOSE_TRACE
-								DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession) write failed: request id %d\n", self->requestid);
-#endif
+								XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession) write failed: request id %d\n", self->requestid);
 								self->SetState(XSMTS_FailureCleanup);
 								self->waiting = false;
 							}
@@ -3054,9 +2453,7 @@ void XSMtaskBase::Process()
 				}
 				else
 				{
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("(XSMTS_WritePlayFabDetailsToSession) write failed: request id %d\n", requestid);
-#endif
+					XSM_VERBOSE_OUTPUT("(XSMTS_WritePlayFabDetailsToSession) write failed: request id %d\n", requestid);
 
 					SetState(XSMTS_FailureCleanup);
 					waiting = false;
@@ -3107,9 +2504,7 @@ void XSMtaskBase::ProcessPlayFabPartyChange(const PartyStateChange* _change)
 					}
 					else
 					{
-	#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("(XSMTS_WaitForPlayFabNetworkSetup) couldn't create network: request id %d\n", requestid);
-	#endif
+						XSM_VERBOSE_OUTPUT("(XSMTS_WaitForPlayFabNetworkSetup) couldn't create network: request id %d\n", requestid);
 						SetState(XSMTS_FailureCleanup);
 						waiting = false;
 					}
@@ -3155,9 +2550,7 @@ void XSMtaskBase::ProcessPlayFabPartyChange(const PartyStateChange* _change)
 					}
 					else
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("(XSMTS_WaitForConnectToPlayFabNetwork) couldn't connect to network: request id %d\n", requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("(XSMTS_WaitForConnectToPlayFabNetwork) couldn't connect to network: request id %d\n", requestid);
 						SetState(XSMTS_FailureCleanup);
 						waiting = false;
 					}
@@ -3201,9 +2594,7 @@ void XSMtaskBase::ProcessPlayFabPartyChange(const PartyStateChange* _change)
 					}
 					else
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("(XSMTS_WaitForAuthenticateLocalUser) couldn't authenticate local user: request id %d\n", requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("(XSMTS_WaitForAuthenticateLocalUser) couldn't authenticate local user: request id %d\n", requestid);
 						SetState(XSMTS_FailureCleanup);
 						waiting = false;
 					}
@@ -3247,9 +2638,7 @@ void XSMtaskBase::ProcessPlayFabPartyChange(const PartyStateChange* _change)
 					}
 					else
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("(XSMTS_WaitForConnectChatControl) couldn't connect chat control: request id %d\n", requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("(XSMTS_WaitForConnectChatControl) couldn't connect chat control: request id %d\n", requestid);
 						SetState(XSMTS_FailureCleanup);
 						waiting = false;
 					}
@@ -3283,9 +2672,7 @@ void XSMtaskBase::ProcessPlayFabPartyChange(const PartyStateChange* _change)
 					}
 					else
 					{
-	#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("(XSMTS_WaitForCreateEndpoint) couldn't create endpoint: request id %d\n", requestid);
-	#endif
+						XSM_VERBOSE_OUTPUT("(XSMTS_WaitForCreateEndpoint) couldn't create endpoint: request id %d\n", requestid);
 						SetState(XSMTS_FailureCleanup);
 						waiting = false;
 					}

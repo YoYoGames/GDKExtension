@@ -1,22 +1,13 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #include "SessionManagement.h"
 #include "GDKX.h"
-//#include <collection.h> 
-//#include "Files/Support/Support_Data_Structures.h"
 
 #define TICKET_TIMEOUT	30			// 30 seconds
-
-//using namespace Windows::Foundation;
-//#ifndef WIN_UAP
-//using namespace Windows::Xbox::Networking;
-//using namespace Windows::Xbox::System;
-//#endif
-//using namespace Microsoft::Xbox::Services;
-//using namespace Microsoft::Xbox::Services::Multiplayer;
-//using namespace Microsoft::Xbox::Services::Matchmaking;
-
-//extern Platform::String^ g_PrimaryServiceConfigId;
-
-extern void CreateAsynEventWithDSMap(int dsmapindex, int event_index);
 
 XSMtaskAdvertiseSession::~XSMtaskAdvertiseSession()
 {
@@ -63,17 +54,13 @@ void XSMtaskAdvertiseSession::Process()
 					HRESULT res = XblMatchmakingCreateMatchTicketResult(asyncBlock, &(self->ticketResponse));
 					if (FAILED(res))
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_CreateMatchTicket) create match ticket failed: error 0x%08x: request id %d\n", res, self->requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_CreateMatchTicket) create match ticket failed: error 0x%08x: request id %d\n", res, self->requestid);
 						self->SetState(XSMTS_FailureCleanup);
 						self->waiting = false;
 					}
 					else
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_CreateMatchTicket) create match ticket succeeded: request id %d ticket id %s\n", self->requestid, self->ticketResponse.matchTicketId);
-#endif
+						XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_CreateMatchTicket) create match ticket succeeded: request id %d ticket id %s\n", self->requestid, self->ticketResponse.matchTicketId);
 
 						self->SetState(XSMTS_AdvertiseSession_WaitMatchTicketResult);
 						self->waiting = true;		// we don't want to keep updating this task while waiting for a multiplayer session changed event
@@ -95,9 +82,7 @@ void XSMtaskAdvertiseSession::Process()
 
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_CreateMatchTicket) create match ticket failed: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_CreateMatchTicket) create match ticket failed: request id %d\n", requestid);
 				SetState(XSMTS_FailureCleanup);
 				waiting = false;
 
@@ -117,9 +102,7 @@ void XSMtaskAdvertiseSession::Process()
 			res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_WaitForAvailableSlots) couldn't get member list: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_WaitForAvailableSlots) couldn't get member list: request id %d\n", requestid);
 				SetState(XSMTS_FailureCleanup);
 			}
 			else
@@ -127,9 +110,7 @@ void XSMtaskAdvertiseSession::Process()
 				const XblMultiplayerSessionConstants* consts = XblMultiplayerSessionSessionConstants(session->session_handle);
 				if (consts == NULL)
 				{
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_WaitForAvailableSlots) couldn't get session constants: request id %d\n", requestid);
-#endif
+					XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_WaitForAvailableSlots) couldn't get session constants: request id %d\n", requestid);
 					SetState(XSMTS_FailureCleanup);
 				}
 				else
@@ -149,9 +130,7 @@ void XSMtaskAdvertiseSession::Process()
 			res = XblMultiplayerSessionLeave(session->session_handle);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("advertisesession (XSMTS_FailureCleanup) couldn't leave session: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_FailureCleanup) couldn't leave session: request id %d\n", requestid);
 				// Not sure if there's anything else I can do at this point
 			}
 
@@ -199,8 +178,6 @@ void XSMtaskAdvertiseSession::Process()
 
 			XSM::DeleteSessionGlobally(session);			
 
-			//XSMsession^ xsmsession = XSM::GetSession(session);
-			//XSM::DeleteSession(xsmsession->id);			
 		} break;
 	}
 }
@@ -220,23 +197,17 @@ void XSMtaskAdvertiseSession::ProcessSessionChanged(xbl_session_ptr _updatedsess
 	{
 		case XSMTS_AdvertiseSession_WaitMatchTicketResult:
 		{						
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult): request id %d\n", requestid);
 			// Compare the old and new sessions
 			XblMultiplayerSessionChangeTypes changes = XblMultiplayerSessionCompare(_updatedsession->session_handle, session->session_handle);			
 
 			if ((changes & XblMultiplayerSessionChangeTypes::MatchmakingStatusChange) == XblMultiplayerSessionChangeTypes::MatchmakingStatusChange)
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) matchmaking status change: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) matchmaking status change: request id %d\n", requestid);
 				const XblMultiplayerMatchmakingServer* mmstatus = XblMultiplayerSessionMatchmakingServer(_updatedsession->session_handle);
 				if (mmstatus == NULL)
 				{
-#ifdef XSM_VERBOSE_TRACE
-					DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) couldn't get matchmaking server data: request id %d\n", requestid);
-#endif
+					XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) couldn't get matchmaking server data: request id %d\n", requestid);
 					SetState(XSMTS_FailureCleanup);
 					waiting = false;
 				}		
@@ -245,9 +216,7 @@ void XSMtaskAdvertiseSession::ProcessSessionChanged(xbl_session_ptr _updatedsess
 					if ((mmstatus->Status == XblMatchmakingStatus::Expired) ||
 						(mmstatus->Status == XblMatchmakingStatus::Canceled))
 					{
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("expired\n");
-#endif
+						XSM_VERBOSE_OUTPUT("expired\n");
 						// Resubmit the match ticket?
 						// How does this affect timeouts etc?
 
@@ -298,9 +267,7 @@ void XSMtaskAdvertiseSession::ProcessSessionChanged(xbl_session_ptr _updatedsess
 									res = XblMultiplayerSessionMembers(newsession->session_handle, &memberList, &memberCount);
 									if (FAILED(res))
 									{
-#ifdef XSM_VERBOSE_TRACE
-										DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) XblMultiplayerSessionMembers failed 0x%08x: request id %d\n", res, self->requestid);
-#endif
+										XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) XblMultiplayerSessionMembers failed 0x%08x: request id %d\n", res, self->requestid);
 										self->SetState(XSMTS_FailureCleanup);
 									}
 									else
@@ -308,9 +275,7 @@ void XSMtaskAdvertiseSession::ProcessSessionChanged(xbl_session_ptr _updatedsess
 										const XblMultiplayerSessionConstants* consts = XblMultiplayerSessionSessionConstants(newsession->session_handle);
 										if (consts == NULL)
 										{
-#ifdef XSM_VERBOSE_TRACE
-											DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) couldn't get session constants: request id %d\n", self->requestid);
-#endif
+											XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) couldn't get session constants: request id %d\n", self->requestid);
 											self->SetState(XSMTS_FailureCleanup);
 										}
 										else
@@ -328,16 +293,13 @@ void XSMtaskAdvertiseSession::ProcessSessionChanged(xbl_session_ptr _updatedsess
 									}
 
 									// This is an update to the existing session
-									//XSM::ReplaceSession(session, newSession);
 									XSM::OnSessionChanged(0, newsession);
 
 									self->waiting = false;
 								}
 								else
 								{
-#ifdef XSM_VERBOSE_TRACE
-									DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) XblMultiplayerGetSessionResult failed 0x%08x: request id %d\n", res, self->requestid);
-#endif
+									XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) XblMultiplayerGetSessionResult failed 0x%08x: request id %d\n", res, self->requestid);
 									self->SetState(XSMTS_FailureCleanup);
 									self->waiting = false;
 								}
@@ -349,9 +311,7 @@ void XSMtaskAdvertiseSession::ProcessSessionChanged(xbl_session_ptr _updatedsess
 						res = XblMultiplayerGetSessionAsync(xbl_context, &(mmstatus->TargetSessionRef), asyncBlock);
 						if (FAILED(res))
 						{
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) XblMultiplayerGetSessionAsync failed 0x%08x: request id %d\n", res, requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("advertisesession (XSMTS_AdvertiseSession_WaitMatchTicketResult) XblMultiplayerGetSessionAsync failed 0x%08x: request id %d\n", res, requestid);
 							SetState(XSMTS_FailureCleanup);
 							waiting = false;
 

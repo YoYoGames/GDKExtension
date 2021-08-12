@@ -47,17 +47,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Extension_Interface.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="GDKX.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="YYRValue.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Ref.h">
-      <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="PlayFabPartyManagement.h">
       <Filter>Header Files</Filter>
@@ -78,6 +69,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MigrateHost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Extension_Interface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ref.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="YYRValue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

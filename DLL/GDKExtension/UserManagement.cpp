@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #include "GDKX.h"
 #include "UserManagement.h"
 #include "stdlib.h"
@@ -325,7 +331,7 @@ int XUMuser::DisassociateController(const APP_LOCAL_DEVICE_ID* _controller)
 		return -1;
 	}
 
-	int padIndex = std::distance(Controllers.begin(), controller_i);
+	int padIndex = (int)std::distance(Controllers.begin(), controller_i);
 
 	Controllers.erase(controller_i);
 
@@ -845,6 +851,7 @@ int XUM::AddUser(XUserAddOptions _options, bool _fromManualAccountPicker)
 						return true;
 					}
 				}
+				return false;
 			});
 
 			if (i == cachedUsers.end())
@@ -1374,7 +1381,6 @@ void CALLBACK XUM::UserDeviceAssociationChangedCallback(
 {
 	YYASSERT(change);
 
-	int i;
 	XUMuser* oldUser = NULL;
 	XUMuser* newUser = NULL;
 

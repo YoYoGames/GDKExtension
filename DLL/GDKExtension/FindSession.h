@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #ifndef FINDSESSION_H
 #define FINDSESSION_H
 
@@ -21,12 +27,17 @@ class XSMtaskFindSession : public XSMtaskBase
 {
 public:
 	char* hopperName;
-	//Platform::String^ sdaTemplateName;
 	char* matchAttributes;
 	XblCreateMatchTicketResponse ticketResponse;
 	xbl_session_ptr matchedSession;		
 
-	XSMtaskFindSession() { taskType = XSMTT_FindSession; hopperName = NULL; /*sdaTemplateName = nullptr; */ matchAttributes = NULL; ZeroMemory(&ticketResponse, sizeof(XblCreateMatchTicketResponse)); reFindingHost = false; }
+	XSMtaskFindSession() { 
+		taskType = XSMTT_FindSession; 
+		hopperName = NULL; 
+		matchAttributes = NULL; 
+		ZeroMemory(&ticketResponse, sizeof(XblCreateMatchTicketResponse)); 
+		reFindingHost = false; 
+	} // end constructor
 	
 	virtual void Process() override;
 	virtual void ProcessSessionChanged(xbl_session_ptr _updatedsession) override;

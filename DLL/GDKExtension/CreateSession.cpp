@@ -1,21 +1,15 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #include "GDKX.h"
 #include "SessionManagement.h"
 #include "PlayFabPartyManagement.h"
-//#include <collection.h> 
-//#include "Files/Support/Support_Data_Structures.h"
 
 
-//using namespace Windows::Foundation;
 using namespace Party;
-//using namespace Windows::Xbox::Networking;
-//#ifndef WIN_UAP
-//using namespace Windows::Xbox::System;
-//#endif
-//using namespace Microsoft::Xbox::Services;
-//using namespace Microsoft::Xbox::Services::Multiplayer;
-//using namespace Microsoft::Xbox::Services::Matchmaking;
-
-//extern void CreateAsynEventWithDSMap(int dsmapindex, int event_index);
 
 XSMtaskCreateSession::~XSMtaskCreateSession()
 {
@@ -48,9 +42,7 @@ void XSMtaskCreateSession::Process()
 	{
 		case XSMTS_CreateSession_InitialSession:
 		{
-#ifdef XSM_VERBOSE_TRACE
-			DebugConsoleOutput("createsession (XSMTS_CreateSession_InitialSession): request id %d\n", requestid);
-#endif
+			XSM_VERBOSE_OUTPUT("createsession (XSMTS_CreateSession_InitialSession): request id %d\n", requestid);
 
 			res = WriteSessionAsync(xbl_context, session->session_handle, XblMultiplayerSessionWriteMode::UpdateOrCreateNew,
 				[](XAsyncBlock* asyncBlock)
@@ -69,9 +61,7 @@ void XSMtaskCreateSession::Process()
 						{
 							// Process multiplayer session handle
 							xbl_session_ptr session = std::make_shared<xbl_session>(sessionHandle);
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("createsession (XSMTS_CreateSession_InitialSession) write succeeded: request id %d\n", self->requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("createsession (XSMTS_CreateSession_InitialSession) write succeeded: request id %d\n", self->requestid);
 							self->SetState(XSMTS_CreateSession_SetHost);
 
 							XSM::OnSessionChanged(0, session);
@@ -81,9 +71,7 @@ void XSMtaskCreateSession::Process()
 						else
 						{
 							// Handle failure
-#ifdef XSM_VERBOSE_TRACE
-							DebugConsoleOutput("createsession (XSMTS_CreateSession_InitialSession) write failed: request id %d\n", self->requestid);
-#endif
+							XSM_VERBOSE_OUTPUT("createsession (XSMTS_CreateSession_InitialSession) write failed: request id %d\n", self->requestid);
 							self->SetState(XSMTS_CreateSession_FailureToWrite);
 							self->waiting = false;
 						}
@@ -104,9 +92,7 @@ void XSMtaskCreateSession::Process()
 				// Need to create an event to tell the user what happened
 				//delete asyncBlock;
 
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("createsession (XSMTS_CreateSession_InitialSession) write failed: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("createsession (XSMTS_CreateSession_InitialSession) write failed: request id %d\n", requestid);
 
 				SetState(XSMTS_FailureCleanup);
 				waiting = false;
@@ -124,9 +110,7 @@ void XSMtaskCreateSession::Process()
 			res = XblMultiplayerSessionMembers(session->session_handle, &memberList, &memberCount);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("createsession (XSMTS_CreateSession_InitialSession) couldn't get member list: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("createsession (XSMTS_CreateSession_InitialSession) couldn't get member list: request id %d\n", requestid);
 				SetState(XSMTS_FailureCleanup);
 			}
 			else
@@ -162,9 +146,7 @@ void XSMtaskCreateSession::Process()
 								{
 									// Process multiplayer session handle
 									xbl_session_ptr session = std::make_shared<xbl_session>(sessionHandle);
-#ifdef XSM_VERBOSE_TRACE
-									DebugConsoleOutput("createsession (XSMTS_CreateSession_SetHost) write session succeeded: request id %d\n", self->requestid);
-#endif
+									XSM_VERBOSE_OUTPUT("createsession (XSMTS_CreateSession_SetHost) write session succeeded: request id %d\n", self->requestid);
 									self->SetState(XSMTS_SetupPlayFabNetwork);//XSMTS_CreateSession_SetupPlayFabNetwork);//XSMTS_CreateSession_CreateSuccess;
 
 									XSM::OnSessionChanged(self->user_id, session);
@@ -174,9 +156,7 @@ void XSMtaskCreateSession::Process()
 								else
 								{
 									// Handle failure
-#ifdef XSM_VERBOSE_TRACE
-									DebugConsoleOutput("createsession (XSMTS_CreateSession_SetHost) write session failed: request id %d\n", self->requestid);
-#endif
+									XSM_VERBOSE_OUTPUT("createsession (XSMTS_CreateSession_SetHost) write session failed: request id %d\n", self->requestid);
 									//self->SetState(XSMTS_CreateSession_FailureToWrite);	// hmmm, why is this commented out in the XDK version
 									self->waiting = false;
 								}
@@ -191,9 +171,7 @@ void XSMtaskCreateSession::Process()
 					}
 					else
 					{						
-#ifdef XSM_VERBOSE_TRACE
-						DebugConsoleOutput("createsession (XSMTS_CreateSession_SetHost) write session failed with nullptr: request id %d\n", requestid);
-#endif
+						XSM_VERBOSE_OUTPUT("createsession (XSMTS_CreateSession_SetHost) write session failed with nullptr: request id %d\n", requestid);
 
 						SetState(XSMTS_CreateSession_FailureToWrite);
 						waiting = false;
@@ -252,9 +230,7 @@ void XSMtaskCreateSession::Process()
 			res = XblMultiplayerSessionLeave(session->session_handle);
 			if (FAILED(res))
 			{
-#ifdef XSM_VERBOSE_TRACE
-				DebugConsoleOutput("createsession (XSMTS_CreateSession_FailureCleanup) couldn't leave session: request id %d\n", requestid);
-#endif
+				XSM_VERBOSE_OUTPUT("createsession (XSMTS_CreateSession_FailureCleanup) couldn't leave session: request id %d\n", requestid);
 				// Not sure if there's anything else I can do at this point
 			}
 
@@ -299,21 +275,13 @@ void XSMtaskCreateSession::Process()
 
 			XSM::DeleteSessionGlobally(session);			
 
-			//XSMsession^ xsmsession = XSM::GetSession(session);
-			//XSM::DeleteSession(xsmsession->id);			
 		} break;
 	}
 }
 
 void XSMtaskCreateSession::ProcessSessionChanged(xbl_session_ptr _updatedsession)
 {	
-	switch(state)
-	{
-		default:
-		{
-			session = _updatedsession;
-		} break;
-	}
+	session = _updatedsession;
 }
 
 void XSMtaskCreateSession::ProcessSessionDeleted(xbl_session_ptr _sessiontodelete)
@@ -340,8 +308,4 @@ void XSMtaskCreateSession::ProcessPlayFabPartyChange(const PartyStateChange* _ch
 	if (_change == NULL)
 		return;
 
-	switch (state)
-	{
-		default: break;
-	}
 }

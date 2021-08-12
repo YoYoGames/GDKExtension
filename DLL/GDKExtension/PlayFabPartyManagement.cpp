@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 #include "GDKX.h"
 #include "PlayFabPartyManagement.h"
 #include "SessionManagement.h"
@@ -8,23 +14,9 @@
 #include "PartyImpl.h"
 
 #include "PartyXboxLiveImpl.h"
-// #include "Files/Buffer/Buffer_Manager.h"
-// #include "Files/Function/Function_Data_Structures.h"
-// #include "Files/Support/Support_Data_Structures.h"
-// #include "Files/Support/yoyo_unordered_hash.h"
-// #include "Files/Networking/Networking_Manager.h"
-// #include "Files/IO/LoadSave.h"
 #include <stdint.h>
 #include <string>
 #include <ctime>
-
-//#include "GDKX.h"
-
-/* These have to be here. Putting them in yoyo_unordered_hash.h where they're actually used
- * breaks the Windows runner build... somehow.
-*/
-// bool CHashMapCompareKeys(String _k, String _k2);
-// unsigned int CHashMapCalculateHash(String _k);
 
 #define PACKETBUFFER_INACTIVE_USER_TIMEOUT	60 * 1000 * 1000
 
@@ -1014,7 +1006,7 @@ void PlayFabPartyManager::OnEndpointMessageReceived(const Party::PartyStateChang
 
 		bool shouldbuffer = ShouldBuffer(networkDescriptor.networkIdentifier, entityID);
 
-		for (int i = 0; i < result->receiverEndpointCount; i++)
+		for (uint32_t i = 0; i < result->receiverEndpointCount; i++)
 		{
 			if (result->receiverEndpoints[i] == NULL)
 				continue;
@@ -1428,6 +1420,7 @@ int PlayFabPartyManager::CleanupLocalUser(uint64_t _user_id)
 	}
 
 	xumuser->playfabState = XUMuserPlayFabState::logged_out;
+	return 0;
 }
 
 int PlayFabPartyManager::CreateNetwork(uint64_t _user_id, int _maxPlayers, XSMPlayFabPayload* _payload)
@@ -1780,7 +1773,7 @@ int PlayFabPartyManager::SendPacket(uint64_t _user_id, const char* _networkID, c
 	PartyLocalEndpoint* pSendingEndpoint = NULL;
 	PartyEndpoint* pDestEndpoint = NULL;
 
-	for (int i = 0; i < numEndpoints; i++)
+	for (uint32_t i = 0; i < numEndpoints; i++)
 	{
 		const char* endpointEntityID = NULL;
 		error = endpoints[i]->GetEntityId(&endpointEntityID);
@@ -1965,7 +1958,7 @@ int PlayFabPartyManager::MuteRemoteUser(uint64_t _local_user, uint64_t _remote_u
 	}
 	else
 	{
-		for (int i = 0; i < numNetworks; i++)
+		for (uint32_t i = 0; i < numNetworks; i++)
 		{
 			uint32_t numChatControls;
 			PartyChatControlArray chatControls;
@@ -1976,7 +1969,7 @@ int PlayFabPartyManager::MuteRemoteUser(uint64_t _local_user, uint64_t _remote_u
 				continue;
 			}
 
-			for (int j = 0; j < numChatControls; j++)
+			for (uint32_t j = 0; j < numChatControls; j++)
 			{
 				PartyLocalChatControl* localChatControl = NULL;
 				error = chatControls[j]->GetLocal(&localChatControl);
@@ -1998,7 +1991,7 @@ int PlayFabPartyManager::MuteRemoteUser(uint64_t _local_user, uint64_t _remote_u
 
 					if ((mute_for_all_users) || (strcmp(entityID, localUserEntityID) == 0))
 					{
-						for (int k = 0; k < numChatControls; k++)
+						for (uint32_t k = 0; k < numChatControls; k++)
 						{
 							if (k == j)
 								continue;
@@ -2081,7 +2074,7 @@ bool PlayFabPartyManager::IsRemoteUserMuted(uint64_t _local_user, uint64_t _remo
 	}
 	else
 	{
-		for (int i = 0; i < numNetworks; i++)
+		for (uint32_t i = 0; i < numNetworks; i++)
 		{
 			uint32_t numChatControls;
 			PartyChatControlArray chatControls;
@@ -2092,7 +2085,7 @@ bool PlayFabPartyManager::IsRemoteUserMuted(uint64_t _local_user, uint64_t _remo
 				continue;
 			}
 
-			for (int j = 0; j < numChatControls; j++)
+			for (uint32_t j = 0; j < numChatControls; j++)
 			{
 				PartyLocalChatControl* localChatControl = NULL;
 				error = chatControls[j]->GetLocal(&localChatControl);
@@ -2114,7 +2107,7 @@ bool PlayFabPartyManager::IsRemoteUserMuted(uint64_t _local_user, uint64_t _remo
 
 					if ((get_for_all_users) || (strcmp(entityID, localUserEntityID) == 0))
 					{
-						for (int k = 0; k < numChatControls; k++)
+						for (uint32_t k = 0; k < numChatControls; k++)
 						{
 							if (k == j)
 								continue;
@@ -2200,7 +2193,7 @@ int PlayFabPartyManager::SetChatPermissions(uint64_t _local_user, uint64_t _remo
 	}
 	else
 	{
-		for (int i = 0; i < numNetworks; i++)
+		for (uint32_t i = 0; i < numNetworks; i++)
 		{
 			uint32_t numChatControls;
 			PartyChatControlArray chatControls;
@@ -2211,7 +2204,7 @@ int PlayFabPartyManager::SetChatPermissions(uint64_t _local_user, uint64_t _remo
 				continue;
 			}
 
-			for (int j = 0; j < numChatControls; j++)
+			for (uint32_t j = 0; j < numChatControls; j++)
 			{
 				PartyLocalChatControl* localChatControl = NULL;
 				error = chatControls[j]->GetLocal(&localChatControl);
@@ -2238,7 +2231,7 @@ int PlayFabPartyManager::SetChatPermissions(uint64_t _local_user, uint64_t _remo
 
 					if ((set_for_all_users) || (strcmp(entityID, localUserEntityID) == 0))
 					{
-						for (int k = 0; k < numChatControls; k++)
+						for (uint32_t k = 0; k < numChatControls; k++)
 						{
 							if (k == j)
 								continue;
@@ -2325,7 +2318,7 @@ uint64_t PlayFabPartyManager::GetChatPermissions(uint64_t _local_user, uint64_t 
 	}
 	else
 	{
-		for (int i = 0; i < numNetworks; i++)
+		for (uint32_t i = 0; i < numNetworks; i++)
 		{
 			uint32_t numChatControls;
 			PartyChatControlArray chatControls;
@@ -2336,7 +2329,7 @@ uint64_t PlayFabPartyManager::GetChatPermissions(uint64_t _local_user, uint64_t 
 				continue;
 			}
 
-			for (int j = 0; j < numChatControls; j++)
+			for (uint32_t j = 0; j < numChatControls; j++)
 			{
 				PartyLocalChatControl* localChatControl = NULL;
 				error = chatControls[j]->GetLocal(&localChatControl);
@@ -2358,7 +2351,7 @@ uint64_t PlayFabPartyManager::GetChatPermissions(uint64_t _local_user, uint64_t 
 
 					if ((get_for_all_users) || (strcmp(entityID, localUserEntityID) == 0))
 					{
-						for (int k = 0; k < numChatControls; k++)
+						for (uint32_t k = 0; k < numChatControls; k++)
 						{
 							if (k == j)
 								continue;
@@ -2416,7 +2409,7 @@ PartyXblChatPermissionInfo PlayFabPartyManager::GetChatPermissionMask(uint64_t _
 	PartyXblLocalChatUser* localuser = NULL;
 	PartyXblChatUser* remoteuser = NULL;
 
-	for (int i = 0; i < chatUserCount; i++)
+	for (uint32_t i = 0; i < chatUserCount; i++)
 	{
 		uint64_t user_id = 0;
 		error = chatUsers[i]->GetXboxUserId(&user_id);
@@ -2480,7 +2473,7 @@ void PlayFabPartyManager::AddRemoteChatUser(uint64_t _user_id)
 		return;
 	}
 
-	for (int i = 0; i < userCount; i++)
+	for (uint32_t i = 0; i < userCount; i++)
 	{
 		PartyXblChatUser* chatUser = chatUsers[i];
 		if (chatUser != NULL)
@@ -2504,10 +2497,10 @@ void PlayFabPartyManager::AddRemoteChatUser(uint64_t _user_id)
 					return;
 				}
 
-				int refcount = (int)context;
+				int refcount = (int)(intptr_t)context;
 				refcount++;
 
-				error = chatUser->SetCustomContext((void*)refcount);
+				error = chatUser->SetCustomContext((void*)(intptr_t)refcount);
 				if (PARTY_FAILED(error))
 				{
 					PARTY_DBG_TRACE("PlayFabPartyManager::AddRemoteChatUser(): SetCustomContext() failed with error %s\n", GetXblErrorMessage(error));
@@ -2533,7 +2526,7 @@ void PlayFabPartyManager::AddRemoteChatUser(uint64_t _user_id)
 		return;
 	}
 	int newrefcount = 1;
-	error = remoteChatUser->SetCustomContext((void*)newrefcount);
+	error = remoteChatUser->SetCustomContext((void*)(intptr_t)newrefcount);
 	if (PARTY_FAILED(error))
 	{
 		PARTY_DBG_TRACE("PlayFabPartyManager::AddRemoteChatUser(): SetCustomContext() failed with error %s\n", GetXblErrorMessage(error));
@@ -2554,7 +2547,7 @@ void PlayFabPartyManager::RemoveRemoteChatUser(uint64_t _user_id)
 		return;
 	}
 
-	for (int i = 0; i < userCount; i++)
+	for (uint32_t i = 0; i < userCount; i++)
 	{
 		PartyXblChatUser* chatUser = chatUsers[i];
 		if (chatUser != NULL)
@@ -2592,7 +2585,7 @@ void PlayFabPartyManager::RemoveRemoteChatUser(uint64_t _user_id)
 					return;
 				}
 
-				int refcount = (int)context;
+				int refcount = (int)(intptr_t)context;
 				refcount--;
 				
 				if (refcount == 0)
@@ -2609,7 +2602,7 @@ void PlayFabPartyManager::RemoveRemoteChatUser(uint64_t _user_id)
 				}
 				else
 				{
-					error = chatUser->SetCustomContext((void*)refcount);
+					error = chatUser->SetCustomContext((void*)(intptr_t)refcount);
 					if (PARTY_FAILED(error))
 					{
 						PARTY_DBG_TRACE("PlayFabPartyManager::RemoveRemoteChatUser(): SetCustomContext() failed with error %s\n", GetXblErrorMessage(error));
@@ -2634,7 +2627,7 @@ PartyNetwork* PlayFabPartyManager::GetNetworkFromID(const char* _networkID)
 		return NULL;
 	}
 
-	for (int i = 0; i < numNetworks; i++)
+	for (uint32_t i = 0; i < numNetworks; i++)
 	{
 		PartyNetworkDescriptor networkDescriptor;
 		error = networks[i]->GetNetworkDescriptor(&networkDescriptor);
@@ -2662,7 +2655,7 @@ PartyNetwork* PlayFabPartyManager::GetNetworkContainingEntity(const char* _entit
 		return NULL;
 	}
 
-	for (int i = 0; i < numNetworks; i++)
+	for (uint32_t i = 0; i < numNetworks; i++)
 	{
 		uint32_t numEndpoints = 0;
 		PartyEndpointArray endpoints = NULL;
@@ -2673,7 +2666,7 @@ PartyNetwork* PlayFabPartyManager::GetNetworkContainingEntity(const char* _entit
 			return NULL;
 		}		
 
-		for (int j = 0; j < numEndpoints; j++)
+		for (uint32_t j = 0; j < numEndpoints; j++)
 		{
 			const char* endpointEntityID = NULL;
 			error = endpoints[j]->GetEntityId(&endpointEntityID);
@@ -2708,7 +2701,7 @@ PartyNetwork* PlayFabPartyManager::GetNetworkContainingEntities(const char* _ent
 		return NULL;
 	}
 
-	for (int i = 0; i < numNetworks; i++)
+	for (uint32_t i = 0; i < numNetworks; i++)
 	{
 		uint32_t numEndpoints = 0;
 		PartyEndpointArray endpoints = NULL;
@@ -2721,7 +2714,7 @@ PartyNetwork* PlayFabPartyManager::GetNetworkContainingEntities(const char* _ent
 
 		bool found1 = false;
 		bool found2 = false;
-		for (int j = 0; j < numEndpoints; j++)
+		for (uint32_t j = 0; j < numEndpoints; j++)
 		{
 			const char* endpointEntityID = NULL;
 			error = endpoints[j]->GetEntityId(&endpointEntityID);
