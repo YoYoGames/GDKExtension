@@ -19,6 +19,10 @@ typedef long long int64;
 typedef unsigned long long uint64;
 typedef int32_t int32;
 typedef uint32_t uint32;
+typedef int16_t int16;
+typedef uint16_t uint16;
+typedef int8_t int8;
+typedef uint8_t uint8;
 
 typedef void* HYYMUTEX;
 
@@ -64,6 +68,9 @@ struct YYRunnerInterface
 	void (*COPY_RValue)(RValue* _pDest, const RValue* _pSource);
 	int (*KIND_RValue)(const RValue* _pValue);
 	void (*YYCreateString)(RValue* _pVal, const char* _pS);
+
+	void (*YYCreateArray)(RValue* pRValue, int n_values, const double* values);
+	void (*YYPushArrayRValue)(RValue* pArray, const RValue* pVal);
 
 	// finding and runnine user scripts from name
 	int (*Script_Find_Id)(const char* name);
@@ -142,6 +149,9 @@ inline bool GET_RValue(RValue* _pRet, RValue* _pV, YYObjectBase* _pPropSelf, int
 inline void COPY_RValue(RValue* _pDest, const RValue* _pSource) { g_pYYRunnerInterface->COPY_RValue(_pDest, _pSource); }
 inline int KIND_RValue(const RValue* _pValue) { return g_pYYRunnerInterface->KIND_RValue(_pValue); }
 inline void YYCreateString(RValue* _pVal, const char* _pS) { g_pYYRunnerInterface->YYCreateString(_pVal, _pS); }
+
+inline void YYCreateArray(RValue* pRValue, int n_values = 0, const double* values = NULL) { g_pYYRunnerInterface->YYCreateArray(pRValue, n_values, values); }
+inline void YYPushArrayRValue(RValue* pArray, const RValue* pVal) { g_pYYRunnerInterface->YYPushArrayRValue(pArray, pVal); }
 
 // finding and runnine user scripts from name
 inline int Script_Find_Id(char* name) { return g_pYYRunnerInterface->Script_Find_Id(name); }
