@@ -412,6 +412,7 @@ cmake --build ..\json-c\x64\build --target INSTALL</Command>
     <ClCompile Include="PlayFabPartyManagement.cpp" />
     <ClCompile Include="SessionManagement.cpp" />
     <ClCompile Include="UserManagement.cpp" />
+    <ClCompile Include="YoYo_FunctionsM.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdvertiseSession.h" />
