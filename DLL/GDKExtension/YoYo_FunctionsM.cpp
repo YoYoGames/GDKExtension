@@ -19,7 +19,6 @@
 #include <XGameUI.h>
 #include <xsapi-c/services_c.h>
 #include <xsapi-c/xbox_live_context_c.h>
-#include <YYGML.h>
 
 #include "GDKX.h"
 #include "UserManagement.h"
@@ -598,7 +597,7 @@ void Achievement_Show_Achievement( void )
 		return;
 	}
 
-	XUMuser* user;
+	XUMuser* user = NULL;
 
 	for (int i = 0; i < size; i++)
 	{
@@ -958,7 +957,7 @@ void F_XboxOneGetUser(RValue& Result, CInstance* selfinst, CInstance* otherinst,
 
 	if ((index < 0) || (index >= numusers))
 	{
-		rel_csol.Output("xboxone_get_user() - index %d out of range\n", index);
+		DebugConsoleOutput("xboxone_get_user() - index %d out of range\n", index);
 		return;
 	}
 
