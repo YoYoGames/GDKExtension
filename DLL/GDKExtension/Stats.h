@@ -1,3 +1,9 @@
+//
+// Copyright (C) 2020 Opera Norway AS. All rights reserved.
+//
+// This file is an original work developed by Opera.
+//
+
 /* Xbox stats manifest handling for GDK runner.
  * Derived from XboxOneRunner/XboxOneRunner/DynamicEvents/ProviderGenerator.h.
 */
