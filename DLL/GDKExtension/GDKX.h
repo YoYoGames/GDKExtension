@@ -65,6 +65,12 @@ enum eChallengeResult
 	eCR_Tie,
 };
 
+enum eLeaderboardType
+{
+	eLT_Number,
+	eLT_TimeMinsSecs,
+};
+
 enum eXboxFileError
 {
 	eXboxFileError_NoError = 0,
