@@ -54,8 +54,6 @@ extern APP_LOCAL_DEVICE_ID GetGamepadDeviceID(int _index);
 #define TICKS_PER_MILLISECOND                               10000
 #define TICKS_PER_SECOND                                    10000000i64
 
-extern char* g_WinPhoneAnalyticsID;
-
 /* SCID defined in options.ini */
 extern char* g_XboxSCID;
 
@@ -92,19 +90,9 @@ void F_XboxOneGenerateSessionId(RValue& Result, CInstance* selfinst, CInstance* 
 
 void F_XboxOneSetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneGetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetFileError(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
-void F_XboxOneWasTerminated(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneWasClosedByUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneIsSuspending(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneIsConstrained(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneSuspend(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
 void F_XboxOneShowHelp(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
-void F_XboxOneLicenseTrialVersion(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneLicenseTrialUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneLicenseTrialTimeRemaining(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxCheckPrivilege(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
 void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
@@ -559,24 +547,6 @@ double	LeaveRating(char* _pTextString, const char* _pYES, const char* _pNO, cons
 {
 	return 0.0;
 }
-
-void YYGetFullPathName( const char* _pszFilename, char* _pDest, int _sizeof )
-{
-	if ((_pszFilename[1] == ':') && ((_pszFilename[2] == '\\') || (_pszFilename[2] == '/'))) {
-		strcpy( _pDest, _pszFilename );
-	} // end if
-	else {
-
-extern char* g_pWorkingDirectory;
-		strcpy( _pDest, g_pWorkingDirectory );
-		int len = strlen( _pDest );
-		if ((_pDest[len-1] != '\\') && (_pDest[len-1] != '/')) {
-			_pDest[len] = '\\';
-			_pDest[len+1] = '\0';
-		} // end if
-		strcat( _pDest, _pszFilename );
-	} // end else
-} // end YYGetFullPathName
 
 void Achievement_Show_Achievement( void )
 {
@@ -1209,7 +1179,7 @@ void F_XboxOneUserForPad(RValue& Result, CInstance* selfinst, CInstance* otherin
 	
 	int index = YYGetInt32(arg, 0);
 
-	APP_LOCAL_DEVICE_ID devid = GetGamepadDeviceID(index);
+	APP_LOCAL_DEVICE_ID devid; // = GetGamepadDeviceID(index); TODO
 
 	if (memcmp(&devid, &XUserNullDeviceId, sizeof(APP_LOCAL_DEVICE_ID)) != 0)		// not a NULL device ID
 	{
@@ -1545,88 +1515,6 @@ void F_XboxOneGetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* ot
 		return;
 
 	Result.v64 = xuser->XboxUserIdInt;		
-}
-
-void F_XboxOneGetFileError(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = 0;
-
-
-	extern eXboxFileError g_CurrentFileError;	
-
-	Result.val = (int)g_CurrentFileError;
-
-}
-
-void F_XboxOneWasTerminated(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = 0;	
-
-	extern bool g_AppState_WasTerminated;
-
-	Result.val = g_AppState_WasTerminated ? 1.0 : 0.0;
-}
-
-void F_XboxOneWasClosedByUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = 0;
-
-	extern bool g_AppState_WasClosedByUser;
-
-	Result.val = g_AppState_WasClosedByUser ? 1.0 : 0.0;
-}
-
-void F_XboxOneIsSuspending(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = 0;		
-
-	extern bool g_AppState_IsSuspendingEvent;	
-
-	Result.val = g_AppState_IsSuspendingEvent ? 1.0 : 0.0;
-}
-
-void F_XboxOneIsConstrained(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = 0;	
-
-	extern bool g_AppState_IsConstrained;
-	extern bool g_AppState_IsWindowActive;
-
-	// Pressing and holding the guide button to bring up the controller settings *doesn't* constrain the app
-	// whereas just pressing the guide to bring up the home menu *does* constrain the app
-	// even though in both scenarios the player loses control of the game
-	// To work around the former problem we need to track the activation status (basically the focus)
-	// of the app window - see https://forums.xboxlive.com/questions/7438/how-to-detect-pressing-and-holding-the-guide-butto.html
-	// I don't think it's worth exposing these things separately so I'll fold the activation state into this result
-	Result.val = (g_AppState_IsConstrained || (g_AppState_IsWindowActive == false)) ? 1.0 : 0.0;
-}
-
-void F_XboxOneSuspend(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = 0;	
-
-	extern bool g_InternalAppState_IsSuspended;
-#ifndef YYADK
-	g_InternalAppState_IsSuspended = true;
-
-	DebugConsoleOutput("Suspending...\n");
-#endif	
-}
-
-void F_XboxOneLicenseTrialTimeRemaining(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = 0;	
-
-	extern float g_TrialTimeRemaining;
-
-	Result.val = g_TrialTimeRemaining;
 }
 
 // (user, privilege_id, attempt_resolution)
