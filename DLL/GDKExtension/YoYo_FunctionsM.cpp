@@ -688,7 +688,7 @@ static void DoLeaderboardQuery(const char* leaderboard_or_stat_name, uint64 base
 		HRESULT status = XblLeaderboardGetLeaderboardResultSize(async, &result_size);
 		if (SUCCEEDED(status))
 		{
-			result_buf = YYAlloc(result_size);
+			result_buf = YYAlloc((int)result_size);
 			status = XblLeaderboardGetLeaderboardResult(async, result_size, result_buf, &result, NULL);
 		}
 
@@ -844,7 +844,7 @@ void	Achievement_Load_Friends(void)
 				if (SUCCEEDED(status))
 				{
 					DsMapAddDouble(dsMapIndex, "succeeded", 1);
-					DsMapAddDouble(dsMapIndex, "numfriends", n_results);
+					DsMapAddDouble(dsMapIndex, "numfriends", (double)n_results);
 
 					for (size_t results_idx = 0; results_idx < n_results; ++results_idx)
 					{
@@ -909,7 +909,7 @@ char *utf8_replace(char *original, char *replacement, char *haystack)
 		num_replaces++;
 	}
 
-	char *new_string = (char*)YYAlloc((string_len + (num_replaces * diff) + 1) * sizeof(char) );
+	char *new_string = (char*)YYAlloc((int)((string_len + (num_replaces * diff) + 1) * sizeof(char)) );
 
 	if (num_replaces == 0)
 	{
@@ -1224,7 +1224,7 @@ void F_XboxOnePadCountForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 		{
 			if (user->XboxUserIdInt == id)
 			{
-				Result.val = user->Controllers.size();
+				Result.val = (double)user->Controllers.size();
 				return;
 			}
 		}
@@ -1718,7 +1718,7 @@ void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherins
 			int64 v = (int64)YYGetInt64(arg, i);
 			/* Our version of json-c is old and doesn't have 64-bit integer support.
 			 * json_object_object_add(dimensions, param_name, json_object_new_int64(v)); */
-			json_object_object_add(dimensions, param_name, json_object_new_double(v));
+			json_object_object_add(dimensions, param_name, json_object_new_double((double)v));
 			break;
 		}
 
@@ -1726,7 +1726,7 @@ void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherins
 		{
 			uint64 v = (uint64)YYGetInt64(arg, i);
 			/* json-c doesn't have a uint64 type... double is probably the least likely to overflow. */
-			json_object_object_add(dimensions, param_name, json_object_new_double(v));
+			json_object_object_add(dimensions, param_name, json_object_new_double((double)v));
 			break;
 		}
 
@@ -1788,7 +1788,7 @@ void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherins
 					}
 				}
 
-				json_object_object_add(dimensions, param_name, json_object_new_string_len(pArg, len));
+				json_object_object_add(dimensions, param_name, json_object_new_string_len(pArg, (int)len));
 			}
 
 			break;
@@ -1930,7 +1930,7 @@ void F_XboxOneGetStatsForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 			return;
 		}
 
-		void* result_buf = YYAlloc(result_buf_size);
+		void* result_buf = YYAlloc((int)result_buf_size);
 
 		XblUserStatisticsResult* results;
 		size_t results_count;
@@ -2057,7 +2057,7 @@ void F_XboxOneSetUserStatInt(RValue& Result, CInstance* selfinst, CInstance* oth
 	int64 value = YYGetInt64(arg, 2);
 
 	Result.kind = VALUE_REAL;
-	Result.val = XboxStatsManager::set_stat_numeric(user_id, stat, value, "xboxone_stats_set_stat_int")
+	Result.val = XboxStatsManager::set_stat_numeric(user_id, stat, (double)value, "xboxone_stats_set_stat_int")
 		? 0
 		: -1;
 }
@@ -2134,7 +2134,7 @@ void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* o
 		tmp.kind = VALUE_REAL;
 		YYCreateString(&tmp, stat_names[stat_idx].c_str());
 
-		SET_RValue(&Result, &tmp, (YYObjectBase*)(selfinst), stat_idx);
+		SET_RValue(&Result, &tmp, (YYObjectBase*)(selfinst), (int)stat_idx);
 
 		FREE_RValue(&tmp);
 	} while (stat_idx > 0);
@@ -2229,7 +2229,7 @@ static void DoTitleManagedLeaderboardQuery(uint64 user_id, XblLeaderboardQuery q
 		HRESULT status = XblLeaderboardGetLeaderboardResultSize(async, &result_size);
 		if (SUCCEEDED(status))
 		{
-			result_buf = YYAlloc(result_size);
+			result_buf = YYAlloc((int)result_size);
 			status = XblLeaderboardGetLeaderboardResult(async, result_size, result_buf, &result, NULL);
 		}
 
