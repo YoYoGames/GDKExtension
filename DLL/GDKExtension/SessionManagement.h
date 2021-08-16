@@ -22,9 +22,7 @@
 #define REPORT_SESSION_JOINED_FOR_ALL_MEMBERS
 
 #pragma message(".............. Add XBOX_LIVE_VER=1508 to preprocessor definitions in project settings if using standalone Xbox Live SDK (replace version with appropriate value)")
-#if defined(WIN_UAP) || defined(XBOX_LIVE_VER) || defined(_GAMING_XBOX)		// _GAMING_XBOX is temp
-#define DISABLE_GAME_CHAT
-#endif
+
 
 #ifdef WIN_UAP
 #define USE_WRITE_SESSION_ASYNC
