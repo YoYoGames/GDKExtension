@@ -19,6 +19,10 @@ typedef long long int64;
 typedef unsigned long long uint64;
 typedef int32_t int32;
 typedef uint32_t uint32;
+typedef int16_t int16;
+typedef uint16_t uint16;
+typedef int8_t int8;
+typedef uint8_t uint8;
 
 typedef void* HYYMUTEX;
 
@@ -63,7 +67,10 @@ struct YYRunnerInterface
 	bool (*GET_RValue)(RValue* _pRet, RValue* _pV, YYObjectBase* _pPropSelf, int _index, bool fPrepareArray, bool fPartOfSet);
 	void (*COPY_RValue)(RValue* _pDest, const RValue* _pSource);
 	int (*KIND_RValue)(const RValue* _pValue);
+	void (*FREE_RValue)(RValue* _pValue);
 	void (*YYCreateString)(RValue* _pVal, const char* _pS);
+
+	void (*YYCreateArray)(RValue* pRValue, int n_values, const double* values);
 
 	// finding and runnine user scripts from name
 	int (*Script_Find_Id)(const char* name);
@@ -76,7 +83,7 @@ struct YYRunnerInterface
 	int64(*Timing_Time)(void);
 
 	// mutex handling
-	HYYMUTEX(*YYMutexCreate)(const char* _name);
+	HYYMUTEX (*YYMutexCreate)(const char* _name);
 	void (*YYMutexDestroy)(HYYMUTEX hMutex);
 	void (*YYMutexLock)(HYYMUTEX hMutex);
 	void (*YYMutexUnlock)(HYYMUTEX hMutex);
@@ -141,7 +148,10 @@ inline void SET_RValue(RValue* _pDest, RValue* _pV, YYObjectBase* _pPropSelf, in
 inline bool GET_RValue(RValue* _pRet, RValue* _pV, YYObjectBase* _pPropSelf, int _index, bool fPrepareArray = false, bool fPartOfSet = false) { return g_pYYRunnerInterface->GET_RValue(_pRet, _pV, _pPropSelf, _index, fPrepareArray, fPartOfSet); }
 inline void COPY_RValue(RValue* _pDest, const RValue* _pSource) { g_pYYRunnerInterface->COPY_RValue(_pDest, _pSource); }
 inline int KIND_RValue(const RValue* _pValue) { return g_pYYRunnerInterface->KIND_RValue(_pValue); }
+inline void FREE_RValue(RValue* _pValue) { return g_pYYRunnerInterface->FREE_RValue(_pValue); }
 inline void YYCreateString(RValue* _pVal, const char* _pS) { g_pYYRunnerInterface->YYCreateString(_pVal, _pS); }
+
+inline void YYCreateArray(RValue* pRValue, int n_values = 0, const double* values = NULL) { g_pYYRunnerInterface->YYCreateArray(pRValue, n_values, values); }
 
 // finding and runnine user scripts from name
 inline int Script_Find_Id(char* name) { return g_pYYRunnerInterface->Script_Find_Id(name); }
