@@ -71,7 +71,6 @@ struct YYRunnerInterface
 	void (*YYCreateString)(RValue* _pVal, const char* _pS);
 
 	void (*YYCreateArray)(RValue* pRValue, int n_values, const double* values);
-	void (*YYPushArrayRValue)(RValue* pArray, const RValue* pVal);
 
 	// finding and runnine user scripts from name
 	int (*Script_Find_Id)(const char* name);
@@ -84,7 +83,7 @@ struct YYRunnerInterface
 	int64(*Timing_Time)(void);
 
 	// mutex handling
-	HYYMUTEX(*YYMutexCreate)(const char* _name);
+	HYYMUTEX (*YYMutexCreate)(const char* _name);
 	void (*YYMutexDestroy)(HYYMUTEX hMutex);
 	void (*YYMutexLock)(HYYMUTEX hMutex);
 	void (*YYMutexUnlock)(HYYMUTEX hMutex);
@@ -153,7 +152,6 @@ inline void FREE_RValue(RValue* _pValue) { return g_pYYRunnerInterface->FREE_RVa
 inline void YYCreateString(RValue* _pVal, const char* _pS) { g_pYYRunnerInterface->YYCreateString(_pVal, _pS); }
 
 inline void YYCreateArray(RValue* pRValue, int n_values = 0, const double* values = NULL) { g_pYYRunnerInterface->YYCreateArray(pRValue, n_values, values); }
-inline void YYPushArrayRValue(RValue* pArray, const RValue* pVal) { g_pYYRunnerInterface->YYPushArrayRValue(pArray, pVal); }
 
 // finding and runnine user scripts from name
 inline int Script_Find_Id(char* name) { return g_pYYRunnerInterface->Script_Find_Id(name); }
