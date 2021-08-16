@@ -13,6 +13,11 @@ struct RValue;
 class YYObjectBase;
 class CInstance;
 struct YYRunnerInterface;
+struct HTTP_REQ_CONTEXT;
+typedef int (*PFUNC_async)(HTTP_REQ_CONTEXT* _pContext, void* _pPayload, int* _pMap);
+typedef void (*PFUNC_cleanup)(HTTP_REQ_CONTEXT* _pContext);
+typedef void (*PFUNC_process)(HTTP_REQ_CONTEXT* _pContext);
+
 typedef void (*TSetRunnerInterface)(const YYRunnerInterface* pRunnerInterface, size_t _functions_size);
 typedef void (*TYYBuiltin)(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 typedef long long int64;
@@ -25,6 +30,7 @@ typedef int8_t int8;
 typedef uint8_t uint8;
 
 typedef void* HYYMUTEX;
+typedef void* HSPRITEASYNC;
 
 struct YYRunnerInterface
 {
@@ -78,6 +84,17 @@ struct YYRunnerInterface
 
 	// finding builtin functions
 	bool  (*Code_Function_Find)(const char* name, int* ind);
+
+	// http functions
+	void (*HTTP_Get)(const char* _pFilename, int _type, PFUNC_async _async, PFUNC_cleanup _cleanup, void* _pV);
+	void (*HTTP_Post)(const char* _pFilename, const char* _pPost, PFUNC_async _async, PFUNC_cleanup _cleanup, void* _pV);
+	void (*HTTP_Request)(const char* _url, const char* _method, const char* _headers, const char* _pBody, PFUNC_async _async, PFUNC_cleanup _cleanup, void* _pV, int _contentLength);
+
+	// sprite loading helper functions
+	int (*ASYNCFunc_SpriteAdd)(HTTP_REQ_CONTEXT* _pContext, void* _p, int* _pMap);
+	void (*ASYNCFunc_SpriteCleanup)(HTTP_REQ_CONTEXT* _pContext);
+	HSPRITEASYNC (*CreateSpriteAsync)(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags);
+
 
 	// timing
 	int64(*Timing_Time)(void);
@@ -162,6 +179,19 @@ inline bool Script_Perform(int ind, CInstance* selfinst, CInstance* otherinst, i
 // finding builtin functions
 inline bool  Code_Function_Find(char* name, int* ind) { return g_pYYRunnerInterface->Code_Function_Find(name, ind); }
 
+// Http function
+inline void HTTP_Get(const char* _pFilename, int _type, PFUNC_async _async, PFUNC_cleanup _cleanup, void* _pV) { g_pYYRunnerInterface->HTTP_Get(_pFilename, _type, _async, _cleanup, _pV); }
+inline void HTTP_Post(const char* _pFilename, const char* _pPost, PFUNC_async _async, PFUNC_cleanup _cleanup, void* _pV) { g_pYYRunnerInterface->HTTP_Post(_pFilename, _pPost, _async, _cleanup, _pV); }
+inline void HTTP_Request(const char* _url, const char* _method, const char* _headers, const char* _pBody, PFUNC_async _async, PFUNC_cleanup _cleanup, void* _pV, int _contentLength = -1) {
+	g_pYYRunnerInterface->HTTP_Request(_url, _method, _headers, _pBody, _async, _cleanup, _pV, _contentLength);
+} // end HTTP_Request
+
+// sprite async helper function
+inline HSPRITEASYNC CreateSpriteAsync(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags) { 
+	return g_pYYRunnerInterface->CreateSpriteAsync(_pSpriteIndex, _xOrig, _yOrig, _numImages, _flags); 
+} // end CreateSpriteAsync
+
+
 // timing
 inline int64 Timing_Time(void) { return g_pYYRunnerInterface->Timing_Time(); }
 
@@ -202,5 +232,23 @@ inline int BufferGetContentSize(int _index) { return g_pYYRunnerInterface->Buffe
 		return false; \
 	}
 */
+
+const int ARG_CONSTANT = -1;           // Argument kinds
+const int ARG_EXPRESSION = 0;
+const int ARG_STRING = 1;
+const int ARG_STRINGEXP = 2;
+const int ARG_BOOLEAN = 3;
+const int ARG_MENU = 4;
+const int ARG_SPRITE = 5;
+const int ARG_SOUND = 6;
+const int ARG_BACKGROUND = 7;
+const int ARG_PATH = 8;
+const int ARG_SCRIPT = 9;
+const int ARG_OBJECT = 10;
+const int ARG_ROOM = 11;
+const int ARG_FONTR = 12;
+const int ARG_COLOR = 13;
+const int ARG_TIMELINE = 14;
+const int ARG_FONT = 15;
 
 #endif
