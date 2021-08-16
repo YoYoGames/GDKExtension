@@ -1272,15 +1272,6 @@ void F_XboxOneUserIsSignedIn(RValue& Result, CInstance* selfinst, CInstance* oth
 	}
 }
 
-#if 0
-extern int ASYNCFunc_SpriteAdd(HTTP_REQ_CONTEXT* _pContext, void* _p, int* _pMap);
-extern void ASYNCFunc_SpriteCleanup(HTTP_REQ_CONTEXT* _pContext);
-
-// Needed for gamerpicture stuff
-extern char* g_SpriteNames;
-extern int g_NumberOfSprites;
-extern DynamicArrayOfCSprite g_SpriteItems;
-
 void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;
@@ -1318,28 +1309,8 @@ void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CIn
 	// Looks like we need to create the sprite stuff here too so we can return the correct index
 	// Set up the new sprite details
 
-	int sprite_idx = g_NumberOfSprites++;
-
-	// Copied and pasted from Sprite_Add()
-	g_SpriteItems.arr = YYRealloc(g_SpriteItems.arr, g_NumberOfSprites * sizeof(*g_SpriteItems.arr));
-	g_SpriteItems.length = g_NumberOfSprites;
-	g_SpriteNames = (char*)(YYRealloc(g_SpriteNames, g_NumberOfSprites * sizeof(*g_SpriteNames)));
-
-	char _num[256];
-	snprintf(_num, sizeof(_num), "__newsprite%d", sprite_idx);
-	g_SpriteNames[sprite_idx] = YYStrDup(_num);
-	g_SpriteItems.arr[sprite_idx] = new CSprite;
-
-
-	g_SpriteItems.arr[sprite_idx]->m_index = sprite_idx;
-	g_SpriteItems.arr[sprite_idx]->m_name = g_SpriteNames[sprite_idx];
-
-	YYSpriteAsync* pAS = new YYSpriteAsync;
-	pAS->_spriteNumber = sprite_idx;
-	pAS->_imgNumber = 0;
-	pAS->_xOff = xorig;
-	pAS->_yOff = yorig;
-	pAS->_flags = 0;
+	int sprite_idx = -1;
+	HSPRITEASYNC pAS = CreateSpriteAsync(&sprite_idx, xorig, yorig, 0, 0);
 
 	struct SpriteAddFromGamerPictureContext
 	{
@@ -1351,9 +1322,9 @@ void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CIn
 		XblContextHandle xbl_ctx;
 
 		int sprite_idx;
-		YYSpriteAsync* pAS;
+		HSPRITEASYNC pAS;
 
-		SpriteAddFromGamerPictureContext(uint64_t user_id, int imagesize, int xorig, int yorig, XblContextHandle xbl_ctx, int sprite_idx, YYSpriteAsync* pAS) :
+		SpriteAddFromGamerPictureContext(uint64_t user_id, int imagesize, int xorig, int yorig, XblContextHandle xbl_ctx, int sprite_idx, HSPRITEASYNC pAS) :
 			user_id(user_id), imagesize(imagesize), xorig(xorig), yorig(yorig), xbl_ctx(xbl_ctx), sprite_idx(sprite_idx), pAS(pAS) {}
 
 		~SpriteAddFromGamerPictureContext()
@@ -1390,15 +1361,14 @@ void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CIn
 				}
 
 				// Use standard HTTP get
-				g_fHttpOutput = true;
-				LoadSave::HTTP_Get(pic_uri.c_str(), ARG_SPRITE, ASYNCFunc_SpriteAdd, ASYNCFunc_SpriteCleanup, ctx->pAS);
+				HTTP_Get(pic_uri.c_str(), ARG_SPRITE, g_pYYRunnerInterface->ASYNCFunc_SpriteAdd, g_pYYRunnerInterface->ASYNCFunc_SpriteCleanup, ctx->pAS);
 			}
 			else {
 				DebugConsoleOutput("xboxone_sprite_add_from_gamerpicture() - XblProfileGetUserProfileAsync failed (HRESULT 0x%08X)\n", (unsigned)(hr));
 
 				int dsmap = CreateDsMap(4,
 					"filename", 0.0, "gamerpicture",
-					"id", (double)(ctx->sprite_id), (void*)NULL,
+					"id", (double)(ctx->sprite_idx), (void*)NULL,
 					"http_status", 0.0, (void*)NULL,
 					"status", -1.0, (void*)NULL);
 
@@ -1418,7 +1388,6 @@ void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CIn
 
 	Result.val = sprite_idx;
 }
-#endif
 
 static bool g_XboxProfileCardLaunching = false;
 
