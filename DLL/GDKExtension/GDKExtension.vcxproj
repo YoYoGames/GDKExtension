@@ -411,7 +411,9 @@ cmake --build ..\json-c\x64\build --target INSTALL</Command>
     <ClCompile Include="MigrateHost.cpp" />
     <ClCompile Include="PlayFabPartyManagement.cpp" />
     <ClCompile Include="SessionManagement.cpp" />
+    <ClCompile Include="Stats.cpp" />
     <ClCompile Include="UserManagement.cpp" />
+    <ClCompile Include="YoYo_FunctionsM.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdvertiseSession.h" />
@@ -423,6 +425,7 @@ cmake --build ..\json-c\x64\build --target INSTALL</Command>
     <ClInclude Include="MigrateHost.h" />
     <ClInclude Include="PlayFabPartyManagement.h" />
     <ClInclude Include="Ref.h" />
+    <ClInclude Include="Stats.h" />
     <ClInclude Include="UserManagement.h" />
     <ClInclude Include="YYRValue.h" />
   </ItemGroup>
