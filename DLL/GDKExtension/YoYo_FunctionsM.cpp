@@ -68,9 +68,6 @@ extern bool		g_SocketInitDone;
 extern	int		g_IDE_Version;
 
 void F_XboxOnePackageCheckLicense(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetUserCount(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetActivatingUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneUserIsActive(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneUserIsGuest(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneUserIsSignedIn(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
@@ -80,14 +77,11 @@ void F_XboxOneGameDisplayNameForUser(RValue& Result, CInstance* selfinst, CInsta
 void F_XboxOneAppDisplayNameForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneGamerTagForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneUserIdForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneAgeGroupForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneGamerScoreForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneReputationForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneUserForPad(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOnePadCountForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOnePadForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneSponsorForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneShowAccountPicker(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneShowProfileCardForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneVerifyStringAsync(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
@@ -928,65 +922,6 @@ void	Achievement_Event(char *id){}
 void	Achievement_Show(int type,char *optarg, int numarg){}
 #endif
 
-// Xbox One specific functions
-void F_XboxOneGetUserCount(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	int numusers = 0;
-	XUM::GetUsers(numusers);
-
-	Result.kind = VALUE_REAL;
-	Result.val = numusers;
-}
-
-
-void F_XboxOneGetUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_INT64;
-	Result.v64 = 0;
-
-	if ((argc != 1) || (arg[0].kind != VALUE_REAL))
-	{
-		YYError("xboxone_get_user() - argument should be a user number but it is not.", false);		
-		return;
-	}
-
-	int numusers = 0;
-	XUMuser** users = XUM::GetUsers(numusers);
-
-	int index = YYGetInt32(arg, 0);
-
-	if ((index < 0) || (index >= numusers))
-	{
-		DebugConsoleOutput("xboxone_get_user() - index %d out of range\n", index);
-		return;
-	}
-
-	// Hmmm - hate packing a 64bit value into a variable that is only 64bits on certain platforms (it works as these functions are all only on Xbox One) :/
-	// Unfortunately can't use the proper 64bit value type as the user needs to compare against a value to check for success, and this literal will be interpreted as a double (and currently the types on each side of a comparison need to match)
-	uint64 id = users[index]->XboxUserIdInt;
-	Result.v64 = id;
-}
-
-void F_XboxOneGetActivatingUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_INT64;
-	Result.v64 = 0;
-
-	if (argc != 0)
-	{
-		YYError("xboxone_get_activating_user() - doesn't take any arguments", false);		
-		return;
-	}
-
-	XUM_LOCK_MUTEX;
-	XUserLocalId user = XUM::GetActivatingUser();
-	XUMuser* xuser = XUM::GetUserFromLocalId(user);
-	if (xuser == NULL)
-		return;
-
-	Result.v64 = xuser->XboxUserIdInt;
-}
-
 char *utf8_replace(char *original, char *replacement, char *haystack)
 {
 	size_t len_replacement = strlen(replacement);
@@ -1222,28 +1157,6 @@ void F_XboxOneUserIdForUser(RValue& Result, CInstance* selfinst, CInstance* othe
 	DebugConsoleOutput("xboxone_user_id_for_user() - user not found\n");		
 }
 
-void F_XboxOneAgeGroupForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = -1;
-	
-	uint64 user_id = (uint64)YYGetInt64(arg, 0);
-
-	XUM_LOCK_MUTEX
-	XUMuser* user = XUM::GetUserFromId(user_id);
-
-	if (user != NULL)
-	{
-		Result.val = (double)(user->AgeGroup);
-		return;
-	}
-	else {
-		Result.val = 0.0;		// agegroup_unknown
-	}
-
-	DebugConsoleOutput("xboxone_agegroup_for_user() - user not found", false);		
-}
-
 void F_XboxOneGamerScoreForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;
@@ -1348,46 +1261,6 @@ void F_XboxOnePadCountForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 	}
 }
 
-void F_XboxOnePadForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = -1;	
-
-	int padindex = YYGetInt32(arg, 1);
-
-	XUM_LOCK_MUTEX;
-
-	int numusers = 0;
-	XUMuser** users = XUM::GetUsers(numusers);
-
-	uint64 id = (uint64)YYGetInt64(arg, 0);
-
-	for (int i = 0; i < numusers; i++)
-	{
-		XUMuser* user = users[i];
-		if (user != NULL)
-		{
-			if (user->XboxUserIdInt == id)
-			{
-				for (size_t j = padindex; j < user->Controllers.size(); j++)
-				{
-					APP_LOCAL_DEVICE_ID* deviceID = &(user->Controllers[j]);
-
-					int padid = GetGamepadIndex(deviceID);
-					if (padid != -1)		// this should never be -1
-					{
-						Result.val = padid;
-						return;
-					}
-				}
-			}
-		}
-	}
-
-	// No valid user found
-	DebugConsoleOutput("xboxone_pad_for_user() - user not found", false);
-}
-
 void F_XboxOneUserIsGuest(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;
@@ -1426,42 +1299,6 @@ void F_XboxOneUserIsSignedIn(RValue& Result, CInstance* selfinst, CInstance* oth
 	}
 	else {
 		DebugConsoleOutput("xboxone_user_is_signed_in() - user not found\n");
-	}
-}
-
-void F_XboxOneShowAccountPicker(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	Result.kind = VALUE_REAL;
-	Result.val = -1;	
-
-	XUserAddOptions options = XUserAddOptions::None;
-	if (argc == 0)
-	{
-		// UWP-style account picker
-	}
-	else
-	{
-		if ((argc < 2) || (arg[0].kind != VALUE_REAL) || (arg[1].kind != VALUE_REAL))
-		{
-			YYError("xboxone_show_account_picker() - invalid arguments", false);
-			Result.val = -1;
-			return;
-		}
-
-		int optionsval = YYGetInt32(arg, 1);		
-		if (optionsval == 1)
-			options = XUserAddOptions::AllowGuests;
-	}
-	
-	int ret = XUM::AddUser(options, true);
-	if (ret < 0)
-	{
-		DebugConsoleOutput("xboxone_show_account_picker() failed\n");
-		Result.val = ret;
-	}
-	else
-	{
-		Result.val = 0;
 	}
 }
 
