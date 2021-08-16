@@ -2399,17 +2399,20 @@ void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* o
 
 	YYCreateArray(&Result);
 
-	for(auto i = stat_names.begin(); i != stat_names.end(); ++i)
-	{
+	/* Initialize Result array in reverse to avoid unnecessary resizing */
+	size_t stat_idx = stat_names.size();
+
+	do {
+		--stat_idx;
+
 		RValue tmp;
 		tmp.kind = VALUE_REAL;
-		YYCreateString(&tmp, i->c_str());
+		YYCreateString(&tmp, stat_names[stat_idx].c_str());
 
-		YYPushArrayRValue(&Result, &tmp);
+		SET_RValue(&Result, &tmp, (YYObjectBase*)(selfinst), stat_idx);
 
 		FREE_RValue(&tmp);
-	}
-
+	} while (stat_idx > 0);
 }
 
 void F_XboxOneAddUserToStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
