@@ -93,14 +93,13 @@ struct YYRunnerInterface
 	// sprite loading helper functions
 	int (*ASYNCFunc_SpriteAdd)(HTTP_REQ_CONTEXT* _pContext, void* _p, int* _pMap);
 	void (*ASYNCFunc_SpriteCleanup)(HTTP_REQ_CONTEXT* _pContext);
-	HSPRITEASYNC (*CreateSpriteAsync)(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags);
-
+	HSPRITEASYNC(*CreateSpriteAsync)(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags);
 
 	// timing
 	int64(*Timing_Time)(void);
 
 	// mutex handling
-	HYYMUTEX (*YYMutexCreate)(const char* _name);
+	HYYMUTEX(*YYMutexCreate)(const char* _name);
 	void (*YYMutexDestroy)(HYYMUTEX hMutex);
 	void (*YYMutexLock)(HYYMUTEX hMutex);
 	void (*YYMutexUnlock)(HYYMUTEX hMutex);
@@ -186,9 +185,9 @@ inline void HTTP_Request(const char* _url, const char* _method, const char* _hea
 	g_pYYRunnerInterface->HTTP_Request(_url, _method, _headers, _pBody, _async, _cleanup, _pV, _contentLength);
 } // end HTTP_Request
 
-// sprite async helper function
-inline HSPRITEASYNC CreateSpriteAsync(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags) { 
-	return g_pYYRunnerInterface->CreateSpriteAsync(_pSpriteIndex, _xOrig, _yOrig, _numImages, _flags); 
+// sprite async loading
+inline HSPRITEASYNC CreateSpriteAsync(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags) {
+	return g_pYYRunnerInterface->CreateSpriteAsync(_pSpriteIndex, _xOrig, _yOrig, _numImages, _flags);
 } // end CreateSpriteAsync
 
 
@@ -233,6 +232,7 @@ inline int BufferGetContentSize(int _index) { return g_pYYRunnerInterface->Buffe
 	}
 */
 
+#ifndef __Action_Class_H__
 const int ARG_CONSTANT = -1;           // Argument kinds
 const int ARG_EXPRESSION = 0;
 const int ARG_STRING = 1;
@@ -250,5 +250,6 @@ const int ARG_FONTR = 12;
 const int ARG_COLOR = 13;
 const int ARG_TIMELINE = 14;
 const int ARG_FONT = 15;
+#endif
 
 #endif
