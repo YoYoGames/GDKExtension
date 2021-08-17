@@ -554,9 +554,9 @@ void StopMultiplayerForUser(XUMuser* user)
 		//Windows::Foundation::Collections::IVector<XSMsession^>^ sessions = XSM::GetSessions();
 		std::vector<XSMsession*>* sessions = XSM::GetSessions();
 
-		int numsessions = sessions->size();
+		size_t numsessions = sessions->size();
 		sessionIDs = (int*)YYAlloc(sizeof(int) * numsessions);
-		for (int i = numsessions - 1; i >= 0; i--) //start at end and iterate backwards (avoids indices changing when sessions are deleted)
+		for (size_t i = numsessions - 1; i >= 0; i--) //start at end and iterate backwards (avoids indices changing when sessions are deleted)
 		{
 			XSMsession* session = sessions->at(i);
 			if ((session != NULL) && (session->session != NULL))
@@ -936,7 +936,7 @@ void F_XboxOneMatchmakingSetJoinableSession(RValue& Result, CInstance* selfinst,
 	{		
 		XAsyncBlock* asyncBlock = new XAsyncBlock();
 		asyncBlock->queue = XSM::GetTaskQueue();
-		asyncBlock->context = (void*)session_id;			// put this value into the context pointer so we can tell which function we called
+		asyncBlock->context = (void*)(intptr_t)session_id;			// put this value into the context pointer so we can tell which function we called
 		asyncBlock->callback = [](XAsyncBlock* asyncBlock)
 		{
 			// The documentation doesn't mention any way of getting the result of this call

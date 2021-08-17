@@ -688,7 +688,7 @@ static void DoLeaderboardQuery(const char* leaderboard_or_stat_name, uint64 base
 		HRESULT status = XblLeaderboardGetLeaderboardResultSize(async, &result_size);
 		if (SUCCEEDED(status))
 		{
-			result_buf = YYAlloc(result_size);
+			result_buf = YYAlloc((int)result_size);
 			status = XblLeaderboardGetLeaderboardResult(async, result_size, result_buf, &result, NULL);
 		}
 
@@ -844,7 +844,7 @@ void	Achievement_Load_Friends(void)
 				if (SUCCEEDED(status))
 				{
 					DsMapAddDouble(dsMapIndex, "succeeded", 1);
-					DsMapAddDouble(dsMapIndex, "numfriends", n_results);
+					DsMapAddDouble(dsMapIndex, "numfriends", (double)n_results);
 
 					for (size_t results_idx = 0; results_idx < n_results; ++results_idx)
 					{
@@ -909,7 +909,7 @@ char *utf8_replace(char *original, char *replacement, char *haystack)
 		num_replaces++;
 	}
 
-	char *new_string = (char*)YYAlloc((string_len + (num_replaces * diff) + 1) * sizeof(char) );
+	char *new_string = (char*)YYAlloc((int)((string_len + (num_replaces * diff) + 1) * sizeof(char)) );
 
 	if (num_replaces == 0)
 	{
@@ -1224,7 +1224,7 @@ void F_XboxOnePadCountForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 		{
 			if (user->XboxUserIdInt == id)
 			{
-				Result.val = user->Controllers.size();
+				Result.val = (double)user->Controllers.size();
 				return;
 			}
 		}
@@ -1272,15 +1272,6 @@ void F_XboxOneUserIsSignedIn(RValue& Result, CInstance* selfinst, CInstance* oth
 	}
 }
 
-#if 0
-extern int ASYNCFunc_SpriteAdd(HTTP_REQ_CONTEXT* _pContext, void* _p, int* _pMap);
-extern void ASYNCFunc_SpriteCleanup(HTTP_REQ_CONTEXT* _pContext);
-
-// Needed for gamerpicture stuff
-extern char* g_SpriteNames;
-extern int g_NumberOfSprites;
-extern DynamicArrayOfCSprite g_SpriteItems;
-
 void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;
@@ -1318,28 +1309,8 @@ void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CIn
 	// Looks like we need to create the sprite stuff here too so we can return the correct index
 	// Set up the new sprite details
 
-	int sprite_idx = g_NumberOfSprites++;
-
-	// Copied and pasted from Sprite_Add()
-	g_SpriteItems.arr = YYRealloc(g_SpriteItems.arr, g_NumberOfSprites * sizeof(*g_SpriteItems.arr));
-	g_SpriteItems.length = g_NumberOfSprites;
-	g_SpriteNames = (char*)(YYRealloc(g_SpriteNames, g_NumberOfSprites * sizeof(*g_SpriteNames)));
-
-	char _num[256];
-	snprintf(_num, sizeof(_num), "__newsprite%d", sprite_idx);
-	g_SpriteNames[sprite_idx] = YYStrDup(_num);
-	g_SpriteItems.arr[sprite_idx] = new CSprite;
-
-
-	g_SpriteItems.arr[sprite_idx]->m_index = sprite_idx;
-	g_SpriteItems.arr[sprite_idx]->m_name = g_SpriteNames[sprite_idx];
-
-	YYSpriteAsync* pAS = new YYSpriteAsync;
-	pAS->_spriteNumber = sprite_idx;
-	pAS->_imgNumber = 0;
-	pAS->_xOff = xorig;
-	pAS->_yOff = yorig;
-	pAS->_flags = 0;
+	int sprite_idx = -1;
+	HSPRITEASYNC pAS = CreateSpriteAsync(&sprite_idx, xorig, yorig, 0, 0);
 
 	struct SpriteAddFromGamerPictureContext
 	{
@@ -1351,9 +1322,9 @@ void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CIn
 		XblContextHandle xbl_ctx;
 
 		int sprite_idx;
-		YYSpriteAsync* pAS;
+		HSPRITEASYNC pAS;
 
-		SpriteAddFromGamerPictureContext(uint64_t user_id, int imagesize, int xorig, int yorig, XblContextHandle xbl_ctx, int sprite_idx, YYSpriteAsync* pAS) :
+		SpriteAddFromGamerPictureContext(uint64_t user_id, int imagesize, int xorig, int yorig, XblContextHandle xbl_ctx, int sprite_idx, HSPRITEASYNC pAS) :
 			user_id(user_id), imagesize(imagesize), xorig(xorig), yorig(yorig), xbl_ctx(xbl_ctx), sprite_idx(sprite_idx), pAS(pAS) {}
 
 		~SpriteAddFromGamerPictureContext()
@@ -1390,15 +1361,14 @@ void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CIn
 				}
 
 				// Use standard HTTP get
-				g_fHttpOutput = true;
-				LoadSave::HTTP_Get(pic_uri.c_str(), ARG_SPRITE, ASYNCFunc_SpriteAdd, ASYNCFunc_SpriteCleanup, ctx->pAS);
+				HTTP_Get(pic_uri.c_str(), ARG_SPRITE, g_pYYRunnerInterface->ASYNCFunc_SpriteAdd, g_pYYRunnerInterface->ASYNCFunc_SpriteCleanup, ctx->pAS);
 			}
 			else {
 				DebugConsoleOutput("xboxone_sprite_add_from_gamerpicture() - XblProfileGetUserProfileAsync failed (HRESULT 0x%08X)\n", (unsigned)(hr));
 
 				int dsmap = CreateDsMap(4,
 					"filename", 0.0, "gamerpicture",
-					"id", (double)(ctx->sprite_id), (void*)NULL,
+					"id", (double)(ctx->sprite_idx), (void*)NULL,
 					"http_status", 0.0, (void*)NULL,
 					"status", -1.0, (void*)NULL);
 
@@ -1418,7 +1388,6 @@ void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CIn
 
 	Result.val = sprite_idx;
 }
-#endif
 
 static bool g_XboxProfileCardLaunching = false;
 
@@ -1718,7 +1687,7 @@ void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherins
 			int64 v = (int64)YYGetInt64(arg, i);
 			/* Our version of json-c is old and doesn't have 64-bit integer support.
 			 * json_object_object_add(dimensions, param_name, json_object_new_int64(v)); */
-			json_object_object_add(dimensions, param_name, json_object_new_double(v));
+			json_object_object_add(dimensions, param_name, json_object_new_double((double)v));
 			break;
 		}
 
@@ -1726,7 +1695,7 @@ void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherins
 		{
 			uint64 v = (uint64)YYGetInt64(arg, i);
 			/* json-c doesn't have a uint64 type... double is probably the least likely to overflow. */
-			json_object_object_add(dimensions, param_name, json_object_new_double(v));
+			json_object_object_add(dimensions, param_name, json_object_new_double((double)v));
 			break;
 		}
 
@@ -1788,7 +1757,7 @@ void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherins
 					}
 				}
 
-				json_object_object_add(dimensions, param_name, json_object_new_string_len(pArg, len));
+				json_object_object_add(dimensions, param_name, json_object_new_string_len(pArg, (int)len));
 			}
 
 			break;
@@ -1930,7 +1899,7 @@ void F_XboxOneGetStatsForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 			return;
 		}
 
-		void* result_buf = YYAlloc(result_buf_size);
+		void* result_buf = YYAlloc((int)result_buf_size);
 
 		XblUserStatisticsResult* results;
 		size_t results_count;
@@ -2057,7 +2026,7 @@ void F_XboxOneSetUserStatInt(RValue& Result, CInstance* selfinst, CInstance* oth
 	int64 value = YYGetInt64(arg, 2);
 
 	Result.kind = VALUE_REAL;
-	Result.val = XboxStatsManager::set_stat_numeric(user_id, stat, value, "xboxone_stats_set_stat_int")
+	Result.val = XboxStatsManager::set_stat_numeric(user_id, stat, (double)value, "xboxone_stats_set_stat_int")
 		? 0
 		: -1;
 }
@@ -2134,7 +2103,7 @@ void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* o
 		tmp.kind = VALUE_REAL;
 		YYCreateString(&tmp, stat_names[stat_idx].c_str());
 
-		SET_RValue(&Result, &tmp, (YYObjectBase*)(selfinst), stat_idx);
+		SET_RValue(&Result, &tmp, (YYObjectBase*)(selfinst), (int)stat_idx);
 
 		FREE_RValue(&tmp);
 	} while (stat_idx > 0);
@@ -2229,7 +2198,7 @@ static void DoTitleManagedLeaderboardQuery(uint64 user_id, XblLeaderboardQuery q
 		HRESULT status = XblLeaderboardGetLeaderboardResultSize(async, &result_size);
 		if (SUCCEEDED(status))
 		{
-			result_buf = YYAlloc(result_size);
+			result_buf = YYAlloc((int)result_size);
 			status = XblLeaderboardGetLeaderboardResult(async, result_size, result_buf, &result, NULL);
 		}
 

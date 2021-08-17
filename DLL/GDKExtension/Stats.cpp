@@ -116,7 +116,7 @@ bool Xbox_Stat_Load(uint8* _pChunk, uint32 _sz, uint8* _pBase)
 				throw XboxStatLoadError("Unexpected EOF in Xbox_Stat_Load()::read_string()");
 			}
 
-			pos += (end - begin) + 1;
+			pos += (uint32)(end - begin) + 1;
 
 			return (const char*)(begin);
 		};
@@ -185,6 +185,7 @@ bool Xbox_Stat_Load(uint8* _pChunk, uint32 _sz, uint8* _pBase)
 	{
 		DebugConsoleOutput("%s\n", e.what());
 	}
+	return true;
 }
 
 std::map<uint64_t, XboxStatsManager::User> XboxStatsManager::m_users;
@@ -695,6 +696,7 @@ bool XboxStatsManager::_flush_user_delete(FlushUserContext* ctx, std::unique_loc
 			}
 		}
 	}
+	return true;
 }
 
 /* Finish a user stats flush operation. */
