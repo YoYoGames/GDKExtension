@@ -82,53 +82,15 @@ void F_XboxOnePadCountForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 void F_XboxOneSponsorForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneShowProfileCardForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneVerifyStringAsync(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxGetMicrosoftStoreId(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxGetTokenAndSignature(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
 void F_XboxOneGenerateSessionId(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
 void F_XboxOneSetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneGetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
-void F_XboxOneShowHelp(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
-void F_XboxCheckPrivilege(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
-void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetStatsForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneStatsSetup(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
-void F_XboxOneSetUserStatReal(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneSetUserStatInt(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneSetUserStatString(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneDeleteUserStat(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetUserStat(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneAddUserToStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneRemoveUserFromStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneFlushUserStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetStatLeaderboard(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetStatSocialLeaderboard(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneSetAchievementProgress(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
-void F_XboxOneSetRichPresence(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxReadPlayerLeaderboard(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
 void F_XboxOneSetServiceConfigurationID(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
 void F_XboxLiveNotAvailable(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
-void F_XboxOne_video_open(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOne_video_close(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOne_video_draw(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOne_video_setVolume(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
-void F_XboxOneShowDetailsAsync(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
-void F_XboxOneDebug(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
-void F_UWPGetAppReceipt(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
 
 static uint64 g_stats_user_id;
@@ -136,8 +98,6 @@ static char* g_stats_service_config = NULL;
 static uint32 g_stats_title_id;
 
 int	g_PictureSprite=-1;
-
-void	CreateArray(RValue *pRValue, int n_args, ...);
 
 extern bool g_chatIntegrationLayerInited;
 extern bool g_XboxOneGameChatEnabled;
@@ -156,9 +116,6 @@ void UpdateYoYoFunctionsM(void)
 		GameChat2IntegrationLayer::Get()->Update();
 	}
 #endif
-
-	// Update stats
-	XboxStatsManager::background_flush();
 }
 
 // #############################################################################################
@@ -178,9 +135,6 @@ void QuitYoYoFunctionsM( void )
 void InitYoYoFunctionsM( void )
 {
 #if 0
-	Function_Add( "xboxone_get_user_count", F_XboxOneGetUserCount, 0, true);
-	Function_Add( "xboxone_get_user", F_XboxOneGetUser, 1, true);
-	Function_Add( "xboxone_get_activating_user", F_XboxOneGetActivatingUser, 1, true);
 	Function_Add( "xboxone_user_is_active", F_XboxOneUserIsActive, 1, true);
 	Function_Add( "xboxone_user_is_guest", F_XboxOneUserIsGuest, 1, true);
 	Function_Add( "xboxone_user_is_signed_in", F_XboxOneUserIsSignedIn, 1, true);
@@ -198,8 +152,6 @@ void InitYoYoFunctionsM( void )
 	Function_Add( "xboxone_show_account_picker", F_XboxOneShowAccountPicker, 2, true);	
 	Function_Add( "xboxone_sprite_add_from_gamerpicture", F_XboxOneSpriteAddFromGamerPicture, 4, true);
 	Function_Add( "xboxone_show_profile_card_for_user", F_XboxOneShowProfileCardForUser, 2, true);
-	Function_Add( "xboxone_verify_string_async", F_XboxOneVerifyStringAsync, 2, true);
-
 
 	Function_Add( "xboxone_generate_player_session_id", F_XboxOneGenerateSessionId, 0, true);
 
@@ -207,132 +159,7 @@ void InitYoYoFunctionsM( void )
 	Function_Add( "xboxone_get_savedata_user", F_XboxOneGetSaveDataUser, 0, true);
 	Function_Add( "xboxone_get_file_error", F_XboxOneGetFileError, 0, true);
 
-	Function_Add( "xboxone_was_terminated", F_XboxOneWasTerminated, 0, true);
-	Function_Add( "xboxone_was_closed_by_user", F_XboxOneWasClosedByUser, 0, true);
-	Function_Add( "xboxone_is_suspending", F_XboxOneIsSuspending, 0, true);
-	Function_Add( "xboxone_is_constrained", F_XboxOneIsConstrained, 0, true);	
-	Function_Add( "xboxone_suspend", F_XboxOneSuspend, 0, true);
-
-	Function_Add( "xboxone_show_help", F_XboxOneShowHelp, 1, true);
-
-	Function_Add( "xboxone_license_trial_version", F_XboxOneLicenseTrialVersion, 0, true);
-	Function_Add( "xboxone_license_trial_user", F_XboxOneLicenseTrialUser, 0, true);
-	Function_Add( "xboxone_license_trial_time_remaining", F_XboxOneLicenseTrialTimeRemaining, 0, true);
-
-	Function_Add( "xboxone_check_privilege", F_XboxCheckPrivilege, 3, true);
-
-	Function_Add( "xboxone_fire_event", F_XboxOneFireEvent, -1, true);
-	Function_Add( "xboxone_get_stats_for_user", F_XboxOneGetStatsForUser, -1, true);
-
-	Function_Add( "xboxone_stats_setup", F_XboxOneStatsSetup, 2, true);
-
-	Function_Add("xboxone_stats_set_stat_real", F_XboxOneSetUserStatReal, 3, true);
-	Function_Add("xboxone_stats_set_stat_int", F_XboxOneSetUserStatInt, 3, true);
-	Function_Add("xboxone_stats_set_stat_string", F_XboxOneSetUserStatString, 3, true);
-	Function_Add("xboxone_stats_delete_stat", F_XboxOneDeleteUserStat, 2, true);
-	Function_Add("xboxone_stats_get_stat", F_XboxOneGetUserStat, 2, true);
-	Function_Add("xboxone_stats_get_stat_names", F_XboxOneGetUserStatNames, 1, true);
-	Function_Add("xboxone_stats_add_user", F_XboxOneAddUserToStats, 1, true);
-	Function_Add("xboxone_stats_remove_user", F_XboxOneRemoveUserFromStats, 1, true);
-	Function_Add("xboxone_stats_flush_user", F_XboxOneFlushUserStats, 2, true);
-	Function_Add("xboxone_stats_get_leaderboard", F_XboxOneGetStatLeaderboard, 6, true);
-	Function_Add("xboxone_stats_get_social_leaderboard", F_XboxOneGetStatSocialLeaderboard, 7, true);
-	Function_Add("xboxone_achievements_set_progress", F_XboxOneSetAchievementProgress, 3, true);
-
-	Function_Add( "xboxone_read_player_leaderboard", F_XboxReadPlayerLeaderboard, 4, true);
-
-	Function_Add( "xboxone_set_rich_presence", F_XboxOneSetRichPresence, -1, true);
-
-	extern void InitMatchmakingFunctionsM(void);
-	InitMatchmakingFunctionsM();
-
-	Function_Add("xboxone_debug", F_XboxOneDebug, 2, true);
-
-	Function_Add( "xboxone_product_show_details", F_XboxOneShowDetailsAsync, 2, true);
-
 	Function_Add( "xboxone_set_service_configuration_id", F_XboxOneSetServiceConfigurationID, 1, true);
-
-	Function_Add("video_open", F_XboxOne_video_open, 1, true);
-	Function_Add("video_close", F_XboxOne_video_close, 0, true);
-	Function_Add("video_draw", F_XboxOne_video_draw, 0, true);
-	Function_Add("video_set_volume", F_XboxOne_video_setVolume, 1, true);
-
-	// Function aliases (so we're not referring to Xbox One stuff)
-	Function_Add( "xboxlive_get_user_count", F_XboxOneGetUserCount, 0, true);
-	Function_Add( "xboxlive_get_user", F_XboxOneGetUser, 1, true);
-	Function_Add( "xboxlive_get_activating_user", F_XboxOneGetActivatingUser, 1, true);
-	Function_Add( "xboxlive_user_is_active", F_XboxOneUserIsActive, 1, true);
-	Function_Add( "xboxlive_user_is_guest", F_XboxOneUserIsGuest, 1, true);
-	Function_Add( "xboxlive_user_is_signed_in", F_XboxOneUserIsSignedIn, -1, true);
-	Function_Add("xboxlive_user_is_signing_in", F_XboxOneUserIsSigningIn, -1, true);
-	Function_Add( "xboxlive_user_is_remote", F_XboxOneUserIsRemote, 1, true);
-	Function_Add( "xboxlive_gamedisplayname_for_user", F_XboxOneGameDisplayNameForUser, -1, true);
-	Function_Add( "xboxlive_appdisplayname_for_user", F_XboxOneAppDisplayNameForUser, -1, true);
-	Function_Add("xboxlive_gamertag_for_user", F_XboxOneGamerTagForUser, -1, true);
-	Function_Add( "xboxlive_user_id_for_user", F_XboxOneUserIdForUser, 1, true);
-	Function_Add( "xboxlive_agegroup_for_user", F_XboxOneAgeGroupForUser, 1, true);
-	Function_Add( "xboxlive_gamerscore_for_user", F_XboxOneGamerScoreForUser, 1, true);
-	Function_Add( "xboxlive_reputation_for_user", F_XboxOneReputationForUser, 1, true);
-	Function_Add( "xboxlive_user_for_pad", F_XboxOneUserForPad, 1, true);	
-	Function_Add( "xboxlive_pad_count_for_user", F_XboxOnePadCountForUser, 1, true);
-	Function_Add( "xboxlive_pad_for_user", F_XboxOnePadForUser, 2, true);	
-	Function_Add( "xboxlive_sponsor_for_user", F_XboxOneSponsorForUser, 2, true);	
-	Function_Add( "xboxlive_show_account_picker", F_XboxOneShowAccountPicker, 2, true);	
-	Function_Add( "xboxlive_sprite_add_from_gamerpicture", F_XboxOneSpriteAddFromGamerPicture, 4, true);
-	Function_Add( "xboxlive_show_profile_card_for_user", F_XboxOneShowProfileCardForUser, 2, true);
-	Function_Add( "xboxlive_verify_string_async", F_XboxOneVerifyStringAsync, 2, true);
-
-
-	Function_Add( "xboxlive_generate_player_session_id", F_XboxOneGenerateSessionId, 0, true);
-
-	Function_Add( "xboxlive_set_savedata_user", F_XboxOneSetSaveDataUser, 1, true);
-	Function_Add( "xboxlive_get_savedata_user", F_XboxOneGetSaveDataUser, 0, true);
-	Function_Add( "xboxlive_get_file_error", F_XboxOneGetFileError, 0, true);
-
-	Function_Add( "uwp_was_terminated", F_XboxOneWasTerminated, 0, true);
-	Function_Add( "uwp_was_closed_by_user", F_XboxOneWasClosedByUser, 0, true);
-	Function_Add( "uwp_is_suspending", F_XboxOneIsSuspending, 0, true);
-	Function_Add( "uwp_is_constrained", F_XboxOneIsConstrained, 0, true);	
-	Function_Add( "uwp_suspend", F_XboxOneSuspend, 0, true);
-
-	Function_Add("uwp_get_app_receipt", F_UWPGetAppReceipt, 0, true);
-
-	Function_Add( "uwp_show_help", F_XboxOneShowHelp, 1, true);
-
-	Function_Add( "uwp_license_trial_version", F_XboxOneLicenseTrialVersion, 0, true);
-	Function_Add( "uwp_license_trial_user", F_XboxOneLicenseTrialUser, 0, true);
-	Function_Add( "uwp_license_trial_time_remaining", F_XboxOneLicenseTrialTimeRemaining, 0, true);
-
-	Function_Add( "uwp_check_privilege", F_XboxCheckPrivilege, 3, true);
-
-	Function_Add( "xboxlive_fire_event", F_XboxOneFireEvent, -1, true);
-	Function_Add( "xboxlive_get_stats_for_user", F_XboxOneGetStatsForUser, -1, true);
-
-	Function_Add( "xboxlive_stats_setup", F_XboxOneStatsSetup, 2, true);
-
-	Function_Add("xboxlive_stats_set_stat_real", F_XboxOneSetUserStatReal, 3, true);
-	Function_Add("xboxlive_stats_set_stat_int", F_XboxOneSetUserStatInt, 3, true);
-	Function_Add("xboxlive_stats_set_stat_string", F_XboxOneSetUserStatString, 3, true);
-	Function_Add("xboxlive_stats_delete_stat", F_XboxOneDeleteUserStat, 2, true);
-	Function_Add("xboxlive_stats_get_stat", F_XboxOneGetUserStat, 2, true);
-	Function_Add("xboxlive_stats_get_stat_names", F_XboxOneGetUserStatNames, 1, true);
-	Function_Add("xboxlive_stats_add_user", F_XboxOneAddUserToStats, 1, true);
-	Function_Add("xboxlive_stats_remove_user", F_XboxOneRemoveUserFromStats, 1, true);
-	Function_Add("xboxlive_stats_flush_user", F_XboxOneFlushUserStats, 2, true);
-	Function_Add("xboxlive_stats_get_leaderboard", F_XboxOneGetStatLeaderboard, 6, true);
-	Function_Add("xboxlive_stats_get_social_leaderboard", F_XboxOneGetStatSocialLeaderboard, 7, true);
-	Function_Add("xboxlive_achievements_set_progress", F_XboxOneSetAchievementProgress, 3, true);
-
-	Function_Add("xboxlive_get_store_id", F_XboxGetMicrosoftStoreId, 2, true);
-	Function_Add("xboxlive_get_token_and_signature", F_XboxGetTokenAndSignature, -1, true);
-
-	Function_Add( "xboxlive_set_rich_presence", F_XboxOneSetRichPresence, -1, true);
-
-	Function_Add( "xboxlive_read_player_leaderboard", F_XboxReadPlayerLeaderboard, 4, true);
-
-	Function_Add( "xboxlive_set_service_configuration_id", F_XboxOneSetServiceConfigurationID, 1, true);
-
-	Function_Add( "xboxone_package_check_license", F_XboxOnePackageCheckLicense, 1, true);
 #endif
 }
 
@@ -759,6 +586,7 @@ static void DoLeaderboardQuery(const char* leaderboard_or_stat_name, uint64 base
 	}
 }
 
+YYEXPORT
 void F_XboxReadPlayerLeaderboard(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	const char* ident = YYGetString(arg, 0);
@@ -1487,6 +1315,7 @@ void F_XboxOneGetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* ot
 }
 
 // (user, privilege_id, attempt_resolution)
+YYEXPORT
 void F_XboxCheckPrivilege(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 
@@ -1634,6 +1463,7 @@ SXboxOneEventType *findXboxOneEvent(const char *name)
 }
 #endif
 
+YYEXPORT
 void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;
@@ -1810,6 +1640,7 @@ void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherins
 	
 }
 
+YYEXPORT
 void F_XboxOneGetStatsForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	// user, service config id, list of stat names to read	
@@ -1988,6 +1819,7 @@ void F_XboxOneGetStatsForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 	}
 }
 
+YYEXPORT
 void F_XboxOneStatsSetup(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	if (arg[2].kind == VALUE_STRING)
@@ -2005,6 +1837,7 @@ void F_XboxOneStatsSetup(RValue& Result, CInstance* selfinst, CInstance* otherin
 	g_stats_title_id = YYGetInt32(arg, 2);
 }
 
+YYEXPORT
 void F_XboxOneSetUserStatReal(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2018,6 +1851,7 @@ void F_XboxOneSetUserStatReal(RValue& Result, CInstance* selfinst, CInstance* ot
 		: -1;
 }
 
+YYEXPORT
 void F_XboxOneSetUserStatInt(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2031,6 +1865,7 @@ void F_XboxOneSetUserStatInt(RValue& Result, CInstance* selfinst, CInstance* oth
 		: -1;
 }
 
+YYEXPORT
 void F_XboxOneSetUserStatString(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2044,6 +1879,7 @@ void F_XboxOneSetUserStatString(RValue& Result, CInstance* selfinst, CInstance* 
 		: -1;
 }
 
+YYEXPORT
 void F_XboxOneDeleteUserStat(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2056,6 +1892,7 @@ void F_XboxOneDeleteUserStat(RValue& Result, CInstance* selfinst, CInstance* oth
 		: -1;
 }
 
+YYEXPORT
 void F_XboxOneGetUserStat(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2085,6 +1922,7 @@ void F_XboxOneGetUserStat(RValue& Result, CInstance* selfinst, CInstance* otheri
 
 }
 
+YYEXPORT
 void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2109,6 +1947,7 @@ void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* o
 	} while (stat_idx > 0);
 }
 
+YYEXPORT
 void F_XboxOneAddUserToStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2119,6 +1958,7 @@ void F_XboxOneAddUserToStats(RValue& Result, CInstance* selfinst, CInstance* oth
 		: -1;
 }
 
+YYEXPORT
 void F_XboxOneRemoveUserFromStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2129,6 +1969,7 @@ void F_XboxOneRemoveUserFromStats(RValue& Result, CInstance* selfinst, CInstance
 		: -1;
 }
 
+YYEXPORT
 void F_XboxOneFlushUserStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2270,6 +2111,7 @@ static void DoTitleManagedLeaderboardQuery(uint64 user_id, XblLeaderboardQuery q
 	}
 }
 
+YYEXPORT
 void F_XboxOneGetStatLeaderboard(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 
@@ -2306,6 +2148,7 @@ void F_XboxOneGetStatLeaderboard(RValue& Result, CInstance* selfinst, CInstance*
 
 }
 
+YYEXPORT
 void F_XboxOneGetStatSocialLeaderboard(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2346,6 +2189,7 @@ struct XBLAchievement
 
 int g_currXBLAchievementRequestID = 0;
 
+YYEXPORT
 void F_XboxOneSetAchievementProgress(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;
@@ -2455,6 +2299,7 @@ void F_XboxOneSetAchievementProgress(RValue& Result, CInstance* selfinst, CInsta
 
 }
 
+YYEXPORT
 void F_XboxOneSetRichPresence(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;

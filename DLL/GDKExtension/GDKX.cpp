@@ -12,6 +12,7 @@
 #include <windows.h>
 #include <XGameRuntime.h>
 
+#include "Stats.h"
 #include "UserManagement.h"
 
 #define _GAMING_XBOX
@@ -48,6 +49,9 @@ YYEXPORT
 void gdk_update(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	XUM::Update();
+
+	// Update stats
+	XboxStatsManager::background_flush();
 }
 
 YYEXPORT
