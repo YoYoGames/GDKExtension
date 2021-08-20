@@ -14,6 +14,7 @@
 #include <mutex>
 #include <string>
 #include <vector>
+#include <xsapi-c/services_c.h>
 
 struct SXboxOneEventType
 {
