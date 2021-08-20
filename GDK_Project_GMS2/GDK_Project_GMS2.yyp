@@ -1,7 +1,7 @@
 {
   "resources": [
     {"id":{"name":"GDKExtension","path":"extensions/GDKExtension/GDKExtension.yy",},"order":0,},
-    {"id":{"name":"Script1","path":"scripts/Script1/Script1.yy",},"order":15,},
+    {"id":{"name":"GDK_Controller","path":"objects/GDK_Controller/GDK_Controller.yy",},"order":0,},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":0,},
   ],
   "Options": [
@@ -56,7 +56,7 @@
   ],
   "IncludedFiles": [],
   "MetaData": {
-    "IDEVersion": "9.2.1.2579",
+    "IDEVersion": "23.1.1.366",
   },
   "resourceVersion": "1.4",
   "name": "GDK_Project_GMS2",
