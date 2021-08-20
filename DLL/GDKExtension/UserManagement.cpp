@@ -889,7 +889,7 @@ int XUM::AddUser(XUserAddOptions _options, bool _fromManualAccountPicker)
 		}
 		else
 		{
-			DebugConsoleOutput("Sign-in failed\n");
+			DebugConsoleOutput("Sign-in failed (HRESULT 0x%08X)\n", (unsigned)(result));
 
 			{
 				// DS_LOCK_MUTEX;			// a bit dangerous being inside a XUM_LOCK_MUTEX block - split this apart
@@ -925,8 +925,10 @@ int XUM::AddUser(XUserAddOptions _options, bool _fromManualAccountPicker)
 		m_userAddInProgress = false;
 	};
 
+	HRESULT result = XUserAddAsync(_options, &(ctx->async));
+
 	// Try to perform default user sign-in
-	if (SUCCEEDED(XUserAddAsync(_options, &(ctx->async))))
+	if (SUCCEEDED(result))
 	{
 		// Async action started
 		m_userAddInProgress = true;
@@ -942,6 +944,8 @@ int XUM::AddUser(XUserAddOptions _options, bool _fromManualAccountPicker)
 	}
 	else
 	{
+		DebugConsoleOutput("XUserAddAsync failed (HRESULT 0x%08X)\n", (unsigned)(result));
+
 		// Failed, so be sure to clean async block
 		delete ctx;
 	}
