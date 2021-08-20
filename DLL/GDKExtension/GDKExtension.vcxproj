@@ -226,7 +226,7 @@
       <AdditionalDependencies>json-c-static.lib;xgameruntime.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d /f /i $(OutputPath)*.dll $(ProjectDir)..\..\GDK_Project_GMS2\extensions\Extension1</Command>
+      <Command>xcopy /y /d /f /i $(OutputPath)*.dll $(ProjectDir)..\..\GDK_Project_GMS2\extensions\GDKExtension</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>cmake -D CMAKE_INSTALL_PREFIX=..\json-c\x64\install -S ..\json-c -B ..\json-c\x64\build
@@ -271,7 +271,7 @@ cmake --build ..\json-c\x64\build --target INSTALL</Command>
       <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y /d /f /i $(OutputPath)*.dll $(ProjectDir)..\..\GDK_Project_GMS2\extensions\Extension1</Command>
+      <Command>xcopy /y /d /f /i $(OutputPath)*.dll $(ProjectDir)..\..\GDK_Project_GMS2\extensions\GDKExtension</Command>
     </PostBuildEvent>
     <PreBuildEvent>
       <Command>cmake -D CMAKE_INSTALL_PREFIX=..\json-c\x64\install -S ..\json-c -B ..\json-c\x64\build
