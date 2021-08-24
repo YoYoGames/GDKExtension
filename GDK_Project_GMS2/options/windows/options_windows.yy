@@ -18,7 +18,7 @@
   "option_windows_resize_window": false,
   "option_windows_borderless": false,
   "option_windows_scale": 0,
-  "option_windows_copy_exe_to_dest": false,
+  "option_windows_copy_exe_to_dest": true,
   "option_windows_sleep_margin": 10,
   "option_windows_texture_page": "2048x2048",
   "option_windows_installer_finished": "${base_options_dir}/windows/installer/finished.bmp",

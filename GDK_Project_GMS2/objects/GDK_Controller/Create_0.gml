@@ -1,8 +1,8 @@
+show_message( "Hello" );
 show_debug_message( "##### Calling gdk_init()" );
 gdk_init("00000000-0000-0000-0000-0000790907e2");
 show_debug_message( "##### Finished gdk_init()" );
-
-xboxone_show_account_picker( 0, 0 );
+show_message( "Fini" );
 
 // gdk_update();
 
