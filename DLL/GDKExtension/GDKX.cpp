@@ -41,7 +41,26 @@ bool YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _
 YYEXPORT
 void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (argc != 1)
+	{
+		YYError("gdk_init() called with %d arguments, expected 1", argc);
+		return;
+	}
+
+	YYFree(g_XboxSCID);
+	g_XboxSCID = (char*)(YYStrDup(YYGetString(arg, 1)));
+
 	XGameRuntimeInitialize();
+	
+	XblInitArgs xblArgs = {};
+	xblArgs.scid = g_XboxSCID;
+
+	HRESULT hr = XblInitialize(&xblArgs);
+	if (FAILED(hr))
+	{
+		DebugConsoleOutput("Unable to initialize XSAPI (HRESULT 0x%08X)\n", (unsigned)(hr));
+	}
+
 	XUM::Init();
 }
 
@@ -58,7 +77,25 @@ YYEXPORT
 void gdk_quit(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	XUM::Quit();
+
+	XAsyncBlock async;
+	memset(&async, 0, sizeof(async));
+
+	HRESULT status = XblCleanupAsync(&async);
+	if (SUCCEEDED(status))
+	{
+		status = XAsyncGetStatus(&async, true);
+	}
+
+	if(!SUCCEEDED(status))
+	{
+		DebugConsoleOutput("XblCleanupAsync failed (HRESULT 0x%08X)\n", (unsigned)(status));
+	}
+
 	XGameRuntimeUninitialize();
+
+	YYFree(g_XboxSCID);
+	g_XboxSCID = NULL;
 }
 
 YYEXPORT
