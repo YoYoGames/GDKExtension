@@ -293,6 +293,8 @@ bool operator==(const APP_LOCAL_DEVICE_ID& rhs, const APP_LOCAL_DEVICE_ID& lhs)
 
 int XUMuser::AssociateController(const APP_LOCAL_DEVICE_ID* _controller)
 {
+	// Not sure what this is trying to do on PC
+	return -1;
 	if (_controller == NULL)
 		return -1;
 
@@ -311,7 +313,7 @@ int XUMuser::AssociateController(const APP_LOCAL_DEVICE_ID* _controller)
 	Controllers.push_back(*_controller);
 	// ControllerIndices.push_back(GetGamepadIndex(_controller));
 
-	assert(Controllers.size() == ControllerIndices.size());
+	//assert(Controllers.size() == ControllerIndices.size());
 
 	return ControllerIndices.back();
 }
@@ -742,13 +744,15 @@ void XUM::Init()
 		&m_userDeviceAssociationChangedCallbackToken
 	);
 
+	// RK :: We should do this after we have a user (not before).
 	SetupMachineStorage();
 	
 	//RefreshCachedUsers();	// set up initial list
 	activatingUser = XUserNullUserLocalId;
 	saveDataUser = XUserNullUserLocalId;
 
-	AddUser(XUserAddOptions::AddDefaultUserSilently, false);	// set up default user
+	// RK :: Gersh advises allowing UI is the best default.... 
+	AddUser(XUserAddOptions::AddDefaultUserAllowingUI, false);	// set up default user
 
 
 #if !defined(WIN_UAP) && !defined(NO_SECURE_CONNECTION) && YY_CHAT
@@ -832,10 +836,14 @@ int XUM::AddUser(XUserAddOptions _options, bool _fromManualAccountPicker)
 
 		if (SUCCEEDED(result))
 		{
+			DebugConsoleOutput("!!!!!!!!! Sign-in succeeded! (HRESULT 0x%08X)\n", (unsigned)(result));
+
 			// See if we already have this user
 			auto i = std::find_if(cachedUsers.begin(), cachedUsers.end(),
 				[&](const XUMuser* cachedUser)
 			{
+				DebugConsoleOutput("!!!!!!!!! Same user\n");
+
 				// Apparently we can get an identical handle back, or a different handle which points to the same user
 				if (cachedUser != NULL)
 				{
@@ -856,6 +864,7 @@ int XUM::AddUser(XUserAddOptions _options, bool _fromManualAccountPicker)
 
 			if (i == cachedUsers.end())
 			{
+				DebugConsoleOutput("!!!!!!!!! New user\n");
 				// New user found, so add to list
 				XUMuser* newXUMuser = new XUMuser;
 				newXUMuser->user = newUser;
@@ -930,6 +939,8 @@ int XUM::AddUser(XUserAddOptions _options, bool _fromManualAccountPicker)
 	// Try to perform default user sign-in
 	if (SUCCEEDED(result))
 	{
+		DebugConsoleOutput("XUserAddAsync Succeed (HRESULT 0x%08X)\n", (unsigned)(result));
+
 		// Async action started
 		m_userAddInProgress = true;
 
