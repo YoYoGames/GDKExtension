@@ -1,0 +1,5 @@
+<Package>
+  <Chunk Id="1000" Marker="Launch">
+    <FileGroup DestinationPath="." SourcePath="." Include="*.*" />
+  </Chunk>
+</Package>
