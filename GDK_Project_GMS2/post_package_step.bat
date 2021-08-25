@@ -10,36 +10,51 @@ if not "%YYPLATFORM_option_windows_copy_exe_to_dest%" == "True" goto error_ensur
 if not exist "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" goto error_install_GDK
 call "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" GamingDesktopVS2019
 
-
 :: ensure the runner is called the correct thing
 pushd %YYoutputFolder%
 call :getfilename %YYcompile_output_file_name%
 if exist Runner.exe move Runner.exe %filename%.exe
 popd
 
-:: register the application
-wdapp register %YYoutputFolder% >"%YYtempFolderUnmapped%\wdapp.out"
-if ERRORLEVEL 1 goto exit
+:: generate map
+makepkg genmap /f %YYoutputFolder%\layout.xml /d %YYoutputFolder%
+if ERRORLEVEL 1 goto exitError
+
+:: generate map
+mkdir %YYoutputFolder%\MSIXVC
+makepkg pack /f %YYoutputFolder%\layout.xml /d %YYoutputFolder% /pd %YYoutputFolder%\MSIXVC -pc > "%YYtempFolderUnmapped%\makepkg.out"
+if ERRORLEVEL 1 goto exitError
 
 :: can be useful for debugging problems
-:: type "%YYtempFolderUnmapped%\wdapp.out"
+:: type "%YYtempFolderUnmapped%\makepkg.out"
 
 :: get the application name, this is horrible but should find the game appname to use for launching
 pushd "%YYtempFolderUnmapped%"
-for /f "tokens=*" %%a in (wdapp.out) do (
-  (echo %%a | findstr /i /c:"!Game" >nul) && (set APPNAME=%%a) 
+for /f "tokens=*" %%a in (makepkg.out) do (
+  (echo %%a | findstr /i /c:"Successfully created package '" >nul) && (set APPNAME=%%a) 
 )
 popd
 
-:: launch the application
-if not "%APPNAME%" == "" (
-	wdapp launch %APPNAME% -outputdebugstring -game %YYcompile_output_file_name% -debugoutput %YYtempFolderUnmapped%\game.out -output %YYtempFolderUnmapped%\game.out
-	powershell Get-Content "%YYtempFolderUnmapped%\game.out" -Wait -Encoding utf8 -Tail 30
-	exit /b 255
-)
+set MSIXVC=%APPNAME:~30,-2%
+call :getfilenameext %MSIXVC%
+call :getdirectory %YYtargetFile%
+copy /y %MSIXVC% %directory%
+if ERRORLEVEL 1 goto exitError
 
+:: everything finished OK
+echo ##### Output MSIXVC to %directory%%filenameext%
+:: ----------------------------------------------------------------------------------------------------
+exit /b 255
+
+
+:: ----------------------------------------------------------------------------------------------------
 :exit
 exit /b 0
+
+:: ----------------------------------------------------------------------------------------------------
+:exitError
+echo ERROR : Unable to complete
+exit /b 1
 
 :: ----------------------------------------------------------------------------------------------------
 :: If the GDK is not installed then prompt the user to install it
@@ -57,4 +72,22 @@ exit /b 1
 :: Get the filename from the given parameter
 :getfilename
 set filename=%~n1
+goto :eof
+
+:: ----------------------------------------------------------------------------------------------------
+:: Get the filename from the given parameter
+:getfilenameext
+set filenameext=%~nx1
+goto :eof
+
+:: ----------------------------------------------------------------------------------------------------
+:: Get the directory and filename (no extension)from the given parameter
+:getdirectoryfilename
+set directoryfilename=%~dn1
+goto :eof
+
+:: ----------------------------------------------------------------------------------------------------
+:: Get the directory from the given parameter
+:getdirectory
+set directory=%~dp1
 goto :eof
