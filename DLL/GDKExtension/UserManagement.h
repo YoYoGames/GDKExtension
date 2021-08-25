@@ -26,10 +26,6 @@
 #define NOV_XDK
 #endif
 
-#ifdef YYGDKEXTENSION
-#define YY_PLAYFAB_NOT_IMPLEMENTED
-#endif
-
 //#define XBOX_USER	XUserHandle
 #define XBOX_USER_GAMERTAG_MAX_LENGTH	64
 
