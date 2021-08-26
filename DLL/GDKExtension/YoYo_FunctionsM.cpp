@@ -1934,7 +1934,8 @@ void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* o
 	/* Initialize Result array in reverse to avoid unnecessary resizing */
 	size_t stat_idx = stat_names.size();
 
-	do {
+	while (stat_idx > 0)
+	{
 		--stat_idx;
 
 		RValue tmp;
@@ -1944,7 +1945,7 @@ void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* o
 		SET_RValue(&Result, &tmp, (YYObjectBase*)(selfinst), (int)stat_idx);
 
 		FREE_RValue(&tmp);
-	} while (stat_idx > 0);
+	}
 }
 
 YYEXPORT
