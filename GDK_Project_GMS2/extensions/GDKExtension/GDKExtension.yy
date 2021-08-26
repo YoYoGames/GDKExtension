@@ -17,10 +17,15 @@
   "installdir": "",
   "files": [
     {"filename":"GDKExtension.dll","origname":"","init":"","final":"","kind":1,"uncompress":false,"functions":[
-        {"externalName":"","kind":1,"help":"gdk_init()","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"gdk_init","tags":[],"resourceType":"GMExtensionFunction",},
+        {"externalName":"","kind":1,"help":"gdk_init(scid)","hidden":false,"returnType":1,"argCount":0,"args":[
+            1,
+          ],"resourceVersion":"1.0","name":"gdk_init","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"","kind":1,"help":"gdk_update()","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"gdk_update","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"","kind":1,"help":"gdk_quit()","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"gdk_quit","tags":[],"resourceType":"GMExtensionFunction",},
-        {"externalName":"F_XboxOneShowAccountPicker","kind":1,"help":"xboxone_show_account_picker( arg0, arg1 )","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_show_account_picker","tags":[],"resourceType":"GMExtensionFunction",},
+        {"externalName":"F_XboxOneShowAccountPicker","kind":1,"help":"xboxone_show_account_picker( pad_index, allow_guest )","hidden":false,"returnType":1,"argCount":0,"args":[
+            2,
+            2,
+          ],"resourceVersion":"1.0","name":"xboxone_show_account_picker","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_XboxOneGetUserCount","kind":1,"help":"xboxone_get_user_count()","hidden":false,"returnType":2,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_get_user_count","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_XboxOneGetUser","kind":1,"help":"xboxone_get_user(index)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_get_user","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_XboxOneGetActivatingUser","kind":1,"help":"xboxone_get_activating_user()","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_get_activating_user","tags":[],"resourceType":"GMExtensionFunction",},
