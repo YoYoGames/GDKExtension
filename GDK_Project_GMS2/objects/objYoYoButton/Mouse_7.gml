@@ -1,0 +1,4 @@
+
+if (locked) exit;
+
+onClick();
