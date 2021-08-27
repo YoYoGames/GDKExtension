@@ -34,7 +34,7 @@
     "path": "folders/Demo/Stats Functions.yy",
   },
   "resourceVersion": "1.0",
-  "name": "objStatsAddUser",
+  "name": "objStatsRemoveUser",
   "tags": [],
   "resourceType": "GMObject",
 }

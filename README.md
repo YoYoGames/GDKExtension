@@ -143,55 +143,251 @@ NOTE: these functions should work the same as those in the xbox one and xbox ser
 ## xboxone_fire_event - xboxone_fire_event(event_name, ...)
 ## xboxone_get_stats_for_user - xboxone_get_stats_for_user(user_id, scid)
 ## xboxone_stats_setup - xboxone_stats_setup(user_id, scid, title_id)
-## xboxone_stats_set_stat_real - xboxone_stats_set_stat_real(user_id, stat_name, stat_value)
-## xboxone_stats_set_stat_int - xboxone_stats_set_stat_int(user_id, stat_name, stat_value)
-## xboxone_stats_set_stat_string - xboxone_stats_set_stat_string(user_id, stat_name, stat_value)
-## xboxone_stats_delete_stat - xboxone_stats_delete_stat(user_id, stat_name)
-## xboxone_stats_get_stat - xboxone_stats_get_stat(user_id, stat_name)
+
+## xboxone_stats_set_stat_real
+
+**Usage**: xboxone_stats_set_stat_real(user_id, stat_name, stat_value)
+
+**Description**: This function can be used to set the value of a stat for the given user ID. You supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), then the stat string to set (if the stat string does not already exist then a new stat will be created and set to the given value) and a value (a real) to set the stat to. Note that the stat name must be alphanumeric only, with no symbols or spaces.
+
+When setting the stat value, any previous value will be overridden, therefore it is up to you to determine if the stat value should be updated or not (ie. check that the high score is actually the highest) by comparing to the current stat value with the new one before setting it.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to set the stat for.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **stat_name** The statistic to set (a string).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **stat_value** The value to set the stat to (a real).
+
+**Returns**: {*real*} -1 if there was an error, or any other value if the function was successfully called.
+
+**Code Sample**:
+
+    xboxone_stats_set_stat_real(p_user_id, "TestReal", 123.45);
 
 ---
 
-## xboxone_stats_get_stat_names (BUG)
+## xboxone_stats_set_stat_int
+
+**Usage**: xboxone_stats_set_stat_int(user_id, stat_name, stat_value)
+
+**Description**: This function can be used to set the value of a stat for the given user ID. You supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), then the stat string to set (if the stat string does not already exist then a new stat will be created and set to the given value) and a value (an integer) to set the stat to. Note that the stat name must be alphanumeric only, with no symbols or spaces.
+
+When setting the stat value, any previous value will be overridden, therefore it is up to you to determine if the stat value should be updated or not (ie. check that the high score is actually the highest) by comparing to the current stat value with the new one before setting it.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to set the stat for.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **stat_name** The statistic to set (a string).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*int*} **stat_value** The value to set the stat to (an integer).
+
+**Returns**: {*real*} -1 if there was an error, or any other value if the function was successfully called.
+
+**Code Sample**:
+
+    xboxone_stats_set_stat_int(p_user_id, "TestInt", int64(22));
+
+---
+
+## xboxone_stats_set_stat_string
+
+**Usage**: xboxone_stats_set_stat_string(user_id, stat_name, stat_value)
+
+**Description**: This function can be used to set the value of a stat for the given user ID. You supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), then the stat string to set (if the stat string does not already exist then a new stat will be created and set to the given value) and a value (a string) to set the stat to. Note that the stat name must be alphanumeric only, with no symbols or spaces.
+
+When setting the stat value, any previous value will be overridden, therefore it is up to you to determine if the stat value should be updated or not (ie. check that the high score is actually the highest) by comparing to the current stat value with the new one before setting it.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to set the stat for.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **stat_name** The statistic to set (a string).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **stat_value** The value to set the stat to (a string).
+
+**Returns**: {*real*} -1 if there was an error, or any other value if the function was successfully called.
+
+**Code Sample**:
+
+    xboxone_stats_set_stat_string(p_user_id, "TestString", "YoYo Games");
+
+--- 
+
+## xboxone_stats_delete_stat
+
+**Usage**: xboxone_stats_delete_stat(user_id, stat_name)
+
+**Description**: This function can be used to delete a stat from the stat manager for the given user ID. You supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), then the stat string to delete. This clears the stat value and removed it from the stat manager, meaning it will no longer be returned by the functions [`xboxone_stats_get_stat_names()`](#xboxone_stats_get_stat_names) or  [`xboxone_stats_get_stat()`](#xboxone_stats_get_stat).
+
+The function will will return -1 if there was an error or the user ID is invalid, or any other value if the function was successfully called.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to get the stat for.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **stat_name** The stat to be deleted (a string).
+
+**Returns**: {*real*} -1 if there was an error, or any other value if the function was successfully called.
+
+**Code Sample**:
+
+    for (var i = 0; i < xboxone_get_user_count(); i++) {
+		user_id[i] = xboxone_get_user(i);
+		xboxone_stats_delete_stat(user_id[i], "highScore");
+	}
+
+---
+
+## xboxone_stats_get_stat
+
+**Usage**: xboxone_stats_get_stat(user_id, stat_name)
+
+**Description**: This function can be used to retrieve a single stat value from the stat manager for a given user. You supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), and then the stat string as defined when you created it using the one of the `xboxone_stats_set_stat_*` functions. The return value can be either a string or a real (depending on the stat being checked) or the GML constant undefined if the stat does not exist or there has been an error.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to get the stat for.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **stat_name** The stat to get the value of (a string).
+
+**Returns**: {*real/string/undefined*} The value of the given stat, `undefined` if the stat does not exist.
+
+**Code Sample**:
+
+    if (game_over == true) {
+		if (xboxone_stats_get_stat(p_user_id, "PercentDone") < 100) {
+			var _val = (global.LevelsFinished / global.LevelsTotal) * 100;
+			xboxone_stats_set_stat_real(p_user_id, "PercentDone", _val);
+		}
+	}
+
+---
+
+## xboxone_stats_get_stat_names
 
 **Usage**: xboxone_stats_get_stat_names(user_id)
 
-**Description**: This function can be used to retrieve all the defined stats from the stat manager for a given user. You supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), and the function will returns an array of strings containing the statistics for the user. If an error occurs or the user has no stats the array will still be returned but will have an element count of 0.
+**Description**: This function can be used to retrieve all the defined stats from the stat manager for a given user. You supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), and the function will returns an array of strings containing the statistics for the user. If an error occurs or the user has no stats the array will still be returned but will be empty.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to get the stats for.
 
 **Returns**: {*array*} Array with all the stat names for the given user.
 
 **Code Sample**:
 
     var _stat_str = xboxone_stats_get_stat_names(user_id);
-    for (var i = 0; i < array_length_1d(_stat_str); i++;) {
+    for (var i = 0; i < array_length(_stat_str); i++;) {
         xboxone_stats_delete_stat(user_id, _stat_str[i]);
     }
 
 ---
 
-## xboxone_stats_add_user (BUG)
+## xboxone_stats_add_user
 
 **Usage**: xboxone_stats_add_user(user_id)
 
 **Description**: This function can be used to add a given user to the statistics manager. This must be done before using any of the other stats functions to automatically sync the game with the xbox live server and retrieve the latest values. You supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), and the function will return -1 if there was an error or the user ID is invalid, or any other value if the function was successfully called.
 
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to get the stat for.
+
 **Triggers**: Social Asynchronous Event
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **"id"**: Will hold the constant achievement_stat_event.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **"id"**: Will hold the constant `achievement_stat_event`.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"event"**: Will hold the string "LocalUserAdded".
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"userid"**: The user ID associated with the request.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"userid"**: The user ID associated with the request.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"errorMessage"**: A string with an error message, if any is available (this key is only present when there is an error)
 
-**Returns**: {*real*} The asynchronous event ID value.
+**Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called.
 
 ---
 
-## xboxone_stats_remove_user - xboxone_stats_remove_user(user_id)
-## xboxone_stats_flush_user - xboxone_stats_flush_user(user_id, high_priority)
+## xboxone_stats_remove_user
+
+**Usage**: xboxone_stats_remove_user(user_id)
+
+**Description**: This function can be used to remove (unregister) a given user from the statistics manager, performing a flush of the stat data to the live server. According to the XBox documentation the game does not have to remove the user from the stats manager, as the XBox OS will periodically flush the stats anyway.
+
+To use the function, you supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), and the function will will return -1 if there was an error or the user ID is invalid, or any other value if the function was successfully called.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to get the stat for.
+
+**Triggers**: Social Asynchronous Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **"id"**: Will hold the constant `achievement_stat_event`.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"event"**: Will hold the string "LocalUserRemoved".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"userid"**: The user ID associated with the request.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"errorMessage"**: A string with an error message, if any is available (this key is only present when there is an error)
+
+**Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called.
+
+**Notes**: 
+* Removing the user can return an error if the statistics that have been set on the user are invalid (such as the stat names containing non-alpha numeric characters).
+* If you want to flush the stats data to the live server at any time without removing the user, you can use the function [`xboxone_stats_flush_user()`](#xboxone_stats_flush_user).
+
+**Code Sample**:
+
+	for (var i = 0; i < array_length(user_id); i++) {
+		xboxone_stats_remove_user(user_id[i]);
+	}
+
+---
+
+
+## xboxone_stats_flush_user
+
+**Usage**: xboxone_stats_flush_user(user_id, high_priority)
+
+**Description**: This function can be used to flush the stats data for a given user from the statistics manager, to the live server, ensuring that the server is up to date with the current values. According to XBox documentation, developers should be careful not to call this too often as the XBox will rate-limit the requests, and the XBox OS will also automatically flush stats approximately every 5 minutes automatically anyway.
+
+To use the function, you supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), and then give a priority value (0 for low priority and 1 for high priority). The function will will return -1 if there was an error or the user ID is invalid, or any other value if the function was successfully called.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID of the user to flush the data of.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*boolean*} **high_priority** Whether or not flush is high priority.
+
+**Triggers**: Social Asynchronous Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **"id"**: Will hold the constant `achievement_stat_event`.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"event"**: Will hold the string "StatisticUpdateComplete".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"userid"**: The user ID associated with the request.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"errorMessage"**: A string with an error message, if any is available (this key is only present when there is an error)
+
+**Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called.
+
+**Code Sample**:
+
+	for(var i = 0; i < array_length(user_id); i++) {
+		xboxone_stats_flush_user(user_id[i], 0);
+	}
+
+---
+
 ## xboxone_stats_get_leaderboard - xboxone_stats_get_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending)
 ## xboxone_stats_get_social_leaderboard - xboxone_stats_get_social_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending, favourites_only)
 ## xboxone_achievements_set_progress - xboxone_achievements_set_progress(user_id, achievement, progress)

@@ -4,9 +4,11 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Add User";
+text = "Goto ???";
+target = undefined;
 
 onClick = function() {
-	var _userId = xboxone_get_user(0);
-	xboxone_stats_add_user(_userId);
+	// Set 'text' and 'target' in creation code.
+	if (target == undefined) exit;
+	room_goto(target);
 }
