@@ -7,13 +7,12 @@
 #include "GDKX.h"
 #include "UserManagement.h"
 #include "stdlib.h"
-//#include "Multiplayer/SessionManagement.h"
-//#include "Multiplayer/PlayFabPartyManagement.h"
-//#include "DirectXHelper.h"
 #include <assert.h>
 #include <xsapi-c/services_c.h>
 #include <inttypes.h>
 
+#include "PlayFabPartyManagement.h"
+#include "SessionManagement.h"
 
 #if !defined(WIN_UAP) && !defined(NO_SECURE_CONNECTION) && YY_CHAT
 #include "Multiplayer/GameChat2IntegrationLayer.h"
@@ -204,63 +203,6 @@ XblContextHandle XUMuser::GetXboxLiveContext()
 			DebugConsoleOutput("Couldn't create xbl context (HRESULT 0x%08X)\n", (unsigned)(hr));			
 			return NULL;
 		}
-
-#if 0
-
-#if 1	// temp
-		// sign up to the statistics changed event
-		// Note that using the new version of the Xbox Live API you can subscrive to the  _xboxLiveContext->UserStatisticsService->StatisticChanged event
-#if !(defined(XBOX_LIVE_VER) || (defined(_XDK_VER) && (_XDK_VER >= 0x38390431)))
-		
-		_XboxLiveContext->RealTimeActivityService->StatisticChanged += ref new Windows::Foundation::EventHandler<Microsoft::Xbox::Services::RealTimeActivity::RealTimeActivityStatisticChangeEventArgs^>(
-			[] (Platform::Object^, Microsoft::Xbox::Services::RealTimeActivity::RealTimeActivityStatisticChangeEventArgs^ args)
-		{
-
-		}
-		);
-#endif
-
-#ifdef _DEBUG
-		// Set up debug tracing to the Output window in Visual Studio.
-		//_XboxLiveContext->Settings->DiagnosticsTraceLevel = Microsoft::Xbox::Services::XboxServicesDiagnosticsTraceLevel::Verbose;
-			
-		_XboxLiveContext->Settings->DiagnosticsTraceLevel = Microsoft::Xbox::Services::XboxServicesDiagnosticsTraceLevel::Error;
-
-		// Set up debug tracing of the Xbox Live Services API traffic to the game UI.
-		_XboxLiveContext->Settings->EnableServiceCallRoutedEvents = true;
-		_XboxLiveContext->Settings->ServiceCallRouted += ref new Windows::Foundation::EventHandler<Microsoft::Xbox::Services::XboxServiceCallRoutedEventArgs^>(
-			[=]( Platform::Object^, Microsoft::Xbox::Services::XboxServiceCallRoutedEventArgs^ args )
-			{
-				char* httpMethod = ConvertFromWideCharToUTF8((wchar_t*)(args->HttpMethod->Data()));
-				char* absoluteUri = ConvertFromWideCharToUTF8((wchar_t*)(args->Url->AbsoluteUri->Data()));
-				char* httpStatus = ConvertFromWideCharToUTF8((wchar_t*)(args->HttpStatus.ToString()->Data()));
-				char* responseBody = ConvertFromWideCharToUTF8((wchar_t*)(args->ResponseBody->Data()));
-
-				GDKX::DebugConsoleOutput("[URL]: %s %s\n", httpMethod, absoluteUri);				
-				GDKX::DebugConsoleOutput("[Response]: %s %s\n", httpStatus, responseBody);
-			});
-
-		
-#if ((defined( XBOX_LIVE_VER ) && XBOX_LIVE_VER >= 1508) || (defined(_XDK_VER) && (_XDK_VER >= 0x38390431)))
-		_XboxLiveContext->Settings->DiagnosticsTraceLevel = Microsoft::Xbox::Services::XboxServicesDiagnosticsTraceLevel::Verbose;
-#else
-			// (Optional.) Set up debug tracing of the Xbox Live Service call API failures to the game UI.
-			//Microsoft::Xbox::Services::Configuration::EnableDebugOutputEvents = true;
-		Microsoft::Xbox::Services::Configuration::EnableDebugOutputEvents = false;
-			Microsoft::Xbox::Services::Configuration::DebugOutput += ref new Windows::Foundation::EventHandler<Platform::String^>(
-				[=]( Platform::Object^, Platform::String^ debugOutput )
-				{
-					// Display Xbox Live Services API debug trace to the screen for easy debugging.
-					char* debugOut = ConvertFromWideCharToUTF8((wchar_t*)(debugOutput->Data()));
-					GDKX::DebugConsoleOutput( "[XSAPI Trace]: %s\n", debugOut);
-				});
-				
-#endif
-#endif
-
-#endif // 0
-
-#endif // 0
 	}	
 
 	return _XboxLiveContext;
@@ -342,10 +284,6 @@ int XUMuser::DisassociateController(const APP_LOCAL_DEVICE_ID* _controller)
 
 int XUMuser::EnableMultiplayerSubscriptions()
 {
-#ifdef YY_PLAYFAB_NOT_IMPLEMENTED
-	DebugConsoleOutput("UNIMPLEMENTED FUNCTION: XUMuser::EnableMultiplayerSubscriptions\n");
-
-#else
 	XblContextHandle context = GetXboxLiveContext();
 
 	if (context != NULL)
@@ -359,7 +297,7 @@ int XUMuser::EnableMultiplayerSubscriptions()
 			if (MultiplayerSubscriptionsEnabled == true)
 			{
 				// just bail if subscriptions are already enabled
-				GDKX::DebugConsoleOutput("Attempting to enable multiplayer subscriptions but they're already enabled\n");
+				DebugConsoleOutput("Attempting to enable multiplayer subscriptions but they're already enabled\n");
 				return -1;
 			}
 
@@ -372,7 +310,7 @@ int XUMuser::EnableMultiplayerSubscriptions()
 				XblMultiplayerRemoveSessionChangedHandler(context, SessionChangeToken);
 				XblMultiplayerRemoveSubscriptionLostHandler(context, SubscriptionsLostToken);
 
-				GDKX::DebugConsoleOutput("Couldn't enable multiplayer subscriptions (XblMultiplayerSetSubscriptionsEnabled failed with 0x%08x)\n", res);
+				DebugConsoleOutput("Couldn't enable multiplayer subscriptions (XblMultiplayerSetSubscriptionsEnabled failed with 0x%08x)\n", res);
 				return -1;
 			}
 
@@ -398,17 +336,12 @@ int XUMuser::EnableMultiplayerSubscriptions()
 
 		MultiSubRefCount++;
 	}
-#endif
 
 	return -1;
 }
 
 int XUMuser::DisableMultiplayerSubscriptions()
 {
-#ifdef YY_PLAYFAB_NOT_IMPLEMENTED
-	DebugConsoleOutput("UNIMPLEMENTED FUNCTION: XUMuser::DisableMultiplayerSubscriptions\n");
-
-#else
 	XblContextHandle context = GetXboxLiveContext();
 
 	if (context != NULL)
@@ -422,7 +355,7 @@ int XUMuser::DisableMultiplayerSubscriptions()
 				if (MultiplayerSubscriptionsEnabled == false)		// Hmmm the logic for this is complicated in the XDK version, so need to double-check
 				{
 					// just bail if subscriptions are already enabled
-					GDKX::DebugConsoleOutput("Attempting to disable multiplayer subscriptions but they're already disabled\n");
+					DebugConsoleOutput("Attempting to disable multiplayer subscriptions but they're already disabled\n");
 					return 1;
 				}
 
@@ -432,7 +365,7 @@ int XUMuser::DisableMultiplayerSubscriptions()
 				HRESULT res = XblMultiplayerSetSubscriptionsEnabled(context, false);
 				if (FAILED(res))
 				{
-					GDKX::DebugConsoleOutput("Couldn't disable multiplayer subscriptions (XblMultiplayerSetSubscriptionsEnabled failed with 0x%08x)\n", res);
+					DebugConsoleOutput("Couldn't disable multiplayer subscriptions (XblMultiplayerSetSubscriptionsEnabled failed with 0x%08x)\n", res);
 				}
 
 				PlayFabPartyManager::CleanupLocalUser(XboxUserIdInt);
@@ -440,50 +373,16 @@ int XUMuser::DisableMultiplayerSubscriptions()
 
 				MultiplayerSubscriptionsEnabled = false;
 
-#if defined(WIN_UAP) || (defined(XBOX_LIVE_VER) && XBOX_LIVE_VER>=1508) || (defined(_XDK_VER) && (_XDK_VER >= 0x38390431))
-				context->MultiplayerService->DisableMultiplayerSubscriptions();
-				
-				create_task( [this, context]
-				{
-					// Wait for multiplayer subscriptions to be disabled
-					while(MultiplayerSubscriptionsEnabled == true);
-
-					// Now detach event handlers
-					context->MultiplayerService->MultiplayerSubscriptionLost -= SubscriptionsLostToken;
-					context->MultiplayerService->MultiplayerSessionChanged -= SessionChangeToken;					
-				}
-				);			
-#else
-#if defined( NOV_XDK )
-				context->RealTimeActivityService->DisableMultiplayerSubscriptions();
-				
-				create_task( [this, context]
-				{
-					// Wait for multiplayer subscriptions to be disabled
-					while(MultiplayerSubscriptionsEnabled == true);
-
-					// Now detach event handlers
-					context->RealTimeActivityService->MultiplayerSubscriptionsLost -= SubscriptionsLostToken;
-					context->RealTimeActivityService->MultiplayerSessionChanged -= SessionChangeToken;
-				}
-				);				
-#endif
-#endif
 				return 1;
 			}
 		}
 	}
-#endif
 
 	return -1;
 }
 
 void XUMuser::RefreshPlayFabPartyLogin()
 {
-#ifdef YY_PLAYFAB_NOT_IMPLEMENTED
-	DebugConsoleOutput("UNIMPLEMENTED FUNCTION: XUMuser::RefreshPlayFabPartyLogin\n");
-
-#else
 	if (AreMultiplayerSubscriptionsEnabled())
 	{
 		if (PlayFabPartyManager::ShouldRefreshLocalUserLogin(XboxUserIdInt))
@@ -496,7 +395,6 @@ void XUMuser::RefreshPlayFabPartyLogin()
 			}
 		}
 	}
-#endif
 }
 
 void XUMuser::SetupStorage()
@@ -570,7 +468,6 @@ void XUMuser::SetupStorage()
 	}
 }
 
-#ifndef YY_PLAYFAB_NOT_IMPLEMENTED
 void
 XUMuser::OnSessionChanged(
 	void* context,
@@ -621,7 +518,6 @@ XUMuser::OnSubscriptionsLost(
 	}
 #endif
 }
-#endif
 
 
 void XUM::SetupMachineStorage()
