@@ -48,7 +48,7 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	}
 
 	YYFree(g_XboxSCID);
-	g_XboxSCID = (char*)(YYStrDup(YYGetString(arg, 1)));
+	g_XboxSCID = (char*)(YYStrDup(YYGetString(arg, 0)));
 
 	XGameRuntimeInitialize();
 	
