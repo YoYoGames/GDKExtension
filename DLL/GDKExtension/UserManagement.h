@@ -170,16 +170,6 @@ public:
 
 	static void RemoveUserChatPermissions(uint64_t _user_id);				// removes the chat permissions for this user from all cached users
 
-	static RefCountedGameSaveProvider* GetMachineStorage();
-	static unsigned int GetMachineStorageStatus();
-	static int GetMachineStorageError();
-
-	static void SetMachineStorage(RefCountedGameSaveProvider* _storage);
-	static void SetMachineStorageStatus(unsigned int _storageStatus);
-	static void SetMachineStorageError(int _storageError);
-
-	static void SetupMachineStorage();
-
 	static void RefreshCachedUsers(bool PreserveOldUsers = true);
 
 	static void LockMutex();
@@ -190,11 +180,6 @@ private:
 	static std::vector<XUMuser*> cachedUsers;
 	static XUserLocalId activatingUser;
 	static XUserLocalId saveDataUser;		// the user that is currently associated with save data handling
-
-	//static XGameSaveProviderHandle MachineStorage;
-	static RefCountedGameSaveProvider* MachineStorage;
-	static unsigned int MachineStorageStatus;
-	static int MachineStorageError;		
 
 	static HYYMUTEX mutex;
 
