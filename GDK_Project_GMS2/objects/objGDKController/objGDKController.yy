@@ -25,8 +25,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Objects",
-    "path": "folders/Demo/Objects.yy",
+    "name": "Demo",
+    "path": "folders/Demo.yy",
   },
   "resourceVersion": "1.0",
   "name": "objGDKController",

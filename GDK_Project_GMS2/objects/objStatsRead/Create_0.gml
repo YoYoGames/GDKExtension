@@ -4,9 +4,9 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Add User";
+text = "Read Stat";
+requestId = noone;
 
 onClick = function() {
-	var _userId = xboxone_get_user(0);
-	xboxone_stats_add_user(_userId);
+	requestId = get_string_async("Stat Name (TestInt/TestReal/TestString): ", "TestInt");
 }
