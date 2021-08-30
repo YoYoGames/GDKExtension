@@ -22,6 +22,7 @@
     {"id":{"name":"objStatsDelete","path":"objects/objStatsDelete/objStatsDelete.yy",},"order":8,},
     {"id":{"name":"objYoYoButton","path":"objects/objYoYoButton/objYoYoButton.yy",},"order":0,},
     {"id":{"name":"objStatsSetReal","path":"objects/objStatsSetReal/objStatsSetReal.yy",},"order":5,},
+    {"id":{"name":"objSave","path":"objects/objSave/objSave.yy",},"order":9,},
     {"id":{"name":"rmYoYo","path":"rooms/rmYoYo/rmYoYo.yy",},"order":4,},
     {"id":{"name":"rmStats","path":"rooms/rmStats/rmStats.yy",},"order":0,},
     {"id":{"name":"Note1","path":"notes/Note1/Note1.yy",},"order":17,},

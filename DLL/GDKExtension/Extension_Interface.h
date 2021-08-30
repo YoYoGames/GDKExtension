@@ -36,6 +36,7 @@ struct YYRunnerInterface
 {
 	// basic interaction with the user
 	void (*DebugConsoleOutput)(const char* fmt, ...); // hook to YYprintf
+	void (*ReleaseConsoleOutput)(const char* fmt, ...);
 	void (*ShowMessage)(const char* msg);
 
 	// for printing error messages
@@ -97,6 +98,7 @@ struct YYRunnerInterface
 
 	// timing
 	int64(*Timing_Time)(void);
+	void (*Timing_Sleep)(int64 slp, bool precise);
 
 	// mutex handling
 	HYYMUTEX(*YYMutexCreate)(const char* _name);
@@ -126,7 +128,8 @@ struct YYRunnerInterface
 extern YYRunnerInterface* g_pYYRunnerInterface;
 
 // basic interaction with the user
-#define DebugConsoleOutput(fmt, ...)		g_pYYRunnerInterface->DebugConsoleOutput(fmt, __VA_ARGS__  )
+#define DebugConsoleOutput(fmt, ...) g_pYYRunnerInterface->DebugConsoleOutput(fmt, __VA_ARGS__)
+#define ReleaseConsoleOutput(fmt, ...) g_pYYRunnerInterface->ReleaseConsoleOutput(fmt, __VA_ARGS__)
 inline void ShowMessage(const char* msg) { g_pYYRunnerInterface->ShowMessage(msg); }
 
 // for printing error messages
@@ -193,6 +196,7 @@ inline HSPRITEASYNC CreateSpriteAsync(int* _pSpriteIndex, int _xOrig, int _yOrig
 
 // timing
 inline int64 Timing_Time(void) { return g_pYYRunnerInterface->Timing_Time(); }
+inline void Timing_Sleep(int64 slp, bool precise = false) { g_pYYRunnerInterface->Timing_Sleep(slp, precise); }
 
 // mutex functions
 inline HYYMUTEX YYMutexCreate(const char* _name) { return g_pYYRunnerInterface->YYMutexCreate(_name); }
