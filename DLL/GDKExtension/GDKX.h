@@ -95,6 +95,7 @@ enum eXboxFileError
 
 static const int EVENT_OTHER_DIALOG_ASYNC = 63;
 static const int EVENT_OTHER_SOCIAL = 70;
+static const int EVENT_OTHER_ASYNC_SAVE_LOAD = 72;
 static const int EVENT_OTHER_SYSTEM_EVENT = 75;
 static const int EVENT_OTHER_WEB_IMAGE_LOAD = 60;
 

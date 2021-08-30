@@ -9,4 +9,3 @@ show_debug_message("##### Initialising GDK #####");
 //
 // This function must be passed in the SCID present in the MicrosoftGame.config file.
 gdk_init(SCID);
-

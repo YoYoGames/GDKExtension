@@ -214,7 +214,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;GDKEXTENSION_EXPORTS;_WINDOWS;_USRDLL;YYGDKEXTENSION;_CRT_SECURE_NO_WARNINGS;DISABLE_GAME_CHAT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;GDKEXTENSION_EXPORTS;_WINDOWS;_USRDLL;YYGDKEXTENSION;_CRT_SECURE_NO_WARNINGS;DISABLE_GAME_CHAT;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -407,6 +407,7 @@ cmake --build ..\json-c\x64\build --target INSTALL</Command>
     <ClCompile Include="FindSession.cpp" />
     <ClCompile Include="GDKX.cpp" />
     <ClCompile Include="JoinSession.cpp" />
+    <ClCompile Include="LoadSave.cpp" />
     <ClCompile Include="MatchmakingM.cpp" />
     <ClCompile Include="MigrateHost.cpp" />
     <ClCompile Include="PlayFabPartyManagement.cpp" />
