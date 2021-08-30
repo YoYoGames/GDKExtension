@@ -92,9 +92,6 @@ int DecRefGameSaveProvider(RefCountedGameSaveProvider* _gsp)
 std::vector<XUMuser*> XUM::cachedUsers;
 XUserLocalId XUM::activatingUser = XUserNullUserLocalId;
 XUserLocalId XUM::saveDataUser = XUserNullUserLocalId;
-RefCountedGameSaveProvider* XUM::MachineStorage = nullptr;
-unsigned int XUM::MachineStorageStatus = CSSTATUS_INVALID;
-int XUM::MachineStorageError = 0;
 HYYMUTEX XUM::mutex = NULL;
 int XUM::currRequestID = 0;
 XTaskQueueHandle XUM::m_taskQueue = NULL;
@@ -519,71 +516,6 @@ XUMuser::OnSubscriptionsLost(
 #endif
 }
 
-
-void XUM::SetupMachineStorage()
-{
-	LockMutex();
-	if (MachineStorageStatus == CSSTATUS_INVALID)
-	{
-		MachineStorageStatus = CSSTATUS_SETTINGUP;
-		UnlockMutex();
-
-		struct InitContext
-		{
-			XAsyncBlock async;
-		};
-
-		InitContext* ctx = new InitContext{};
-		if (ctx)
-		{
-			ctx->async.context = ctx;
-			ctx->async.callback = [](XAsyncBlock* async)
-			{
-				InitContext* ctx = reinterpret_cast<InitContext*>(async->context);
-				XGameSaveProviderHandle provider = nullptr;
-				HRESULT hr = XGameSaveInitializeProviderResult(async, &provider);
-				XUM::LockMutex();
-				if (SUCCEEDED(hr))
-				{
-					RefCountedGameSaveProvider* gsp = AllocGameSaveProvider();
-					gsp->provider = provider;					
-					XUM::SetMachineStorage(gsp);
-					XUM::SetMachineStorageStatus(CSSTATUS_AVAILABLE);
-					XUM::SetMachineStorageError(S_OK);
-				}
-				else
-				{
-					XUM::SetMachineStorage(NULL);
-					XUM::SetMachineStorageStatus(CSSTATUS_INVALID);
-					XUM::SetMachineStorageError(hr);
-				}
-				XUM::UnlockMutex();
-				delete ctx;
-			};
-
-			HRESULT hr = XGameSaveInitializeProviderAsync(NULL, g_XboxSCID, false, &ctx->async);
-			if (FAILED(hr))
-			{
-				LockMutex();
-				SetMachineStorage(NULL);
-				SetMachineStorageStatus(CSSTATUS_INVALID);
-				SetMachineStorageError(hr);
-				UnlockMutex();
-			}
-		}
-		else
-		{
-			LockMutex();
-			MachineStorageStatus = CSSTATUS_INVALID;
-			UnlockMutex();
-		}
-	}
-	else
-	{
-		UnlockMutex();
-	}
-}
-
 void XUM::LockMutex()
 {
 	YYMutexLock(mutex);
@@ -639,9 +571,6 @@ void XUM::Init()
 		&UserDeviceAssociationChangedCallback,
 		&m_userDeviceAssociationChangedCallbackToken
 	);
-
-	// RK :: We should do this after we have a user (not before).
-	SetupMachineStorage();
 	
 	//RefreshCachedUsers();	// set up initial list
 	activatingUser = XUserNullUserLocalId;
@@ -649,18 +578,6 @@ void XUM::Init()
 
 	// RK :: Gersh advises allowing UI is the best default.... 
 	AddUser(XUserAddOptions::AddDefaultUserAllowingUI, false);	// set up default user
-
-
-#if !defined(WIN_UAP) && !defined(NO_SECURE_CONNECTION) && YY_CHAT
-	User::AudioDeviceAdded += ref new EventHandler<AudioDeviceAddedEventArgs^ >([=](Platform::Object^, AudioDeviceAddedEventArgs^ args) 
-	{
-		extern bool g_chatIntegrationLayerInited;
-		if (g_chatIntegrationLayerInited)
-		{
-			GameChat2IntegrationLayer::Get()->OnUserAudioDeviceAdded(args);
-		}
-	});
-#endif
 }
 
 void XUM::Quit()
@@ -1038,42 +955,6 @@ void XUM::RemoveUserChatPermissions(uint64_t _user_id)
 			cachedUser->RemoveUserChatPermissions(_user_id);
 		}
 	}
-}
-
-RefCountedGameSaveProvider* XUM::GetMachineStorage()
-{
-	XUM_LOCK_MUTEX
-	return MachineStorage;
-}
-
-unsigned int XUM::GetMachineStorageStatus()
-{
-	XUM_LOCK_MUTEX
-	return MachineStorageStatus;
-}
-
-int XUM::GetMachineStorageError()
-{
-	XUM_LOCK_MUTEX
-	return MachineStorageError;
-}
-
-void XUM::SetMachineStorage(RefCountedGameSaveProvider* _storage)
-{
-	XUM_LOCK_MUTEX
-	MachineStorage = _storage;
-}
-
-void XUM::SetMachineStorageStatus(unsigned int _storageStatus)
-{
-	XUM_LOCK_MUTEX
-	MachineStorageStatus = _storageStatus;
-}
-
-void XUM::SetMachineStorageError(int _storageError)
-{
-	XUM_LOCK_MUTEX
-	MachineStorageError = _storageError;
 }
 
 void XUM::RefreshCachedUsers(bool PreserveOldUsers)
