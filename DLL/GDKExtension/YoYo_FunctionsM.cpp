@@ -85,9 +85,6 @@ void F_XboxOneShowProfileCardForUser(RValue& Result, CInstance* selfinst, CInsta
 
 void F_XboxOneGenerateSessionId(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
-void F_XboxOneSetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-
 void F_XboxOneSetServiceConfigurationID(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 
 void F_XboxLiveNotAvailable(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
@@ -1267,6 +1264,7 @@ void F_XboxOneShowProfileCardForUser(RValue& Result, CInstance* selfinst, CInsta
 	}
 }
 
+YYEXPORT
 void F_XboxOneSetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;
@@ -1294,6 +1292,7 @@ void F_XboxOneSetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* ot
 	// No valid user found
 }
 
+YYEXPORT
 void F_XboxOneGetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_INT64;
