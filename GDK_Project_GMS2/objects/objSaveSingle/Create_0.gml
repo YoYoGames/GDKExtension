@@ -8,8 +8,13 @@ text = "Save (single)";
 requestId = noone;
 
 onClick = function() {
-	var user_id = xboxone_get_activating_user();
-	xboxone_set_savedata_user(user_id);
+
+	var _userId = xboxone_get_savedata_user();
+	if (_userId == pointer_null) {
+		show_debug_message("[INFO] gdk_save_buffer (null user, setting to default user)");
+		_userId = xboxone_get_activating_user();
+		xboxone_set_savedata_user(_userId);
+	}
 	
 	/* Save a single buffer. */
 

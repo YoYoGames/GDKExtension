@@ -13,6 +13,6 @@ errorFlag |= bool(_error);
 show_debug_message(json_encode(async_load));
 
 if (variable_struct_names_count(requestIds) == 0) {
-	if (!errorFlag) show_debug_message("[SUCCESS] gdk_save_buffer (buffer group)");
-	else show_debug_message("[ERROR] gdk_save_buffer (buffer group)");
+	if (!errorFlag) show_debug_message("[SUCCESS] gdk_save_buffer (group)");
+	else show_debug_message("[ERROR] gdk_save_buffer (group)");
 }
