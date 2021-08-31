@@ -389,9 +389,154 @@ To use the function, you supply the user ID as returned by the function [`xboxon
 ---
 
 ## xboxone_stats_get_leaderboard - xboxone_stats_get_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending)
+--- 
 ## xboxone_stats_get_social_leaderboard - xboxone_stats_get_social_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending, favourites_only)
+--- 
 ## xboxone_achievements_set_progress - xboxone_achievements_set_progress(user_id, achievement, progress)
+--- 
 ## xboxone_read_player_leaderboard - xboxone_read_player_leaderboard(ident, player, numitems, friendfilter)
+--- 
 ## xboxone_set_rich_presence - xboxone_set_rich_presence(user_id, is_user_active, rich_presence_string)
+--- 
 ## xboxone_check_privilege - xboxone_check_privilege(user_id, privilege_id, attempt_resolution)
 
+--- 
+
+## gdk_save_group_begin
+
+**Usage**: gdk_save_group_begin(container_name)
+
+**Description**: This function is called when you want to begin the saving out of multiple buffers to multiple files. The "container_name" is a string and will be used as the directory name for where the files will be saved, and should be used as part of the file path when loading the files back into the IDE later (using any of the buffer_load() functions). This function is only for use with the [`gdk_save_buffer()`](#gdk_save_buffer) function and you must also finish the save definition by calling [`gdk_save_group_end()`](#gdk_save_group_end) function otherwise the files will not be saved out.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **container_name** The name of the container (as a string).
+
+**Returns**: N/A
+
+**Code Sample**:
+
+	gdk_save_group_begin("SaveGame");
+	save1 = gdk_save_buffer(buff1, "Player_Save1.sav", 0, 16384);
+	save2 = gdk_save_buffer(buff2, "Player_Save2.sav", 0, 16384);
+	save3 = gdk_save_buffer(buff3, "Player_Save3.sav", 0, 16384);
+	save4 = gdk_save_buffer(buff4, "Player_Save4.sav", 0, 16384);
+	gdk_save_group_end();
+
+--- 
+
+## gdk_save_buffer (TODO)
+
+**Usage**: gdk_save_buffer(buffer_idx, filename, offset, size)
+
+**Description**: With this function you can save part of the contents of a buffer to a file, ready to be read back into memory using the [`buffer_load()`](#LOAD) function (or any of the other functions for loading buffers). The "offset" defines the start position within the buffer for saving (in bytes), and the "size" is the size of the buffer area to be saved from that offset onwards (also in bytes).
+
+This function works asynchronously, and so the game will continue running while being saved, and all files saved using this function will be placed in a *"default"* folder. This folder does not need to be included in the filename as it is added automatically by GameMaker. For example the filename path `"Data\Player_Save.sav"` would actually be saved to `"default\Data\Player_Save.sav"`. However, if you then load the file using the function buffer_load_async(), you do not need to supply the "default" part of the path either.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **buffer_idx** The index of the buffer to save.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **filename** The place where to save the buffer to (path + filename + extension).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **offset** The start position within the buffer for saving (in bytes).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **size** The size of the buffer area to be saved from the offset onwards (in bytes).
+
+**Triggers**: Asynchronous Save/Load Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **"id"**: Will hold the unique identifier of the asynchronous request.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error (error code).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"status"**: 1 if successful, 0 if failed.
+
+**Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called.
+
+**Code Sample**:
+
+	saveid = gdk_save_buffer(buff, "Player_Save.sav", 0, 16384);
+
+then in the asynchronous Save/Load event we can check if the task was successful or not, like this:
+
+	if (async_load[? "id"] == saveid) {
+    	if (async_load[? "status"]== false) {
+        	show_debug_message("Save failed!");
+        }
+		else {
+			show_debug_message("Save succeeded!");
+		}
+    }
+
+--- 
+
+## gdk_save_group_end
+
+**Usage**: gdk_save_group_end()
+
+**Description**: This function finishes the definition of a buffer save group. You must have previously called the function [`gdk_save_group_begin()`](#gdk_save_group_begin) to initiate the group, then call the function [`gdk_save_buffer()`](#gdk_save_buffer) for each file that you wish to save out. Finally you call this function, which will start the saving of the files. ?
+
+<!-- ?? The function will return a unique ID value for the save, which can then be used in the Asynchronous Save / Load event to parse the results from the async_load DS map. ?? -->
+
+**Triggers**: Asynchronous Save/Load Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **"id"**: Will hold the unique identifier of the asynchronous request.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error (error code).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"status"**: 1 if successful, 0 if failed.
+
+<!-- **Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called. -->
+
+**Returns**: N/A
+
+**Code Sample**:
+
+	buffer_async_group_begin("SaveGame");
+	save1 = buffer_save_async(buff1, "Player_Save1.sav", 0, 16384);
+	save2 = buffer_save_async(buff2, "Player_Save2.sav", 0, 16384);
+	save3 = buffer_save_async(buff3, "Player_Save3.sav", 0, 16384);
+	save4 = buffer_save_async(buff4, "Player_Save4.sav", 0, 16384);
+	buffer_async_group_end();
+
+--- 
+
+## xboxone_set_savedata_user
+
+**Usage**: xboxone_set_savedata_user(user_id)
+
+**Description**: This function specifies that future file operations which operate in the save game area (i.e. all file writes, and reads from files that aren't in the bundle area) will be associated with the specified user.This can be called as often as necessary to redirect save data to the appropriate user, or you can use the constant `pointer_null` to save to the generic machine storage area.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The User ID pointer to set for future saving.
+
+**Returns**: N/A
+
+**Code Sample**:
+
+	if xboxone_get_savedata_user() != user_id[0] {
+   		xboxone_set_savedata_user(user_id[0]);
+    }
+
+--- 
+
+## xboxone_get_savedata_user
+
+**Usage**: xboxone_get_savedata_user()
+
+**Description**: This function returns the user ID pointer (or the constant `pointer_null`) currently associated with file saving. See [`xboxone_set_savedata_user()`](#xboxone_set_savedata_user) for further details.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer/pointer_null*} **user_id** The user ID currently being used for save data.
+
+**Returns**: N/A
+
+**Code Sample**:
+
+	if xboxone_get_savedata_user() != user_id[0] {
+   		xboxone_set_savedata_user(user_id[0]);
+    }
+
+---
