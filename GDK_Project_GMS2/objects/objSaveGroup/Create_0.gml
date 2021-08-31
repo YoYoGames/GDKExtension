@@ -9,8 +9,15 @@ requestIds = {};
 errorFlag = false;
 
 onClick = function() {
-	var user_id = xboxone_get_activating_user();
-	xboxone_set_savedata_user(user_id);
+	
+	var _userId = xboxone_get_savedata_user();
+	if (_userId == pointer_null) {
+		show_debug_message("[INFO] gdk_save_buffer (null user, setting to default user)");
+		_userId = xboxone_get_activating_user();
+		xboxone_set_savedata_user(_userId);
+	}
+	
+	/* Save a group of buffers. */
 	
 	var b2 = buffer_create(1, buffer_grow, 1);
 	buffer_write(b2, buffer_text, "bar");
