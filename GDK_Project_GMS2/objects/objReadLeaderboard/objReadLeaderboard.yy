@@ -29,11 +29,11 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Stats Functions (Title)",
-    "path": "folders/Demo/Stats Functions (Title).yy",
+    "name": "Stats Functions (Event)",
+    "path": "folders/Demo/Stats Functions (Event).yy",
   },
   "resourceVersion": "1.0",
-  "name": "objStatsSetString",
+  "name": "objReadLeaderboard",
   "tags": [],
   "resourceType": "GMObject",
 }

@@ -1,4 +1,9 @@
 
+if (os_type != os_windows) {
+	instance_destroy();
+	return;
+}
+
 #macro SCID "00000000-0000-0000-0000-0000790907e2"
 
 show_debug_message("##### Initialising GDK #####");

@@ -4,9 +4,9 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Get User Count";
+text = "Get Save User";
 
 onClick = function() {
-	var _count = xboxone_get_user_count();
-	show_message(_count);
+	var _userId = xboxone_get_savedata_user();
+	show_message("Saving to UserID: " + string(_userId));
 }

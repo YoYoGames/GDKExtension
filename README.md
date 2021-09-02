@@ -1,14 +1,23 @@
 # GameMaker Studio 2 - GDK Extension
 
-An Extension for GameMaker Studio 2 (GMS2) that gives GMS2 Windows Target support for the GDK allowing them to be released on the Microsoft Store and use XBox Live functionality (for those developers that have access through id@xbox, see INSERTLINK  for more information on id@xbox ).
+An Extension for GameMaker Studio 2 (GMS2) that gives GMS2 Windows Target support for the GDK allowing them to be released on the Microsoft Store and use XBox Live functionality (for those developers that have access through id@xbox, see INSERTLINK for more information on id@xbox).
 
-NOTE: Only Windows x64 Target is supported by the GDK, ensure that your GMS2 project has the x64 option selected in Options -> Windows -> General
+**NOTE**: Only Windows x64 Target is supported by the GDK, ensure that your GMS2 project has the x64 option selected in **Options &#8594; Windows &#8594; General**
+
+# Table Of Contents
+
+* [Contents of this repository](#Contents-of-this-repository)
+* [Building this Extension](#Building-this-Extension)
+* [Running the GMS2 Project](#Running-the-GMS2-Project)
+* [GML Function reference](#GML-Function-reference)
+
+--- 
 
 ## Contents of this repository
 
-This repository contains the source code for the DLL that implements the GDK functionality that is exposed to GameMaker games, it is written in C++. 
+This repository contains the source code for the DLL that implements the GDK functionality that is exposed to GameMaker games, it is written in C++. It also contains an example GMS2 project that contains the extension definition and illustrates how to use the extension.
 
-It also contains an example GMS2 project that contains the extension definition and illustrates how to use the extension.
+---
 
 ## Building this Extension
 
@@ -24,15 +33,18 @@ It also contains an example GMS2 project that contains the extension definition 
 
 NOTE: Output from this build will be copied into the GMS2 GDK  project
 
+---
 
 ## Running the GMS2 Project
 
 Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.yyp file.
 
+---
+---
 
-# GDK Extension GML Function reference
+# GML Function reference
 
-NOTE: these functions should work the same as those in the xbox one and xbox series x/s targets and we have adopted the same naming so game code can be shared with the extension.
+**NOTE**: these functions should work the same as those in the xbox one and xbox series x/s targets and we have adopted the same naming so game code can be shared with the extension.
 
 ---
 
@@ -143,6 +155,8 @@ NOTE: these functions should work the same as those in the xbox one and xbox ser
 ## xboxone_fire_event - xboxone_fire_event(event_name, ...)
 ## xboxone_get_stats_for_user - xboxone_get_stats_for_user(user_id, scid)
 ## xboxone_stats_setup - xboxone_stats_setup(user_id, scid, title_id)
+
+---
 
 ## xboxone_stats_set_stat_real
 
@@ -527,11 +541,7 @@ then in the asynchronous Save/Load event we can check if the task was successful
 
 **Description**: This function returns the user ID pointer (or the constant `pointer_null`) currently associated with file saving. See [`xboxone_set_savedata_user()`](#xboxone_set_savedata_user) for further details.
 
-**Params**:
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer/pointer_null*} **user_id** The user ID currently being used for save data.
-
-**Returns**: N/A
+**Returns**: {*pointer/pointer_null*} The user ID currently being used for save data.
 
 **Code Sample**:
 
