@@ -33,7 +33,7 @@
     "path": "folders/Demo/Stats Functions (Title).yy",
   },
   "resourceVersion": "1.0",
-  "name": "objStatsSetString",
+  "name": "objStatsGetSocialLeaderboard",
   "tags": [],
   "resourceType": "GMObject",
 }

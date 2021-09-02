@@ -30,8 +30,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Stats Functions",
-    "path": "folders/Demo/Stats Functions.yy",
+    "name": "Stats Functions (Title)",
+    "path": "folders/Demo/Stats Functions (Title).yy",
   },
   "resourceVersion": "1.0",
   "name": "objStatsDelete",
