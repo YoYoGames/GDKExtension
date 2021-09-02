@@ -4,9 +4,7 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Get User Count";
+if (triggerKey == undefined) exit;
 
-onClick = function() {
-	var _count = xboxone_get_user_count();
-	show_message(_count);
-}
+draw_set_halign(fa_right);
+draw_text(bbox_left - 5, y, "[" + chr(triggerKey) + "]");
