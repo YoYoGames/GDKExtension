@@ -8,6 +8,9 @@
 event_inherited();
 
 text = "Load";
+requestIds = {};
+errorFlag = false;
+
 requests = [];
 
 onClick = function() {
@@ -19,20 +22,18 @@ onClick = function() {
 		xboxone_set_savedata_user(_userId);
 	}
 	
+	errorFlag = false;
+	
 	queue_load("single/b1");
 	queue_load("multi/b2");
 	queue_load("multi/b3");
 	queue_load("multi/b4");
 }
 
-function queue_load(filename)
+function queue_load(_filename)
 {	
-	var buf_id = buffer_create(1, buffer_grow, 1);
-	var req_id = gdk_load_buffer(buf_id, filename, 0, 10);
+	var _bufferId = buffer_create(1, buffer_grow, 1);
+	var _requestId = gdk_load_buffer(_bufferId, _filename, 0, 10);
 	
-	array_push(requests, {
-		filename: filename,
-		buf_id: buf_id,
-		req_id: req_id,
-	});
+	requestIds[$ _requestId] = { filename: _filename, bufferId: _bufferId };
 }

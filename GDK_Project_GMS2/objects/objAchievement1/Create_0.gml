@@ -5,6 +5,7 @@
 event_inherited();
 
 text = "Achievement 1 + 10%"
+requestId = noone;
 
 achievement_progress = 0;
 
@@ -13,5 +14,5 @@ onClick = function() {
 	
 	achievement_progress += 10;
 	show_debug_message("Setting Test Achivement 1 completion to " + string(achievement_progress) + "%");
-	xboxone_achievements_set_progress(_userId, "1", achievement_progress);
+	requestId = xboxone_achievements_set_progress(_userId, "1", achievement_progress);
 }

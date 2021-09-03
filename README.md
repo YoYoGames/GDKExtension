@@ -555,8 +555,13 @@ The above code checks the returned ds_map in the Social Asynchronous Event and i
 --- 
 
 
-## xboxone_achievements_set_progress - xboxone_achievements_set_progress(user_id, achievement, progress)
+## xboxone_achievements_set_progress - 
+
+**Usage**: xboxone_achievements_set_progress(user_id, achievement, progress)
+
+
 --- 
+
 ## xboxone_read_player_leaderboard - xboxone_read_player_leaderboard(ident, player, numitems, friendfilter)
 --- 
 ## xboxone_set_rich_presence - xboxone_set_rich_presence(user_id, is_user_active, rich_presence_string)
@@ -588,11 +593,11 @@ The above code checks the returned ds_map in the Social Asynchronous Event and i
 ```
 --- 
 
-## gdk_save_buffer (TODO)
+## gdk_save_buffer
 
 **Usage**: gdk_save_buffer(buffer_idx, filename, offset, size)
 
-**Description**: With this function you can save part of the contents of a buffer to a file, ready to be read back into memory using the [`buffer_load()`](#LOAD) function (or any of the other functions for loading buffers). The "offset" defines the start position within the buffer for saving (in bytes), and the "size" is the size of the buffer area to be saved from that offset onwards (also in bytes).
+**Description**: With this function you can save part of the contents of a buffer to a file, ready to be read back into memory using the [`gdk_save_buffer()`](#gdk_save_buffer) function (or any of the other functions for loading buffers). The "offset" defines the start position within the buffer for saving (in bytes), and the "size" is the size of the buffer area to be saved from that offset onwards (also in bytes).
 
 This function works asynchronously, and so the game will continue running while being saved, and all files saved using this function will be placed in a *"default"* folder. This folder does not need to be included in the filename as it is added automatically by GameMaker. For example the filename path `"Data\Player_Save.sav"` would actually be saved to `"default\Data\Player_Save.sav"`. However, if you then load the file using the function buffer_load_async(), you do not need to supply the "default" part of the path either.
 
@@ -699,3 +704,54 @@ then in the asynchronous Save/Load event we can check if the task was successful
     }
 ```
 ---
+
+
+
+
+## gdk_load_buffer
+
+**Usage**: gdk_load_buffer(buffer_idx, filename, offset, size)
+
+**Description**: With this function you can load a file that you have created previously using the [`gdk_save_buffer()`](#gdk_save_buffer) function into a buffer. The "offset" defines the start position within the buffer for loading (in bytes), and the "size" is the size of the buffer area to be loaded from that offset onwards (also in bytes). You can supply a value of -1 for the size argument and the entire buffer will be loaded. Note that the function will load from a "default" folder, which does not need to be included as part of the file path you provide. This folder will be created if it doesn't exist or when you save a file using [`gdk_save_buffer()`](#gdk_save_buffer).
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **buffer_idx** The index of the buffer to load.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **filename** The name of the file to load.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **offset** The offset within the buffer to load to (in bytes).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **size** The size of the buffer area to load (in bytes).
+
+**Triggers**: Asynchronous Save/Load Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **"id"**: Will hold the unique identifier of the asynchronous request.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error (error code).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"status"**: 1 if successful, 0 if failed.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"file_size"**: The total size of the file being loaded (in bytes).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"load_size"**: The amount of bytes loaded into the buffer.
+
+**Returns**: {*real*} -1 if there was an error, otherwise the id of the asynchronous request.
+
+**Code Sample**:
+```gml
+	loadid = gdk_load_buffer(buff, "Player_Save.sav", 0, 16384);
+```
+then in the asynchronous Save/Load event we can check if the task was successful or not, like this:
+```gml
+	if (async_load[? "id"] == saveid) {
+    	if (async_load[? "status"]== false) {
+        	show_debug_message("Load failed!");
+        }
+		else {
+			show_debug_message("Load succeeded!");
+		}
+    }
+```
+--- 
+
