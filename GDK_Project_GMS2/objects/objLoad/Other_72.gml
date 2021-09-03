@@ -1,6 +1,8 @@
 /// @description Insert description here
 // You can write your code in this editor
 
+show_message(json_encode(async_load));
+
 var _id = async_load[? "id"];
 
 for(var i = 0; i < array_length(requests); ++i)

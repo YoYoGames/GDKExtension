@@ -4,7 +4,7 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Remove User";
+text = "Remove";
 
 onClick = function() {
 	var _userId = xboxone_get_user(0);
