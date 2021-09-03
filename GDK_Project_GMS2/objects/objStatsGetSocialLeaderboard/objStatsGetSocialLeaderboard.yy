@@ -29,8 +29,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Stats Functions (Title)",
-    "path": "folders/Demo/Stats Functions (Title).yy",
+    "name": "Leaderboards",
+    "path": "folders/Demo/Stats Functions (Title)/Leaderboards.yy",
   },
   "resourceVersion": "1.0",
   "name": "objStatsGetSocialLeaderboard",

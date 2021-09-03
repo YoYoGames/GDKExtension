@@ -25,12 +25,13 @@
   "physicsShapePoints": [],
   "eventList": [
     {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":70,"eventType":7,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
   ],
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Stats Functions (Title)",
-    "path": "folders/Demo/Stats Functions (Title).yy",
+    "name": "Leaderboards",
+    "path": "folders/Demo/Stats Functions (Title)/Leaderboards.yy",
   },
   "resourceVersion": "1.0",
   "name": "objStatsGetLeaderboard",
