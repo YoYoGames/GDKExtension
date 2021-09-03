@@ -1412,10 +1412,10 @@ void F_PlayFabSendPacket(RValue& Result, CInstance* selfinst, CInstance* otherin
 	int bufferindex = YYGetInt32(arg, 2);
 	int size = YYGetInt32(arg, 3);
 
-	const void* pBuff = BufferGetContent(bufferindex);
-	int pBuff_size = BufferGetContentSize(bufferindex);
+	void* pBuff;
+	int pBuff_size;
 
-	if (pBuff == NULL || pBuff_size < 0)
+	if(!BufferGetContent(bufferindex, &pBuff, &pBuff_size))
 	{
 		DebugConsoleOutput("playfab_send_packet() - error: specified buffer not found\n");
 		Result.val = -5;
@@ -1426,10 +1426,14 @@ void F_PlayFabSendPacket(RValue& Result, CInstance* selfinst, CInstance* otherin
 	{
 		DebugConsoleOutput("playfab_send_packet() - error: specified size exceeds buffer size\n");
 		Result.val = -6;
+
+		YYFree(pBuff);
 		return;
 	}
 
 	Result.val = PlayFabPartyManager::SendPacket(user_id, NULL, target, pBuff, size, false);
+	
+	YYFree(pBuff);
 }
 
 void F_PlayFabSendReliablePacket(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
@@ -1467,10 +1471,10 @@ void F_PlayFabSendReliablePacket(RValue& Result, CInstance* selfinst, CInstance*
 	int bufferindex = YYGetInt32(arg, 2);
 	int size = YYGetInt32(arg, 3);
 
-	const void* pBuff = BufferGetContent(bufferindex);
-	int pBuff_size = BufferGetContentSize(bufferindex);
+	void* pBuff;
+	int pBuff_size;
 
-	if (pBuff == NULL || pBuff_size < 0)
+	if (!BufferGetContent(bufferindex, &pBuff, &pBuff_size))
 	{
 		DebugConsoleOutput("playfab_send_reliable_packet() - error: specified buffer not found\n");
 		Result.val = -5;
@@ -1481,10 +1485,14 @@ void F_PlayFabSendReliablePacket(RValue& Result, CInstance* selfinst, CInstance*
 	{
 		DebugConsoleOutput("playfab_send_reliable_packet() - error: specified size exceeds buffer size\n");
 		Result.val = -6;
+
+		YYFree(pBuff);
 		return;
 	}
 
 	Result.val = PlayFabPartyManager::SendPacket(user_id, NULL, target, pBuff, size, true);
+
+	YYFree(pBuff);
 }
 
 void F_PlayFabGetUserAddress(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
