@@ -29,8 +29,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Stats Functions (Title)",
-    "path": "folders/Demo/Stats Functions (Title).yy",
+    "name": "Stats",
+    "path": "folders/Demo/Stats Functions (Title)/Stats.yy",
   },
   "resourceVersion": "1.0",
   "name": "objStatsSetReal",

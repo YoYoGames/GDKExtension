@@ -12,7 +12,7 @@
   "description": "",
   "helpfile": "",
   "iosProps": false,
-  "tvosProps": true,
+  "tvosProps": false,
   "androidProps": false,
   "installdir": "",
   "files": [
