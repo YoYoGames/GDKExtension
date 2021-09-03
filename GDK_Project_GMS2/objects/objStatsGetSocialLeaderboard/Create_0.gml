@@ -4,9 +4,9 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Soc. Leaderboard";
+text = "Fetch (Social)";
 
 onClick = function() {
-	var _userId = xboxone_get_savedata_user();
-	show_message("Saving to UserID: " + string(_userId));
+	var _userId = xboxone_get_activating_user();
+	xboxone_stats_get_social_leaderboard(_userId, "TestInt", 10, 0, true, true, true);
 }

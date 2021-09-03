@@ -111,11 +111,11 @@ Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.
 **Returns**: {*integer*} The total number of users currently signed in to the system.
 
 **Code Sample**:
-
-	for (var i = 0; i < xboxone_get_user_count(); i++;) {
+```gml
+	for (var i = 0; i < xboxone_get_user_count(); i++) {
 		user_id[i] = xboxone_get_user(i);
 	}
-
+```
 ---
 
 ## xboxone_get_user
@@ -131,11 +131,11 @@ Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.
 **Returns**: {*integer*} The total number of users currently signed in to the system.
 
 **Code Sample**:
-
+```gml
 	for (var i = 0; i < xboxone_get_user_count(); i++;) {
 		user_id[i] = xboxone_get_user(i);
 	}
-
+```
 ---
 
 ## xboxone_get_activating_user
@@ -147,9 +147,9 @@ Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.
 **Returns**: {*pointer*} The user ID pointer.
 
 **Code Sample**:
-
+```gml
 	global.main_user = xboxone_get_activating_user();
-
+```
 ---
 
 ## xboxone_fire_event - xboxone_fire_event(event_name, ...)
@@ -177,9 +177,9 @@ When setting the stat value, any previous value will be overridden, therefore it
 **Returns**: {*real*} -1 if there was an error, or any other value if the function was successfully called.
 
 **Code Sample**:
-
+```gml
     xboxone_stats_set_stat_real(p_user_id, "TestReal", 123.45);
-
+```
 ---
 
 ## xboxone_stats_set_stat_int
@@ -201,9 +201,9 @@ When setting the stat value, any previous value will be overridden, therefore it
 **Returns**: {*real*} -1 if there was an error, or any other value if the function was successfully called.
 
 **Code Sample**:
-
+```gml
     xboxone_stats_set_stat_int(p_user_id, "TestInt", int64(22));
-
+```
 ---
 
 ## xboxone_stats_set_stat_string
@@ -225,9 +225,9 @@ When setting the stat value, any previous value will be overridden, therefore it
 **Returns**: {*real*} -1 if there was an error, or any other value if the function was successfully called.
 
 **Code Sample**:
-
+```gml
     xboxone_stats_set_stat_string(p_user_id, "TestString", "YoYo Games");
-
+```
 --- 
 
 ## xboxone_stats_delete_stat
@@ -247,12 +247,12 @@ The function will will return -1 if there was an error or the user ID is invalid
 **Returns**: {*real*} -1 if there was an error, or any other value if the function was successfully called.
 
 **Code Sample**:
-
+```gml
     for (var i = 0; i < xboxone_get_user_count(); i++) {
 		user_id[i] = xboxone_get_user(i);
 		xboxone_stats_delete_stat(user_id[i], "highScore");
 	}
-
+```
 ---
 
 ## xboxone_stats_get_stat
@@ -270,14 +270,14 @@ The function will will return -1 if there was an error or the user ID is invalid
 **Returns**: {*real/string/undefined*} The value of the given stat, `undefined` if the stat does not exist.
 
 **Code Sample**:
-
+```gml
     if (game_over == true) {
 		if (xboxone_stats_get_stat(p_user_id, "PercentDone") < 100) {
 			var _val = (global.LevelsFinished / global.LevelsTotal) * 100;
 			xboxone_stats_set_stat_real(p_user_id, "PercentDone", _val);
 		}
 	}
-
+```
 ---
 
 ## xboxone_stats_get_stat_names
@@ -293,12 +293,12 @@ The function will will return -1 if there was an error or the user ID is invalid
 **Returns**: {*array*} Array with all the stat names for the given user.
 
 **Code Sample**:
-
+```gml
     var _stat_str = xboxone_stats_get_stat_names(user_id);
     for (var i = 0; i < array_length(_stat_str); i++;) {
         xboxone_stats_delete_stat(user_id, _stat_str[i]);
     }
-
+```
 ---
 
 ## xboxone_stats_add_user
@@ -349,7 +349,7 @@ To use the function, you supply the user ID as returned by the function [`xboxon
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"errorMessage"**: A string with an error message, if any is available (this key is only present when there is an error)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"errorMessage"**: A string with an error message (only avaiable when there is an error)
 
 **Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called.
 
@@ -358,11 +358,11 @@ To use the function, you supply the user ID as returned by the function [`xboxon
 * If you want to flush the stats data to the live server at any time without removing the user, you can use the function [`xboxone_stats_flush_user()`](#xboxone_stats_flush_user).
 
 **Code Sample**:
-
+```gml
 	for (var i = 0; i < array_length(user_id); i++) {
 		xboxone_stats_remove_user(user_id[i]);
 	}
-
+```
 ---
 
 
@@ -390,22 +390,171 @@ To use the function, you supply the user ID as returned by the function [`xboxon
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"errorMessage"**: A string with an error message, if any is available (this key is only present when there is an error)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"errorMessage"**: A string with an error message (only avaiable when there is an error)
 
 **Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called.
 
 **Code Sample**:
-
-	for(var i = 0; i < array_length(user_id); i++) {
+```gml
+	for (var i = 0; i < array_length(user_id); i++) {
 		xboxone_stats_flush_user(user_id[i], 0);
 	}
+```
+---
+
+## xboxone_stats_get_leaderboard
+
+**Usage**: xboxone_stats_get_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending)
+
+**Description**: This function can be used to retrieve a global leaderboard of ranks for a given statistic. You supply the user ID (as returned by the function [`xboxone_get_user`](#xboxone_get_user)), the stat string (as defined when you registered it as a "Featured Stat"), and then you specify a number of details about what leaderboard information you want to retrieve. Note that you can only retrieve a global leaderboard for int or real stats, but not for string stats.
+
+IMPORTANT: Stats used in global leaderboards must be registered as "Featured Stats" in the XDP/Windows Dev Center otherwise an error will be returned. If you want local (social) leaderboards, then please see the function xboxone_stats_get_social_leaderboard.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID of the user to get the leaderboard for.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **stat** The stat (as string) to create the global leaderboard from.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **num_entries** The number of entries from the global leaderboard to retrieve.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **start_rank** The rank in the leaderboard to start from (use 0 if "start_at_user" is set to true).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*boolean*} **start_at_user** Set to true to start at the user ID rank, false otherwise (set to false if "start_rank" is anything other than 0).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*boolean*} **ascending** Set to true for ascending order and false for descending order.
+
+**Triggers**: Social Asynchronous Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **"id"**: Will hold the constant `achievement_leaderboard_info`.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"event"**: Will hold the string "GetLeaderboardComplete".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"userid"**: The user ID associated with the request.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"errorMessage"**: A string with an error message (only avaiable when there is an error)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"displayname"**: The unique ID for the leaderboard as defined on the provider dashboard.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"numentries"**: The number of entries in the leaderboard that you have received.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"PlayerN"**: The name of the player, where "N" is an integer value corresponding to their position within the leaderboard entries list.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"PlayeridN"**: The unique user id of the player, "N".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"RankN"**: The rank of the player "N" within the leaderboard.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"ScoreN"**: The score of the player "N".
+
+**Returns**: N/A
+
+**Code Sample**:
+
+The following is an extended example of how this function can be used. To start with you'd call it in some event like Room Start or Create:
+
+```gml
+	xboxone_stats_get_leaderboard(user_id, "GlobalTime", 20, 1, false, true);
+```
+
+The above code would be called to get a list of all global leaderboard positions for the game, and will generate a Social Asynchronous Event call back which we would deal with in the following way:
+
+```gml
+	if (async_load[? "id"] == achievement_stat_event) {
+		if (async_load[? "event"] == "GetLeaderboardComplete") {
+			global.numentries = async_load[? "numentries"];
+			for (var i = 0; i < numentries; i++) {
+				global.playername[i] = async_load[? "Player" + string(i)];
+				global.playerid[i] = async_load[? "Playerid" + string(i)];
+				global.playerrank[i] = async_load[? "Rank" + string(i)];
+				global.playerscore[i] = async_load[? "Score" + string(i]);
+			}
+		}
+	}
+```
+The above code checks the returned ds_map in the Social Asynchronous Event and if its "id" matches the constant being checked, it then checks to see if the event has been triggered by returned leaderboard data before looping through the map and storing all the different values in a number of global arrays.
 
 ---
 
-## xboxone_stats_get_leaderboard - xboxone_stats_get_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending)
+## xboxone_stats_get_social_leaderboard
+
+**Usage**: xboxone_stats_get_social_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending, favourites_only)
+
+**Description**: This function can be used to retrieve a social leaderboard of ranks for a given statistic. You supply the user ID (as returned by the function [`xboxone_get_user`](#xboxone_get_user)), the stat string (as defined when you created it using the `xboxone_stats_set_stat_*` functions), and then you specify a number of details about what leaderboard information you want to retrieve. Note that you can only retrieve a social leaderboard for int or real stats, but not for string stats, and that if you flag the "favourites_only" argument as true, then the results will only contain data for those friends that are marked by the user as "favourites".
+
+IMPORTANT: Stats used in social leaderboards do not need to be registered as "Featured Stats" in the XDP/Windows Dev Center.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID of the user to get the leaderboard for.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **stat** The stat (as string) to create the global leaderboard from.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **num_entries** The number of entries from the global leaderboard to retrieve.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **start_rank** The rank in the leaderboard to start from (use 0 if "start_at_user" is set to true).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*boolean*} **start_at_user** Set to true to start at the user ID rank, false otherwise (set to false if "start_rank" is anything other than 0).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*boolean*} **ascending** Set to true for ascending order and false for descending order.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*favourites_only*} **ascending** Set to true to show only friends that are marked as "favourites" or false otherwise.
+
+**Triggers**: Social Asynchronous Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **"id"**: Will hold the constant `achievement_leaderboard_info`.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"event"**: Will hold the string "GetLeaderboardComplete".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"userid"**: The user ID associated with the request.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"errorMessage"**: A string with an error message (only avaiable when there is an error)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"displayname"**: The unique ID for the leaderboard as defined on the provider dashboard.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"numentries"**: The number of entries in the leaderboard that you have received.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"PlayerN"**: The name of the player, where "N" is an integer value corresponding to their position within the leaderboard entries list.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"PlayeridN"**: The unique user id of the player, "N".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"RankN"**: The rank of the player "N" within the leaderboard.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"ScoreN"**: The score of the player "N".
+
+**Returns**: N/A
+
+**Code Sample**:
+
+The following is an extended example of how this function can be used. To start with you'd call it in some event like Room Start or Create:
+
+```gml
+	xboxone_stats_get_social_leaderboard(user_id, "GlobalTime", 20, 1, false, true);
+```
+
+The above code would be called to get a list of all global leaderboard positions for the game, and will generate a Social Asynchronous Event call back which we would deal with in the following way:
+
+```gml
+	if (async_load[? "id"] == achievement_stat_event) {
+		if (async_load[? "event"] == "GetLeaderboardComplete") {
+			global.numentries = async_load[? "numentries"];
+			for (var i = 0; i < numentries; i++) {
+				global.playername[i] = async_load[? "Player" + string(i)];
+				global.playerid[i] = async_load[? "Playerid" + string(i)];
+				global.playerrank[i] = async_load[? "Rank" + string(i)];
+				global.playerscore[i] = async_load[? "Score" + string(i]);
+			}
+		}
+	}
+```
+The above code checks the returned ds_map in the Social Asynchronous Event and if its "id" matches the constant being checked, it then checks to see if the event has been triggered by returned leaderboard data before looping through the map and storing all the different values in a number of global arrays.
+
 --- 
-## xboxone_stats_get_social_leaderboard - xboxone_stats_get_social_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending, favourites_only)
---- 
+
+
 ## xboxone_achievements_set_progress - xboxone_achievements_set_progress(user_id, achievement, progress)
 --- 
 ## xboxone_read_player_leaderboard - xboxone_read_player_leaderboard(ident, player, numitems, friendfilter)
@@ -429,14 +578,14 @@ To use the function, you supply the user ID as returned by the function [`xboxon
 **Returns**: N/A
 
 **Code Sample**:
-
+```gml
 	gdk_save_group_begin("SaveGame");
 	save1 = gdk_save_buffer(buff1, "Player_Save1.sav", 0, 16384);
 	save2 = gdk_save_buffer(buff2, "Player_Save2.sav", 0, 16384);
 	save3 = gdk_save_buffer(buff3, "Player_Save3.sav", 0, 16384);
 	save4 = gdk_save_buffer(buff4, "Player_Save4.sav", 0, 16384);
 	gdk_save_group_end();
-
+```
 --- 
 
 ## gdk_save_buffer (TODO)
@@ -468,11 +617,11 @@ This function works asynchronously, and so the game will continue running while 
 **Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called.
 
 **Code Sample**:
-
+```gml
 	saveid = gdk_save_buffer(buff, "Player_Save.sav", 0, 16384);
-
+```
 then in the asynchronous Save/Load event we can check if the task was successful or not, like this:
-
+```gml
 	if (async_load[? "id"] == saveid) {
     	if (async_load[? "status"]== false) {
         	show_debug_message("Save failed!");
@@ -481,7 +630,7 @@ then in the asynchronous Save/Load event we can check if the task was successful
 			show_debug_message("Save succeeded!");
 		}
     }
-
+```
 --- 
 
 ## gdk_save_group_end
@@ -505,14 +654,14 @@ then in the asynchronous Save/Load event we can check if the task was successful
 **Returns**: N/A
 
 **Code Sample**:
-
+```gml
 	buffer_async_group_begin("SaveGame");
 	save1 = buffer_save_async(buff1, "Player_Save1.sav", 0, 16384);
 	save2 = buffer_save_async(buff2, "Player_Save2.sav", 0, 16384);
 	save3 = buffer_save_async(buff3, "Player_Save3.sav", 0, 16384);
 	save4 = buffer_save_async(buff4, "Player_Save4.sav", 0, 16384);
 	buffer_async_group_end();
-
+```
 --- 
 
 ## xboxone_set_savedata_user
@@ -528,11 +677,11 @@ then in the asynchronous Save/Load event we can check if the task was successful
 **Returns**: N/A
 
 **Code Sample**:
-
+```gml
 	if xboxone_get_savedata_user() != user_id[0] {
    		xboxone_set_savedata_user(user_id[0]);
     }
-
+```
 --- 
 
 ## xboxone_get_savedata_user
@@ -544,9 +693,9 @@ then in the asynchronous Save/Load event we can check if the task was successful
 **Returns**: {*pointer/pointer_null*} The user ID currently being used for save data.
 
 **Code Sample**:
-
+```gml
 	if xboxone_get_savedata_user() != user_id[0] {
    		xboxone_set_savedata_user(user_id[0]);
     }
-
+```
 ---

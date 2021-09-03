@@ -15,4 +15,3 @@ onClick = function() {
 	show_debug_message("Setting Test Achivement 1 completion to " + string(achievement_progress) + "%");
 	xboxone_achievements_set_progress(_userId, "1", achievement_progress);
 }
-

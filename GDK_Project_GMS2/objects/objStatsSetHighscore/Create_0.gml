@@ -4,10 +4,8 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Get Names";
+text = "Submit";
 
 onClick = function() {
-	var _userId = xboxone_get_user(0);
-	var _statNames = xboxone_stats_get_stat_names(_userId);
-	show_message(_statNames);
+	requestId = get_integer_async("User index: ", 0);
 }

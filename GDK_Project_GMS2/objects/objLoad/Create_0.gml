@@ -26,7 +26,7 @@ onClick = function() {
 }
 
 function queue_load(filename)
-{
+{	
 	var buf_id = buffer_create(1, buffer_grow, 1);
 	var req_id = gdk_load_buffer(buf_id, filename, 0, 10);
 	

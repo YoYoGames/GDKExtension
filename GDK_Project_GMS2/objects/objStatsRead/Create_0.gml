@@ -4,7 +4,7 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Read Stat";
+text = "Read";
 requestId = noone;
 
 onClick = function() {

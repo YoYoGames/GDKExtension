@@ -30,8 +30,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Stats Functions (Title)",
-    "path": "folders/Demo/Stats Functions (Title).yy",
+    "name": "User",
+    "path": "folders/Demo/Stats Functions (Title)/User.yy",
   },
   "resourceVersion": "1.0",
   "name": "objStatsFlushUser",
