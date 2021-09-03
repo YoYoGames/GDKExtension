@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <ctype.h>
 #include <fcntl.h>
+#include <inttypes.h>
 #include <ppl.h>
 #include <ppltasks.h>
 #include <robuffer.h>
@@ -35,16 +36,23 @@ struct PendingSave
 	const int async_id;
 
 	const std::string name;
-	const std::vector<unsigned char> data;
 
-	//const std::shared_ptr<unsigned char[]> data;
-	//const size_t data_size;
+	void* data;
+	size_t data_size;
 
-	PendingSave(int async_id, const std::string& name, const void* data, size_t data_size) :
-		//async_id(async_id), name(name), data(data), data_size(data_size)
+	PendingSave(int async_id, const std::string& name, void* data, size_t data_size) :
 		async_id(async_id),
 		name(name),
-		data((const unsigned char*)(data), (const unsigned char*)(data)+data_size) {}
+		data(data),
+		data_size(data_size) {}
+
+	~PendingSave()
+	{
+		YYFree(data);
+	}
+
+	PendingSave(const PendingSave& src) = delete;
+	PendingSave& operator=(const PendingSave& src) = delete;
 };
 
 static bool save_group_open = false;
@@ -193,10 +201,10 @@ void gdk_save_buffer(RValue& Result, CInstance* selfinst, CInstance* otherinst, 
 	int offset = YYGetInt32(arg, 2);
 	int size = YYGetInt32(arg, 3);
 
-	const unsigned char* buffer_data = (const unsigned char*)(BufferGetContent(buffer_idx));
-	int buffer_size = BufferGetContentSize(buffer_idx);
+	unsigned char* buffer_data;
+	int buffer_size;
 
-	if (buffer_data == NULL || buffer_size < 0)
+	if(!BufferGetContent(buffer_idx, (void**)(&buffer_data), &buffer_size))
 	{
 		DebugConsoleOutput("gdk_save_buffer() - error: specified buffer not found\n");
 		Result.val = -1;
@@ -209,8 +217,11 @@ void gdk_save_buffer(RValue& Result, CInstance* selfinst, CInstance* otherinst, 
 		DebugConsoleOutput("gdk_save_buffer() - error: offset and/or size argument out of range\n");
 		Result.val = -1;
 
+		YYFree(buffer_data);
 		return;
 	}
+
+	/* NOTE: Ownership of buffer_data is transferred to PendingSave object. */
 
 	if (save_group_open)
 	{
@@ -234,7 +245,6 @@ void gdk_save_buffer(RValue& Result, CInstance* selfinst, CInstance* otherinst, 
 
 		Result.val = async_id;
 	}
-
 }
 
 static void _gdk_save_commit(const std::string &container_name, std::list<PendingSave> *buffers)
@@ -290,7 +300,7 @@ static void _gdk_save_commit(const std::string &container_name, std::list<Pendin
 		{
 			for (auto b = buffers->begin(); b != buffers->end();)
 			{
-				hr = XGameSaveSubmitBlobWrite(updates, b->name.c_str(), (const uint8_t*)(b->data.data()), b->data.size());
+				hr = XGameSaveSubmitBlobWrite(updates, b->name.c_str(), (const uint8_t*)(b->data), b->data_size);
 				if (FAILED(hr))
 				{
 					ReleaseConsoleOutput("gdk_save_buffer() - error: XGameSaveSubmitBlobWrite failed (HRESULT 0x%08X)\n", (unsigned)(hr));
@@ -343,4 +353,185 @@ static void _gdk_save_commit(const std::string &container_name, std::list<Pendin
 	});
 
 	t.detach();
+}
+
+static bool _XGameSaveBlobInfoCallbackWrapper(const XGameSaveBlobInfo* info, void* context)
+{
+	std::function<bool(const XGameSaveBlobInfo*)>* func = (std::function<bool(const XGameSaveBlobInfo*)>*)(context);
+	return (*func)(info);
+}
+
+YYEXPORT
+void gdk_load_buffer(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
+{
+	Result.kind = VALUE_REAL;
+
+	if (argc != 4)
+	{
+		DebugConsoleOutput("gdk_load_buffer() - error: expected 4 arguments (buffer_idx, filename, offset, length)\n");
+		Result.val = -1;
+
+		return;
+	}
+
+	int buffer_idx = YYGetInt32(arg, 0);
+	const char* filename = YYGetString(arg, 1);
+	int offset = YYGetInt32(arg, 2);
+	int size = YYGetInt32(arg, 3);
+
+	/* Read data from buffer just to make sure the given index actually exsits... a little wasteful
+	 * but almost certainly not enough to matter.
+	*/
+
+	const unsigned char* buffer_data;
+	int buffer_size;
+
+	if(!BufferGetContent(buffer_idx, (void**)(&buffer_data), &buffer_size))
+	{
+		DebugConsoleOutput("gdk_load_buffer() - error: specified buffer not found\n");
+		Result.val = -1;
+
+		return;
+	}
+
+	YYFree(buffer_data);
+	buffer_data = NULL;
+
+	std::string container_name;
+	std::string blob_name;
+	std::tie(container_name, blob_name) = _SplitPathAndName(filename);
+
+	int async_id = g_HTTP_ID++;
+
+	/* Do the loading in a dedicated thread since we need to call function(s) that may
+	 * block for a while (same as save path).
+	*/
+
+	std::thread t([=]()
+	{
+		eXboxFileError gsp_err;
+		RefCountedGameSaveProvider* gsp = _SynchronousGetStorageSpace(&gsp_err);
+
+		if (gsp == NULL)
+		{
+			ReleaseConsoleOutput("gdk_load_buffer() - error: unable to initialise XGameSaveProvider\n");
+
+			int dsMapIndex = CreateDsMap(3,
+				"id", (double)(async_id), NULL,
+				"status", (double)(false), NULL,
+				"error", (double)(gsp_err), NULL);
+			CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
+
+			return;
+		}
+
+		XGameSaveContainerHandle container = NULL;
+
+		HRESULT hr = XGameSaveCreateContainer(gsp->provider, container_name.c_str(), &container);
+		if (FAILED(hr))
+		{
+			ReleaseConsoleOutput("gdk_load_buffer() - error: XGameSaveCreateContainer failed (HRESULT 0x%08X)\n", (unsigned)(hr));
+		}
+
+		bool blob_found = false;
+		uint32_t blobs_size;
+
+		if (SUCCEEDED(hr))
+		{
+			std::function<bool(const XGameSaveBlobInfo*)> callback = [&](const XGameSaveBlobInfo* info)
+			{
+				/* TODO: Are these case sensitive? */
+				if (strcmp(info->name, blob_name.c_str()) == 0)
+				{
+					blobs_size = sizeof(XGameSaveBlob) /* Structure size */
+						+ strlen(info->name) + 1     /* Name + terminator */
+						+ info->size;                /* Payload size */
+
+					blob_found = true;
+
+					return false; /* Stop enumeration. */
+				}
+				else {
+					return true; /* Continue enumeration. */
+				}
+			};
+
+			hr = XGameSaveEnumerateBlobInfoByName(container, blob_name.c_str(), &callback, &_XGameSaveBlobInfoCallbackWrapper);
+			if (FAILED(hr))
+			{
+				ReleaseConsoleOutput("gdk_load_buffer() - error: XGameSaveEnumerateBlobInfoByName failed (HRESULT 0x%08X)\n", (unsigned)(hr));
+			}
+			else if (!blob_found)
+			{
+				ReleaseConsoleOutput("gdk_load_buffer() - error: blob '%s' not found within container '%s'\n", blob_name.c_str(), container_name.c_str());
+				hr = E_GS_BLOB_NOT_FOUND;
+			}
+		}
+
+		if (SUCCEEDED(hr))
+		{
+			const char* blob_names[] = { blob_name.c_str() };
+			uint32_t num_blobs = 1;
+			XGameSaveBlob* blobs = (XGameSaveBlob*)(YYAlloc(blobs_size));
+
+			hr = XGameSaveReadBlobData(container, blob_names, &num_blobs, blobs_size, blobs);
+			if (FAILED(hr))
+			{
+				ReleaseConsoleOutput("gdk_load_buffer() - error: XGameSaveReadBlobData failed (HRESULT 0x%08X)\n", (unsigned)(hr));
+			}
+			else if (num_blobs != 1)
+			{
+				ReleaseConsoleOutput("gdk_load_buffer() - error: Expected 1 blob, got %" PRIu32 "\n", num_blobs);
+				hr = E_GS_BLOB_NOT_FOUND;
+			}
+			/* TODO: Case sensitive? */
+			else if (strcmp(blobs->info.name, blob_name.c_str()) != 0)
+			{
+				ReleaseConsoleOutput("gdk_load_buffer() - error: Expected blob name '%s', got '%s'\n", blob_name.c_str(), blobs->info.name);
+				hr = E_GS_BLOB_NOT_FOUND;
+			}
+			else {
+				int to_copy = std::min<uint32_t>(size, blobs->info.size);
+				int r = BufferWriteContent(buffer_idx, offset, blobs->data, to_copy, true);
+
+				if (r >= 0)
+				{
+					int dsMapIndex = CreateDsMap(5,
+						"id", (double)(async_id), NULL,
+						"status", (double)(true), NULL,
+						"error", (double)(eXboxFileError_NoError), NULL,
+						"loaded_size", (double)(to_copy), NULL,
+						"file_size", (double)(blobs->info.size), NULL);
+					CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
+				}
+				else {
+					/* This probably means the buffer got deleted from under us or something... */
+					ReleaseConsoleOutput("gdk_load_buffer() - error: Unable to write save data to buffer\n");
+					hr = E_GS_PROVIDED_BUFFER_TOO_SMALL;
+				}
+			}
+
+			YYFree(blobs);
+		}
+
+		if (FAILED(hr))
+		{
+			int dsMapIndex = CreateDsMap(3,
+				"id", (double)(async_id), NULL,
+				"status", (double)(false), NULL,
+				"error", (double)(ConvertConnectedStorageError(hr)), NULL);
+			CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
+		}
+
+		if (container != NULL)
+		{
+			XGameSaveCloseContainer(container);
+		}
+
+		DecRefGameSaveProvider(gsp);
+	});
+
+	t.detach();
+
+	Result.val = async_id;
 }
