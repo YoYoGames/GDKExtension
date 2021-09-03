@@ -34,7 +34,7 @@
     "path": "folders/Demo/Save&Load Functions.yy",
   },
   "resourceVersion": "1.0",
-  "name": "objSaveGroup",
+  "name": "objLoad",
   "tags": [],
   "resourceType": "GMObject",
 }

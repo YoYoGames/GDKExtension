@@ -115,8 +115,8 @@ struct YYRunnerInterface
 	bool (*DsMapAddInt64)(int _index, const char* _pKey, int64 value);
 
 	// buffer access
-	const void* (*BufferGetContent)(int _index);
-	int (*BufferGetContentSize)(int _index);
+	bool (*BufferGetContent)(int _index, void *_ppData, int *_pDataSize);
+	int (*BufferWriteContent)(int _index, int _dest_offset, const void* _pSrcMem, int _size, bool _grow, bool _wrap);
 
 	// variables
 	volatile bool* pLiveConnection;
@@ -213,8 +213,8 @@ inline bool DsMapAddString(int _index, const char* _pKey, const char* pVal) { re
 inline bool DsMapAddInt64(int _index, const char* _pKey, int64 value) { return g_pYYRunnerInterface->DsMapAddInt64(_index, _pKey, value); }
 
 // buffer access
-inline const void* BufferGetContent(int _index) { return g_pYYRunnerInterface->BufferGetContent(_index); }
-inline int BufferGetContentSize(int _index) { return g_pYYRunnerInterface->BufferGetContentSize(_index); }
+inline bool BufferGetContent(int _index, void **_ppData, int *_pDataSize) { return g_pYYRunnerInterface->BufferGetContent(_index, _ppData, _pDataSize); }
+inline int BufferWriteContent(int _index, int _dest_offset, const void* _pSrcMem, int _size, bool _grow = false, bool _wrap = false) { return g_pYYRunnerInterface->BufferWriteContent(_index, _dest_offset, _pSrcMem, _size, _grow, _wrap); }
 
 #define g_LiveConnection	(*g_pYYRunnerInterface->pLiveConnection)
 #define g_HTTP_ID			(*g_pYYRunnerInterface->pHTTP_ID)
