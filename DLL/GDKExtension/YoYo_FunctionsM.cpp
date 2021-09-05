@@ -2197,7 +2197,15 @@ void F_XboxOneSetAchievementProgress(RValue& Result, CInstance* selfinst, CInsta
 
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 	const char* achievement = YYGetString(arg, 1);
-	uint32 progress = YYGetUint32(arg, 2);
+	int32 progress = YYGetInt32(arg, 2);
+
+	if (progress < 0 || progress > 100)
+	{
+		DebugConsoleOutput("xboxone_achievements_set_progress - progres value %" PRId32 " is invalid - must be in the range 0-100\n", progress);
+
+		Result.val = -1;
+		return;
+	}
 
 	XblContextHandle xbl_ctx;
 
