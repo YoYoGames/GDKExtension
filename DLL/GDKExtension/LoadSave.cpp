@@ -297,6 +297,8 @@ static void _gdk_save_commit(const std::string &container_name, std::list<Pendin
 			}
 		}
 
+		bool bailed = false;
+
 		if (SUCCEEDED(hr))
 		{
 			for (auto b = buffers->begin(); b != buffers->end();)
@@ -314,13 +316,14 @@ static void _gdk_save_commit(const std::string &container_name, std::list<Pendin
 					CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
 
 					b = buffers->erase(b);
+
+					bailed = true;
+					break;
 				}
 				else {
 					++b;
 				}
 			}
-
-			hr = ERROR_SUCCESS;
 		}
 
 		if (SUCCEEDED(hr))
@@ -337,7 +340,11 @@ static void _gdk_save_commit(const std::string &container_name, std::list<Pendin
 			int dsMapIndex = CreateDsMap(4,
 				"id", (double)(b->async_id), NULL,
 				"status", (double)(SUCCEEDED(hr) ? true : false), NULL,
-				"error", (double)(ConvertConnectedStorageError(hr)), NULL,
+				/* If "bailed" is true, then any queued updates left here have been dropped due to
+				 * another save in the transaction failing - eXboxFileError_UserCanceled is the
+				 * most accurate error we can report.
+				*/
+				"error", (double)(bailed ? eXboxFileError_UserCanceled : ConvertConnectedStorageError(hr)), NULL,
 				"type", (double)(0.0), "gdk_save_buffer_result");
 			CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
 		}
