@@ -268,10 +268,11 @@ static void _gdk_save_commit(const std::string &container_name, std::list<Pendin
 
 			for (auto b = buffers->begin(); b != buffers->end(); ++b)
 			{
-				int dsMapIndex = CreateDsMap(3,
+				int dsMapIndex = CreateDsMap(4,
 					"id", (double)(b->async_id), NULL,
 					"status", (double)(false), NULL,
-					"error", (double)(gsp_err), NULL);
+					"error", (double)(gsp_err), NULL,
+					"type", (double)(0.0), "gdk_save_buffer_result");
 				CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
 			}
 
@@ -305,10 +306,11 @@ static void _gdk_save_commit(const std::string &container_name, std::list<Pendin
 				{
 					ReleaseConsoleOutput("gdk_save_buffer() - error: XGameSaveSubmitBlobWrite failed (HRESULT 0x%08X)\n", (unsigned)(hr));
 
-					int dsMapIndex = CreateDsMap(3,
+					int dsMapIndex = CreateDsMap(4,
 						"id", (double)(b->async_id), NULL,
 						"status", (double)(false), NULL,
-						"error", (double)(ConvertConnectedStorageError(hr)), NULL);
+						"error", (double)(ConvertConnectedStorageError(hr)), NULL,
+						"type", (double)(0.0), "gdk_save_buffer_result");
 					CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
 
 					b = buffers->erase(b);
@@ -332,10 +334,11 @@ static void _gdk_save_commit(const std::string &container_name, std::list<Pendin
 
 		for (auto b = buffers->begin(); b != buffers->end(); ++b)
 		{
-			int dsMapIndex = CreateDsMap(3,
+			int dsMapIndex = CreateDsMap(4,
 				"id", (double)(b->async_id), NULL,
 				"status", (double)(SUCCEEDED(hr) ? true : false), NULL,
-				"error", (double)(ConvertConnectedStorageError(hr)), NULL);
+				"error", (double)(ConvertConnectedStorageError(hr)), NULL,
+				"type", (double)(0.0), "gdk_save_buffer_result");
 			CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
 		}
 
@@ -416,10 +419,11 @@ void gdk_load_buffer(RValue& Result, CInstance* selfinst, CInstance* otherinst, 
 		{
 			ReleaseConsoleOutput("gdk_load_buffer() - error: unable to initialise XGameSaveProvider\n");
 
-			int dsMapIndex = CreateDsMap(3,
+			int dsMapIndex = CreateDsMap(4,
 				"id", (double)(async_id), NULL,
 				"status", (double)(false), NULL,
-				"error", (double)(gsp_err), NULL);
+				"error", (double)(gsp_err), NULL,
+				"type", (double)(0.0), "gdk_load_buffer_result");
 			CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
 
 			return;
@@ -496,12 +500,13 @@ void gdk_load_buffer(RValue& Result, CInstance* selfinst, CInstance* otherinst, 
 
 				if (r >= 0)
 				{
-					int dsMapIndex = CreateDsMap(5,
+					int dsMapIndex = CreateDsMap(6,
 						"id", (double)(async_id), NULL,
 						"status", (double)(true), NULL,
 						"error", (double)(eXboxFileError_NoError), NULL,
 						"loaded_size", (double)(to_copy), NULL,
-						"file_size", (double)(blobs->info.size), NULL);
+						"file_size", (double)(blobs->info.size), NULL,
+						"type", (double)(0.0), "gdk_load_buffer_result");
 					CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
 				}
 				else {
@@ -516,10 +521,11 @@ void gdk_load_buffer(RValue& Result, CInstance* selfinst, CInstance* otherinst, 
 
 		if (FAILED(hr))
 		{
-			int dsMapIndex = CreateDsMap(3,
+			int dsMapIndex = CreateDsMap(4,
 				"id", (double)(async_id), NULL,
 				"status", (double)(false), NULL,
-				"error", (double)(ConvertConnectedStorageError(hr)), NULL);
+				"error", (double)(ConvertConnectedStorageError(hr)), NULL,
+				"type", (double)(0.0), "gdk_load_buffer_result");
 			CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_ASYNC_SAVE_LOAD);
 		}
 
