@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>_partials.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+<link rel="stylesheet" href="file:///e%3A/Source/GDKExtension/docs/assets/main.css" type="text/css">
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="gml-api">GML API</h1>
+<h2 id="gdkinit-span-class%22badge-badge-primary%22requiredspan"><code>gdk_init</code> <span class="badge badge-primary">REQUIRED</span></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>gdk_init(scid)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>Must be called before any other GDK extension function, recommend using a Controller persistent object that is created or placed in the first room and this call is in the create event.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>scid</strong></td>
+<td>The Service Configuration ID.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div>gdk_init(<span class="hljs-string">"00000000-0000-0000-0000-000060ddb039"</span>);
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="gdkupdate-span-class%22badge-badge-primary%22requiredspan"><code>gdk_update</code> <span class="badge badge-primary">REQUIRED</span></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>gdk_update()</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This should be called each frame while GDK extension is active, recommend using a Controller persistent object that is created or placed in the first room and this call is in the step event.</p>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div>gdk_update();
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="gdkquit-span-class%22badge-badge-primary%22requiredspan"><code>gdk_quit</code> <span class="badge badge-primary">REQUIRED</span></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>gdk_quit()</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This should be called on close down and no GDK extension functions should be called after it, recommend using a Controller persistent object that is created or placed in the first room and this call is in the destroy event.</p>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div>gdk_quit();
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxoneshowaccountpicker-span-class%22badge-badge-danger%22todospan"><code>xboxone_show_account_picker</code> <span class="badge badge-danger">TODO</span></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_show_account_picker(arg0, arg1)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function launches the system’s account picker which will associate the selected user with the specified pad. The &quot;mode&quot; argument is either 0 or 1 – if 0 is specified no guest accounts can be selected, while 1 allows guest accounts. This function returns an asynchronous event ID value, and when the account picker closes an asynchronous dialog event will be triggered with details of the result of the operation.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>param1</strong></td>
+<td>This is an important parameter</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>param1</strong></td>
+<td>This is an optional paramenter</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="triggers"><strong>Triggers</strong></h3>
+<p><strong>[Async Dialog Event]</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>param1</strong></td>
+<td>This is an important parameter</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>param1</strong></td>
+<td>This is an optional paramenter</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td>This is an important parameter</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-built_in">show_debug_message</span>(<span class="hljs-string">"Hello world!"</span>);
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonegetactivatinguser"><code>xboxone_get_activating_user</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_get_activating_user()</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>With this function you can retrieve the user ID pointer for the user that launched the game from the console. Note that this is rarely what you want to do in a game, because this user can logout while the game is running.</p>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td>The user ID pointer.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-literal">global</span>.main_user = xboxone_get_activating_user();
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonegetusercount"><code>xboxone_get_user_count</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_get_user_count()</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>With this function you can find the total number of users currently signed in to the system. The returned value will be an integer value.</p>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td>The total number of users currently signed in to the system.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; xboxone_get_user_count(); i++) {
+    user_id[i] = xboxone_get_user(i);
+}
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonegetuser"><code>xboxone_get_user</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_get_user(index)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>Description With this function you can retrieve the user ID pointer for the indexed user. If the user does not exist, the function will return the constant pointer_null instead. You can find the number of users currently logged in with the function <a href="#xboxone_get_user_count"><code>xboxone_get_user_count()</code></a>.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>integer</code></em></td>
+<td><strong>index</strong></td>
+<td>The index to get the User ID from.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td>The user ID pointer.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; xboxone_get_user_count(); i++) {
+    user_id[i] = xboxone_get_user(i);
+}
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatssetstatreal"><code>xboxone_stats_set_stat_real</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_set_stat_real(user_id, stat_name, stat_value)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to set the value of a stat for the given user ID. You supply the user ID as returned by the function <a href="api_user.md#xboxone_get_user"><code>xboxone_get_user()</code></a>, then the stat string to set (if the stat string does not already exist then a new stat will be created and set to the given value) and a value (a real) to set the stat to. Note that the stat name must be alphanumeric only, with no symbols or spaces.</p>
+<p>?&gt; <strong>Tip</strong> When setting the stat value, any previous value will be overridden, therefore it is up to you to determine if the stat value should be updated or not (ie. check that the high score is actually the highest) by comparing to the current stat value with the new one before setting it.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>stat_name</strong></td>
+<td>The statistic to set.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>stat_value</strong></td>
+<td>The value to set the stat to.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td>-1 on error, any other value otherwise.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div>xboxone_stats_set_stat_real(p_user_id, <span class="hljs-string">"TestReal"</span>, <span class="hljs-number">123.45</span>);
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatssetstatint"><code>xboxone_stats_set_stat_int</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_set_stat_int(user_id, stat_name, stat_value)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to set the value of a stat for the given user ID. You supply the user ID as returned by the function <a href="api_user.md#xboxone_get_user"><code>xboxone_get_user()</code></a>, then the stat string to set (if the stat string does not already exist then a new stat will be created and set to the given value) and a value (an integer) to set the stat to. Note that the stat name must be alphanumeric only, with no symbols or spaces.</p>
+<p>?&gt; <strong>Tip</strong> When setting the stat value, any previous value will be overridden, therefore it is up to you to determine if the stat value should be updated or not (ie. check that the high score is actually the highest) by comparing to the current stat value with the new one before setting it.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>stat_name</strong></td>
+<td>The statistic to set.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>integer</code></em></td>
+<td><strong>stat_value</strong></td>
+<td>The value to set the stat to.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td>-1 on error, any other value otherwise.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div>xboxone_stats_set_stat_int(p_user_id, <span class="hljs-string">"TestInt"</span>, <span class="hljs-number">22</span>);
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatssetstatstring"><code>xboxone_stats_set_stat_string</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_set_stat_string(user_id, stat_name, stat_value)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to set the value of a stat for the given user ID. You supply the user ID as returned by the function <a href="api_user.md#xboxone_get_user"><code>xboxone_get_user()</code></a>, then the stat string to set (if the stat string does not already exist then a new stat will be created and set to the given value) and a value (a string) to set the stat to. Note that the stat name must be alphanumeric only, with no symbols or spaces.</p>
+<p>?&gt; <strong>Tip</strong> When setting the stat value, any previous value will be overridden, therefore it is up to you to determine if the stat value should be updated or not (ie. check that the high score is actually the highest) by comparing to the current stat value with the new one before setting it.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>stat_name</strong></td>
+<td>The statistic to set.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>stat_value</strong></td>
+<td>The value to set the stat to.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td>-1 on error, any other value otherwise.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div>xboxone_stats_set_stat_string(p_user_id, <span class="hljs-string">"TestString"</span>, <span class="hljs-string">"YoYo Games"</span>);
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatsdeletestat"><code>xboxone_stats_delete_stat</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_delete_stat(user_id, stat_name)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to delete a stat from the stat manager for the given user ID. You supply the user ID as returned by the function <a href="api_user#xboxone_get_user"><code>xboxone_get_user()</code></a>, then the stat string to delete. This clears the stat value and removed it from the stat manager, meaning it will no longer be returned by the functions <a href="#xboxone_stats_get_stat_names"><code>xboxone_stats_get_stat_names()</code></a> or  <a href="#xboxone_stats_get_stat"><code>xboxone_stats_get_stat()</code></a>.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>stat_name</strong></td>
+<td>The stat to be deleted.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td>-1 on error, any other value otherwise.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; xboxone_get_user_count(); i++) {
+    user_id[i] = xboxone_get_user(i);
+    xboxone_stats_delete_stat(user_id[i], <span class="hljs-string">"highScore"</span>);
+}
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatsgetstat"><code>xboxone_stats_get_stat</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_get_stat(user_id, stat_name)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to retrieve a single stat value from the stat manager for a given user. You supply the user ID as returned by the function <a href="api_user#xboxone_get_user"><code>xboxone_get_user()</code></a>, and then the stat string as defined when you created it using the one of the <code>xboxone_stats_set_stat_*</code> functions. The return value can be either a string or a real (depending on the stat being checked) or the GML constant undefined if the stat does not exist or there has been an error.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>stat_name</strong></td>
+<td>The statistic to set.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>real/string/undefined</code></em></td>
+<td>the value for the given state.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-keyword">if</span> (game_over == <span class="hljs-literal">true</span>) {
+    <span class="hljs-keyword">if</span> (xboxone_stats_get_stat(p_user_id, <span class="hljs-string">"PercentDone"</span>) &lt; <span class="hljs-number">100</span>) {
+        <span class="hljs-keyword">var</span> _val = (<span class="hljs-literal">global</span>.LevelsFinished / <span class="hljs-literal">global</span>.LevelsTotal) * <span class="hljs-number">100</span>;
+        xboxone_stats_set_stat_real(p_user_id, <span class="hljs-string">"PercentDone"</span>, _val);
+    }
+}
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatsgetstatnames"><code>xboxone_stats_get_stat_names</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_get_stat_names(user_id)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to retrieve all the defined stats from the stat manager for a given user. You supply the user ID as returned by the function <a href="#api_user/xboxone_get_user"><code>xboxone_get_user()</code></a>, and the function will returns an array of strings containing the statistics for the user. If an error occurs or the user has no stats the array will still be returned but will be empty.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>array</code></em></td>
+<td>Array with all the stat names.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div>    <span class="hljs-keyword">var</span> _stat_str = xboxone_stats_get_stat_names(user_id);
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; array_length(_stat_str); i++;) {
+        xboxone_stats_delete_stat(user_id, _stat_str[i]);
+    }
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatsadduser"><code>xboxone_stats_add_user</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_add_user(user_id)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to add a given user to the statistics manager. This must be done before using any of the other stats functions to automatically sync the game with the xbox live server and retrieve the latest values. You supply the user ID as returned by the function <a href="#api_user#xboxone_get_user"><code>xboxone_get_user()</code></a>, and the function will return -1 if there was an error or the user ID is invalid, or any other value if the function was successfully called.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td>-1 on error, any other value otherwise.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="triggers"><strong>Triggers</strong></h3>
+<p><strong>[Asynchronous Social Event]</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>constant</code></em></td>
+<td><strong>id</strong></td>
+<td>Will hold the constant <code>achievement_stat_event</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>event</strong></td>
+<td>Will hold the string <code>&quot;LocalUserAdded&quot;</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>userid</strong></td>
+<td>The user ID associated with the request.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>error</strong></td>
+<td>0 if successful, some other value on error.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>errorMessage</strong></td>
+<td>A string with an error message. <span class="badge badge-info">OPTIONAL</span></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-keyword">for</span>(<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; xboxone_get_user_count(); i++)
+{
+    user_id[i] = xboxone_get_user(i);
+    xboxone_stats_add_user(user_id[i]);
+}
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatsremoveuser"><code>xboxone_stats_remove_user</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_remove_user(user_id)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to remove (unregister) a given user from the statistics manager, performing a flush of the stat data to the live server. According to the XBox documentation the game does not have to remove the user from the stats manager, as the XBox OS will periodically flush the stats anyway.</p>
+<p>To use the function, you supply the user ID as returned by the function <a href="api_user#xboxone_get_user"><code>xboxone_get_user()</code></a>, and the function will will return -1 if there was an error or the user ID is invalid, or any other value if the function was successfully called.</p>
+<p>!&gt; <strong>Important</strong> Removing the user can return an error if the statistics that have been set on the user are invalid (such as the stat names containing non-alpha numeric characters).</p>
+<p>?&gt; <strong>Tip</strong> If you want to flush the stats data to the live server at any time without removing the user, you can use the function <a href="#xboxone_stats_flush_user"><code>xboxone_stats_flush_user()</code></a>.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td>-1 on error, any other value otherwise.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="triggers"><strong>Triggers</strong></h3>
+<p><strong>[Asynchronous Social Event]</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>constant</code></em></td>
+<td><strong>id</strong></td>
+<td>Will hold the constant <code>achievement_stat_event</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>event</strong></td>
+<td>Will hold the string <code>&quot;LocalUserRemoved&quot;</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>userid</strong></td>
+<td>The user ID associated with the request.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>error</strong></td>
+<td>0 if successful, some other value on error.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>errorMessage</strong></td>
+<td>A string with an error message. <span class="badge badge-info">OPTIONAL</span></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; array_length(user_id); i++) {
+    xboxone_stats_remove_user(user_id[i]);
+}
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatsflushuser"><code>xboxone_stats_flush_user</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_flush_user(user_id, high_priority)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to flush the stats data for a given user from the statistics manager, to the live server, ensuring that the server is up to date with the current values.  To use the function, you supply the user ID as returned by the function <a href="api_user#xboxone_get_user"><code>xboxone_get_user()</code></a>, and then give a priority value (0 for low priority and 1 for high priority). The function will will return -1 if there was an error or the user ID is invalid, or any other value if the function was successfully called.</p>
+<p>?&gt; <strong>Important</strong> According to XBox documentation, developers should be careful not to call this too often as the XBox will rate-limit the requests, and the XBox OS will also automatically flush stats approximately every 5 minutes automatically anyway.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>boolean</code></em></td>
+<td><strong>high_priority</strong></td>
+<td>Whether or not flush is high priority.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="returns"><strong>Returns</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td>-1 on error, any other value otherwise.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="triggers"><strong>Triggers</strong></h3>
+<p><strong>[Asynchronous Social Event]</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>constant</code></em></td>
+<td><strong>id</strong></td>
+<td>Will hold the constant <code>achievement_stat_event</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>event</strong></td>
+<td>Will hold the string <code>&quot;StatisticUpdateComplete&quot;</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>userid</strong></td>
+<td>The user ID associated with the request.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>error</strong></td>
+<td>0 if successful, some other value on error.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>errorMessage</strong></td>
+<td>A string with an error message. <span class="badge badge-info">OPTIONAL</span></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; array_length(user_id); i++) {
+    xboxone_stats_flush_user(user_id[i], <span class="hljs-number">0</span>);
+}
+</div></code></pre>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatsgetleaderboard"><code>xboxone_stats_get_leaderboard</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_get_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to retrieve a global leaderboard of ranks for a given statistic. You supply the user ID (as returned by the function <a href="api_user#xboxone_get_user"><code>xboxone_get_user</code></a>), the stat string (as defined when you registered it as a &quot;Featured Stat&quot;), and then you specify a number of details about what leaderboard information you want to retrieve. Note that you can only retrieve a global leaderboard for int or real stats, but not for string stats.</p>
+<p>!&gt; <strong>Important</strong> Stats used in global leaderboards must be registered as &quot;Featured Stats&quot; in the XDP/Windows Dev Center otherwise an error will be returned. If you want local (social) leaderboards, then please see the function <a href="#xboxone_stats_get_social_leaderboard"><code>xboxone_stats_get_social_leaderboard</code></a>.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>stat</strong></td>
+<td>The stat to create the global leaderboard from.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>num_entries</strong></td>
+<td>The number of entries from leaderboard to retrieve.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>start_rank</strong></td>
+<td>The rank in the leaderboard to start from (0 if <code>start_at_user</code>).</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>boolean</code></em></td>
+<td><strong>start_at_user</strong></td>
+<td>Set to true to start at the user ID rank.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>boolean</code></em></td>
+<td><strong>ascending</strong></td>
+<td>Set to true for ascending order and false for descending order.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="triggers"><strong>Triggers</strong></h3>
+<p><strong>[Asynchronous Social Event]</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>constant</code></em></td>
+<td><strong>id</strong></td>
+<td>Will hold the constant <code>achievement_stat_event</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>event</strong></td>
+<td>Will hold the string <code>&quot;LocalUserAdded&quot;</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>userid</strong></td>
+<td>The user ID associated with the request.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>error</strong></td>
+<td>0 if successful, some other value on error.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>errorMessage</strong></td>
+<td>A string with an error message. <span class="badge badge-info">OPTIONAL</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>displayname</strong></td>
+<td>The unique ID for the leaderboard as defined on the provider dashboard.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>numentries</strong></td>
+<td>The number of entries in the leaderboard that you have received.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>PlayerN</strong></td>
+<td>The name of the player, where &quot;N&quot; is position within the received entries list.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>PlayeridN</strong></td>
+<td>The unique user id of the player, &quot;N&quot;</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>RankN</strong></td>
+<td>The rank of the player &quot;N&quot; within the leaderboard.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>ScoreN</strong></td>
+<td>The score of the player &quot;N&quot;.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<p>The following is an extended example of how this function can be used. To start with you'd call it in some event like Room Start or Create:</p>
+<pre class="hljs"><code><div>xboxone_stats_get_leaderboard(user_id, <span class="hljs-string">"GlobalTime"</span>, <span class="hljs-number">20</span>, <span class="hljs-number">1</span>, <span class="hljs-literal">false</span>, <span class="hljs-literal">true</span>);
+</div></code></pre>
+<p>The above code would be called to get a list of all global leaderboard positions for the game, and will generate a Social Asynchronous Event call back which we would deal with in the following way:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">if</span> (<span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"id"</span>] == achievement_stat_event) {
+    <span class="hljs-keyword">if</span> (<span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"event"</span>] == <span class="hljs-string">"GetLeaderboardComplete"</span>) {
+        <span class="hljs-literal">global</span>.numentries = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"numentries"</span>];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; numentries; i++) {
+            <span class="hljs-literal">global</span>.playername[i] = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"Player"</span> + <span class="hljs-built_in">string</span>(i)];
+            <span class="hljs-literal">global</span>.playerid[i] = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"Playerid"</span> + <span class="hljs-built_in">string</span>(i)];
+            <span class="hljs-literal">global</span>.playerrank[i] = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"Rank"</span> + <span class="hljs-built_in">string</span>(i)];
+            <span class="hljs-literal">global</span>.playerscore[i] = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"Score"</span> + <span class="hljs-built_in">string</span>(i]);
+        }
+    }
+}
+</div></code></pre>
+<p>The above code checks the returned ds_map in the Social Asynchronous Event and if its &quot;id&quot; matches the constant being checked, it then checks to see if the event has been triggered by returned leaderboard data before looping through the map and storing all the different values in a number of global arrays.</p>
+<div style="page-break-after: always;"></div>
+<h2 id="xboxonestatsgetsocialleaderboard"><code>xboxone_stats_get_social_leaderboard</code></h2>
+<blockquote>
+<h3 id="usage"><strong>Usage</strong></h3>
+</blockquote>
+<p><code>xboxone_stats_get_social_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending, favourites_only)</code></p>
+<blockquote>
+<h3 id="description"><strong>Description</strong></h3>
+</blockquote>
+<p>This function can be used to retrieve a social leaderboard of ranks for a given statistic. You supply the user ID (as returned by the function <a href="api_user#xboxone_get_user"><code>xboxone_get_user</code></a>), the stat string (as defined when you created it using the <code>xboxone_stats_set_stat_*</code> functions), and then you specify a number of details about what leaderboard information you want to retrieve. Note that you can only retrieve a social leaderboard for int or real stats, but not for string stats, and that if you flag the &quot;favourites_only&quot; argument as true, then the results will only contain data for those friends that are marked by the user as &quot;favourites&quot;.</p>
+<p>?&gt; <strong>Tip</strong> Stats used in social leaderboards do not need to be registered as &quot;Featured Stats&quot; in the XDP/Windows Dev Center.</p>
+<blockquote>
+<h3 id="parameters"><strong>Parameters</strong></h3>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>user_id</strong></td>
+<td>The user ID pointer.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>stat</strong></td>
+<td>The stat to create the global leaderboard from.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>num_entries</strong></td>
+<td>The number of entries from leaderboard to retrieve.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>start_rank</strong></td>
+<td>The rank in the leaderboard to start from (0 if <code>start_at_user</code>).</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>boolean</code></em></td>
+<td><strong>start_at_user</strong></td>
+<td>Set to true to start at the user ID rank.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>boolean</code></em></td>
+<td><strong>ascending</strong></td>
+<td>Set to true for ascending order and false for descending order.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>boolean</code></em></td>
+<td><strong>favourites_only</strong></td>
+<td>Set to true to show only friends that are marked as &quot;favourites&quot;.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="triggers"><strong>Triggers</strong></h3>
+<p><strong>[Asynchronous Social Event]</strong></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">type</th>
+<th>name</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center"><em><code>constant</code></em></td>
+<td><strong>id</strong></td>
+<td>Will hold the constant <code>achievement_stat_event</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>event</strong></td>
+<td>Will hold the string <code>&quot;LocalUserAdded&quot;</code>.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>userid</strong></td>
+<td>The user ID associated with the request.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>error</strong></td>
+<td>0 if successful, some other value on error.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>errorMessage</strong></td>
+<td>A string with an error message. <span class="badge badge-info">OPTIONAL</span></td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>displayname</strong></td>
+<td>The unique ID for the leaderboard as defined on the provider dashboard.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>numentries</strong></td>
+<td>The number of entries in the leaderboard that you have received.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>string</code></em></td>
+<td><strong>PlayerN</strong></td>
+<td>The name of the player, where &quot;N&quot; is position within the received entries list.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>pointer</code></em></td>
+<td><strong>PlayeridN</strong></td>
+<td>The unique user id of the player, &quot;N&quot;</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>RankN</strong></td>
+<td>The rank of the player &quot;N&quot; within the leaderboard.</td>
+</tr>
+<tr>
+<td style="text-align:center"><em><code>real</code></em></td>
+<td><strong>ScoreN</strong></td>
+<td>The score of the player &quot;N&quot;.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<h3 id="code-sample"><strong>Code Sample</strong></h3>
+</blockquote>
+<p>The following is an extended example of how this function can be used. To start with you'd call it in some event like Room Start or Create:</p>
+<pre class="hljs"><code><div>xboxone_stats_get_social_leaderboard(user_id, <span class="hljs-string">"GlobalTime"</span>, <span class="hljs-number">20</span>, <span class="hljs-number">1</span>, <span class="hljs-literal">false</span>, <span class="hljs-literal">true</span>);
+</div></code></pre>
+<p>The above code would be called to get a list of all global leaderboard positions for the game, and will generate a Social Asynchronous Event call back which we would deal with in the following way:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">if</span> (<span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"id"</span>] == achievement_stat_event) {
+    <span class="hljs-keyword">if</span> (<span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"event"</span>] == <span class="hljs-string">"GetLeaderboardComplete"</span>) {
+        <span class="hljs-literal">global</span>.numentries = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"numentries"</span>];
+        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; numentries; i++) {
+            <span class="hljs-literal">global</span>.playername[i] = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"Player"</span> + <span class="hljs-built_in">string</span>(i)];
+            <span class="hljs-literal">global</span>.playerid[i] = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"Playerid"</span> + <span class="hljs-built_in">string</span>(i)];
+            <span class="hljs-literal">global</span>.playerrank[i] = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"Rank"</span> + <span class="hljs-built_in">string</span>(i)];
+            <span class="hljs-literal">global</span>.playerscore[i] = <span class="hljs-symbol">async_load</span>[? <span class="hljs-string">"Score"</span> + <span class="hljs-built_in">string</span>(i]);
+        }
+    }
+}
+</div></code></pre>
+<p>The above code checks the returned ds_map in the Social Asynchronous Event and if its &quot;id&quot; matches the constant being checked, it then checks to see if the event has been triggered by returned leaderboard data before looping through the map and storing all the different values in a number of global arrays.</p>
+<div style="page-break-after: always;"></div>
+
+</body>
+</html>
