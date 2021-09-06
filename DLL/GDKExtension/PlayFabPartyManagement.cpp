@@ -212,29 +212,24 @@ struct PacketBufferUser
 
 			uint64_t receivingUserID = PlayFabPartyManager::GetUserFromEntityID(pCurr->receivingEntityID);
 
-			// FIXME
-
-#if 0
 			// Trigger an async event for each endpoint			
 			int bufferindex = CreateBuffer(pCurr->messageSize, eBuffer_Format_Fixed, 1);
-			IBuffer* pBuff = GetIBuffer(bufferindex);
-			memcpy(pBuff->GetBuffer(), pCurr->messageBuffer, pCurr->messageSize);
+			BufferWriteContent(bufferindex, 0, pCurr->messageBuffer, pCurr->messageSize);
 
-			int dsMapIndex = GDKX::CreateDsMap(0);
+			int dsMapIndex = CreateDsMap(0);
 
-			GDKX::DsMapAddDouble(dsMapIndex, "type", eNetworkingEventType_IncomingData);
-			GDKX::DsMapAddString(dsMapIndex, "id", entityID);			// Server that's throwing the event
-			GDKX::DsMapAddDouble(dsMapIndex, "buffer", bufferindex);
-			GDKX::DsMapAddDouble(dsMapIndex, "size", pCurr->messageSize);
+			DsMapAddDouble(dsMapIndex, "type", eNetworkingEventType_IncomingData);
+			DsMapAddString(dsMapIndex, "id", entityID);			// Server that's throwing the event
+			DsMapAddDouble(dsMapIndex, "buffer", bufferindex);
+			DsMapAddDouble(dsMapIndex, "size", pCurr->messageSize);
 
-			GDKX::DsMapAddString(dsMapIndex, "ip", entityID);		// connecting socket
-			GDKX::DsMapAddDouble(dsMapIndex, "port", 0.0);			// connecting socket
+			DsMapAddString(dsMapIndex, "ip", entityID);		// connecting socket
+			DsMapAddDouble(dsMapIndex, "port", 0.0);			// connecting socket
 
-			GDKX::DsMapAddString(dsMapIndex, "receivingID", pCurr->receivingEntityID);		// receiving endpoint
-			GDKX::DsMapAddDouble(dsMapIndex, "receivingUser", receivingUserID);		// receiving endpoint
+			DsMapAddString(dsMapIndex, "receivingID", pCurr->receivingEntityID);		// receiving endpoint
+			DsMapAddInt64(dsMapIndex, "receivingUser", receivingUserID);		// receiving endpoint
 
-			CreateAsynEventWithDSMapAndBuffer(dsMapIndex, bufferindex, EVENT_OTHER_WEB_NETWORKING);
-#endif
+			CreateAsyncEventWithDSMapAndBuffer(dsMapIndex, bufferindex, EVENT_OTHER_WEB_NETWORKING);
 
 			delete pCurr;
 
@@ -1025,31 +1020,26 @@ void PlayFabPartyManager::OnEndpointMessageReceived(const Party::PartyStateChang
 			}
 			else
 			{
-				// FIXME
-
-#if 0
 				uint64_t receivingUserID = GetUserFromEntityID(receivingEntityID);
 
 				// Trigger an async event for each endpoint			
 				int bufferindex = CreateBuffer(result->messageSize, eBuffer_Format_Fixed, 1);
-				IBuffer* pBuff = GetIBuffer(bufferindex);
-				memcpy(pBuff->GetBuffer(), result->messageBuffer, result->messageSize);
+				BufferWriteContent(bufferindex, 0, result->messageBuffer, result->messageSize);
 
-				int dsMapIndex = GDKX::CreateDsMap(0);
+				int dsMapIndex = CreateDsMap(0);
 
-				GDKX::DsMapAddDouble(dsMapIndex, "type", eNetworkingEventType_IncomingData);
-				GDKX::DsMapAddString(dsMapIndex, "id", entityID);			// Server that's throwing the event
-				GDKX::DsMapAddDouble(dsMapIndex, "buffer", bufferindex);
-				GDKX::DsMapAddDouble(dsMapIndex, "size", result->messageSize);
+				DsMapAddDouble(dsMapIndex, "type", eNetworkingEventType_IncomingData);
+				DsMapAddString(dsMapIndex, "id", entityID);			// Server that's throwing the event
+				DsMapAddDouble(dsMapIndex, "buffer", bufferindex);
+				DsMapAddDouble(dsMapIndex, "size", result->messageSize);
 
-				GDKX::DsMapAddString(dsMapIndex, "ip", entityID);		// connecting socket
-				GDKX::DsMapAddDouble(dsMapIndex, "port", 0.0);			// connecting socket
+				DsMapAddString(dsMapIndex, "ip", entityID);		// connecting socket
+				DsMapAddDouble(dsMapIndex, "port", 0.0);			// connecting socket
 
-				GDKX::DsMapAddString(dsMapIndex, "receivingID", receivingEntityID);		// receiving endpoint
-				GDKX::DsMapAddDouble(dsMapIndex, "receivingUser", receivingUserID);		// receiving endpoint
+				DsMapAddString(dsMapIndex, "receivingID", receivingEntityID);		// receiving endpoint
+				DsMapAddInt64(dsMapIndex, "receivingUser", receivingUserID);		// receiving endpoint
 
-				CreateAsynEventWithDSMapAndBuffer(dsMapIndex, bufferindex, EVENT_OTHER_WEB_NETWORKING);
-#endif
+				CreateAsyncEventWithDSMapAndBuffer(dsMapIndex, bufferindex, EVENT_OTHER_WEB_NETWORKING);
 			}
 		}
 	}
@@ -1868,31 +1858,26 @@ int PlayFabPartyManager::SendPacket(uint64_t _user_id, const char* _networkID, c
 
 int PlayFabPartyManager::SendLoopbackPacket(const char* entityID, const char* _targetEntityID, const void* _pBuff, int _size)
 {
-	// FIXME
-
-#if 0
 	uint64_t user_id = GetUserFromEntityID(entityID);
 
 	// Trigger an async event for each endpoint			
 	int bufferindex = CreateBuffer(_size, eBuffer_Format_Fixed, 1);
-	IBuffer* pBuff = GetIBuffer(bufferindex);
-	memcpy(pBuff->GetBuffer(), _pBuff, _size);
+	BufferWriteContent(bufferindex, 0, _pBuff, _size);
 
-	int dsMapIndex = GDKX::CreateDsMap(0);
+	int dsMapIndex = CreateDsMap(0);
 
-	GDKX::DsMapAddDouble(dsMapIndex, "type", eNetworkingEventType_IncomingData);
-	GDKX::DsMapAddString(dsMapIndex, "id", _targetEntityID);			// Server that's throwing the event
-	GDKX::DsMapAddDouble(dsMapIndex, "buffer", bufferindex);
-	GDKX::DsMapAddDouble(dsMapIndex, "size", _size);
+	DsMapAddDouble(dsMapIndex, "type", eNetworkingEventType_IncomingData);
+	DsMapAddString(dsMapIndex, "id", _targetEntityID);			// Server that's throwing the event
+	DsMapAddDouble(dsMapIndex, "buffer", bufferindex);
+	DsMapAddDouble(dsMapIndex, "size", _size);
 
-	GDKX::DsMapAddString(dsMapIndex, "ip", _targetEntityID);		// connecting socket
-	GDKX::DsMapAddDouble(dsMapIndex, "port", 0.0);			// connecting socket
+	DsMapAddString(dsMapIndex, "ip", _targetEntityID);		// connecting socket
+	DsMapAddDouble(dsMapIndex, "port", 0.0);			// connecting socket
 
-	GDKX::DsMapAddString(dsMapIndex, "receivingID", entityID);		// receiving endpoint
-	GDKX::DsMapAddDouble(dsMapIndex, "receivingUser", user_id);		// receiving endpoint
+	DsMapAddString(dsMapIndex, "receivingID", entityID);		// receiving endpoint
+	DsMapAddInt64(dsMapIndex, "receivingUser", user_id);		// receiving endpoint
 
-	CreateAsynEventWithDSMapAndBuffer(dsMapIndex, bufferindex, EVENT_OTHER_WEB_NETWORKING);
-#endif
+	CreateAsyncEventWithDSMapAndBuffer(dsMapIndex, bufferindex, EVENT_OTHER_WEB_NETWORKING);
 
 	return 0;
 }
