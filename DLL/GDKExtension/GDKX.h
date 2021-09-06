@@ -71,6 +71,15 @@ enum eLeaderboardType
 	eLT_TimeMinsSecs,
 };
 
+enum eNetworkingEventType
+{
+	eNetworkingEventType_None = 0,
+	eNetworkingEventType_Connecting,
+	eNetworkingEventType_Disconnecting,
+	eNetworkingEventType_IncomingData,
+	eNetworkingEventType_NonBlockingConnect,
+};
+
 enum eXboxFileError
 {
 	eXboxFileError_NoError = 0,
@@ -94,10 +103,10 @@ enum eXboxFileError
 };
 
 static const int EVENT_OTHER_DIALOG_ASYNC = 63;
+static const int EVENT_OTHER_WEB_NETWORKING = 68;
 static const int EVENT_OTHER_SOCIAL = 70;
 static const int EVENT_OTHER_ASYNC_SAVE_LOAD = 72;
 static const int EVENT_OTHER_SYSTEM_EVENT = 75;
 static const int EVENT_OTHER_WEB_IMAGE_LOAD = 60;
-
 
 extern char* g_XboxSCID;
