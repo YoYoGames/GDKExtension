@@ -77,30 +77,34 @@
 
 
     /* Sidebar */
-    --sidebar-width                               : 20rem;
+    --sidebar-width                               : 30rem;
 
     /* Tables */
     --table-cell-padding                          : 0.2em 0.1em;
 
-    
+
 }
 blockquote {
+    margin-top: 2.5em !important;
     margin-bottom: 0.1em !important;
     padding-top: 0.1em !important; padding-bottom: 0.1em !important;
 }
 
-hr {
-  border: none;
-  height: 2px;
-  /* Set the hr color */
-  color: #333; /* old IE */
-  background-color: #333; /* Modern Browsers */
-  margin-bottom: 6em;
+.tip {
+    margin: 0.3em 0 !important;
 }
 
+.warn {
+    margin: 0.3em 0 !important;
+}
 
-
-
+hr.delimiter {
+    border: 0;
+    height: 2px;
+    background-image: linear-gradient(to right, rgba(99, 99, 99, 0.60), rgba(99, 99, 99, 0.60), rgba(0, 0, 0, 0));
+    margin-top: 7em;
+    margin-bottom: 0em;
+}
 
 .tags {
     list-style: none;
