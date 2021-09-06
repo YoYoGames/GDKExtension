@@ -29,6 +29,20 @@ typedef uint16_t uint16;
 typedef int8_t int8;
 typedef uint8_t uint8;
 
+#ifdef GDKEXTENSION_EXPORTS
+enum eBuffer_Format {
+	eBuffer_Format_Fixed = 0,
+	eBuffer_Format_Grow = 1,
+	eBuffer_Format_Wrap = 2,
+	eBuffer_Format_Fast = 3,
+	eBuffer_Format_VBuffer = 4,
+	eBuffer_Format_Network = 5,
+};
+#else
+/* For eBuffer_Format */
+#include <Files/Buffer/IBuffer.h>
+#endif
+
 typedef void* HYYMUTEX;
 typedef void* HSPRITEASYNC;
 
@@ -94,7 +108,7 @@ struct YYRunnerInterface
 	// sprite loading helper functions
 	int (*ASYNCFunc_SpriteAdd)(HTTP_REQ_CONTEXT* _pContext, void* _p, int* _pMap);
 	void (*ASYNCFunc_SpriteCleanup)(HTTP_REQ_CONTEXT* _pContext);
-	HSPRITEASYNC(*CreateSpriteAsync)(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags);
+	HSPRITEASYNC (*CreateSpriteAsync)(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags);
 
 	// timing
 	int64(*Timing_Time)(void);
@@ -108,6 +122,7 @@ struct YYRunnerInterface
 
 	// ds map manipulation for 
 	void (*CreateAsyncEventWithDSMap)(int _map, int _event);
+	void (*CreateAsyncEventWithDSMapAndBuffer)(int _map, int _buffer, int _event);
 	int (*CreateDsMap)(int _num, ...);
 
 	bool (*DsMapAddDouble)(int _index, const char* _pKey, double value);
@@ -115,8 +130,9 @@ struct YYRunnerInterface
 	bool (*DsMapAddInt64)(int _index, const char* _pKey, int64 value);
 
 	// buffer access
-	bool (*BufferGetContent)(int _index, void *_ppData, int *_pDataSize);
+	bool (*BufferGetContent)(int _index, void **_ppData, int *_pDataSize);
 	int (*BufferWriteContent)(int _index, int _dest_offset, const void* _pSrcMem, int _size, bool _grow, bool _wrap);
+	int (*CreateBuffer)(int _size, enum eBuffer_Format _bf, int _alignment);
 
 	// variables
 	volatile bool* pLiveConnection;
@@ -206,6 +222,7 @@ inline void YYMutexUnlock(HYYMUTEX hMutex) { g_pYYRunnerInterface->YYMutexUnlock
 
 // ds map manipulation for 
 inline void CreateAsyncEventWithDSMap(int _map, int _event) { return g_pYYRunnerInterface->CreateAsyncEventWithDSMap(_map, _event); }
+inline void CreateAsyncEventWithDSMapAndBuffer(int _map, int _buffer, int _event) { return g_pYYRunnerInterface->CreateAsyncEventWithDSMapAndBuffer(_map, _buffer, _event); }
 #define CreateDsMap(_num, ...) g_pYYRunnerInterface->CreateDsMap( _num, __VA_ARGS__ )
 
 inline bool DsMapAddDouble(int _index, const char* _pKey, double value) { return g_pYYRunnerInterface->DsMapAddDouble(_index, _pKey, value); }
@@ -215,6 +232,7 @@ inline bool DsMapAddInt64(int _index, const char* _pKey, int64 value) { return g
 // buffer access
 inline bool BufferGetContent(int _index, void **_ppData, int *_pDataSize) { return g_pYYRunnerInterface->BufferGetContent(_index, _ppData, _pDataSize); }
 inline int BufferWriteContent(int _index, int _dest_offset, const void* _pSrcMem, int _size, bool _grow = false, bool _wrap = false) { return g_pYYRunnerInterface->BufferWriteContent(_index, _dest_offset, _pSrcMem, _size, _grow, _wrap); }
+inline int CreateBuffer(int _size, enum eBuffer_Format _bf, int _alignment) { return g_pYYRunnerInterface->CreateBuffer(_size, _bf, _alignment); }
 
 #define g_LiveConnection	(*g_pYYRunnerInterface->pLiveConnection)
 #define g_HTTP_ID			(*g_pYYRunnerInterface->pHTTP_ID)
