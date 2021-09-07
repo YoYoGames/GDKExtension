@@ -405,6 +405,7 @@ This function can be used to retrieve a global leaderboard of ranks for a given 
 |   *`real`*   | **ScoreN**       | The score of the player "N".                                                    |
 
 > ### **Code Sample**
+
 The following is an extended example of how this function can be used. To start with you'd call it in some event like Room Start or Create:
 
 ```gml
@@ -473,6 +474,7 @@ This function can be used to retrieve a social leaderboard of ranks for a given 
 
 
 > ### **Code Sample**
+
 The following is an extended example of how this function can be used. To start with you'd call it in some event like Room Start or Create:
 
 ```gml

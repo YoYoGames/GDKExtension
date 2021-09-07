@@ -1,53 +1,22 @@
-## `gdk_save_group_begin`
+## `xboxone_stats_set_stat_real`
 
 > ### **Usage**
 
-`gdk_save_group_begin(container_name)`
+`xboxone_stats_set_stat_real(user_id, stat_name, stat_value)`
 
 > ### **Description**
 
-This function is called when you want to begin the saving out of multiple buffers to multiple files. The "container_name" is a string and will be used as the directory name for where the files will be saved, and should be used as part of the file path when loading the files back into the IDE later (using any of the buffer_load() functions). This function is only for use with the [`gdk_save_buffer()`](#gdk_save_buffer) function and you must also finish the save definition by calling [`gdk_save_group_end()`](#gdk_save_group_end) function otherwise the files will not be saved out.
+This function can be used to set the value of a stat for the given user ID. You supply the user ID as returned by the function [`xboxone_get_user()`](api_user.md#xboxone_get_user), then the stat string to set (if the stat string does not already exist then a new stat will be created and set to the given value) and a value (a real) to set the stat to. Note that the stat name must be alphanumeric only, with no symbols or spaces.
+
+?> **Tip** When setting the stat value, any previous value will be overridden, therefore it is up to you to determine if the stat value should be updated or not (ie. check that the high score is actually the highest) by comparing to the current stat value with the new one before setting it.
 
 > ### **Parameters**
 
-|    type    | name               | description                |
-| :--------: | ------------------ | -------------------------- |
-| *`string`* | **container_name** | The name of the container. |
-
-
-> ### **Code Sample**
-```gml
-gdk_save_group_begin("SaveGame");
-save1 = gdk_save_buffer(buff1, "Player_Save1.sav", 0, 16384);
-save2 = gdk_save_buffer(buff2, "Player_Save2.sav", 0, 16384);
-save3 = gdk_save_buffer(buff3, "Player_Save3.sav", 0, 16384);
-save4 = gdk_save_buffer(buff4, "Player_Save4.sav", 0, 16384);
-gdk_save_group_end();
-```
-<hr class="delimiter">
-<div style="page-break-after: always;"></div>
-
-
-## `gdk_save_buffer`
-
-> ### **Usage**
-
-`gdk_save_buffer(buffer_idx, filename, offset, size)`
-
-> ### **Description**
-
-With this function you can save part of the contents of a buffer to a file, ready to be read back into memory using the [`gdk_save_buffer()`](#gdk_save_buffer) function (or any of the other functions for loading buffers). The "offset" defines the start position within the buffer for saving (in bytes), and the "size" is the size of the buffer area to be saved from that offset onwards (also in bytes).
-
-This function works asynchronously, and so the game will continue running while being saved, and all files saved using this function will be placed in a *"default"* folder. This folder does not need to be included in the filename as it is added automatically by GameMaker. For example the filename path `"Data\Player_Save.sav"` would actually be saved to `"default\Data\Player_Save.sav"`. However, if you then load the file using the function [`gdk_load_buffer()`](#gdk_load_buffer), you do not need to supply the "default" part of the path either.
-
-> ### **Parameters**
-
-|    type     | name           | description                                                                 |
-| :---------: | -------------- | --------------------------------------------------------------------------- |
-| *`integer`* | **buffer_idx** | The index of the buffer to save.                                            |
-| *`string`*  | **filename**   | The place where to save the buffer to (path + filename + extension).        |
-| *`integer`* | **offset**     | The start position within the buffer for saving (in bytes).                 |
-| *`integer`* | **size**       | The size of the buffer area to be saved from the offset onwards (in bytes). |
+|    type     | name           | description                   |
+| :---------: | -------------- | ----------------------------- |
+| *`pointer`* | **user_id**    | The user ID pointer.          |
+| *`string`*  | **stat_name**  | The statistic to set.         |
+|  *`real`*   | **stat_value** | The value to set the stat to. |
 
 
 > ### **Returns**
@@ -57,29 +26,45 @@ This function works asynchronously, and so the game will continue running while 
 | *`real`* | -1 on error, any other value otherwise. |
 
 
-> ### **Triggers**
-> **[Asynchronous Save/Load Event]**
+> ### **Code Sample**
+```gml
+xboxone_stats_set_stat_real(p_user_id, "TestReal", 123.45);
+```
+<hr class="delimiter">
+<div style="page-break-after: always;"></div>
 
-|    type     | name       | description                                                                |
-| :---------: | ---------- | -------------------------------------------------------------------------- |
-| *`integer`* | **id**     | Will hold the unique identifier of the asynchronous request.               |
-|  *`real`*   | **error**  | 0 if successful, some other value if there has been an error (error code). |
-|  *`real`*   | **status** | 1 if successful, 0 if failed.                                              |
+
+## `xboxone_stats_set_stat_int`
+
+> ### **Usage**
+
+`xboxone_stats_set_stat_int(user_id, stat_name, stat_value)`
+
+> ### **Description**
+
+This function can be used to set the value of a stat for the given user ID. You supply the user ID as returned by the function [`xboxone_get_user()`](api_user.md#xboxone_get_user), then the stat string to set (if the stat string does not already exist then a new stat will be created and set to the given value) and a value (an integer) to set the stat to. Note that the stat name must be alphanumeric only, with no symbols or spaces.
+
+?> **Tip** When setting the stat value, any previous value will be overridden, therefore it is up to you to determine if the stat value should be updated or not (ie. check that the high score is actually the highest) by comparing to the current stat value with the new one before setting it.
+
+> ### **Parameters**
+
+|    type     | name           | description                   |
+| :---------: | -------------- | ----------------------------- |
+| *`pointer`* | **user_id**    | The user ID pointer.          |
+| *`string`*  | **stat_name**  | The statistic to set.         |
+| *`integer`* | **stat_value** | The value to set the stat to. |
+
+
+> ### **Returns**
+
+|   type   | description                             |
+| :------: | --------------------------------------- |
+| *`real`* | -1 on error, any other value otherwise. |
+
 
 > ### **Code Sample**
 ```gml
-	saveid = gdk_save_buffer(buff, "Player_Save.sav", 0, 16384);
-```
-The code above will initiate a asynchronous buffer save operation that will trigger an asynchronous Save/Load event where we can check if the task was successful or not, with the following code:
-```gml
-	if (async_load[? "id"] == saveid) {
-    	if (async_load[? "status"]== false) {
-        	show_debug_message("Save failed!");
-        }
-		else {
-			show_debug_message("Save succeeded!");
-		}
-    }
+xboxone_stats_set_stat_int(p_user_id, "TestInt", 22);
 ```
 <hr class="delimiter">
 <div style="page-break-after: always;"></div>
