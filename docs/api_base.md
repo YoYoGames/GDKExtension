@@ -19,6 +19,7 @@ Must be called before any other GDK extension function, recommend using a Contro
 ```gml
 gdk_init("00000000-0000-0000-0000-000060ddb039");
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -37,6 +38,7 @@ This should be called each frame while GDK extension is active, recommend using 
 ```gml
 gdk_update();
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 

@@ -30,6 +30,7 @@ This function can be used to set the value of a stat for the given user ID. You 
 ```gml
 xboxone_stats_set_stat_real(p_user_id, "TestReal", 123.45);
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -65,6 +66,7 @@ This function can be used to set the value of a stat for the given user ID. You 
 ```gml
 xboxone_stats_set_stat_int(p_user_id, "TestInt", 22);
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -100,6 +102,7 @@ This function can be used to set the value of a stat for the given user ID. You 
 ```gml
 xboxone_stats_set_stat_string(p_user_id, "TestString", "YoYo Games");
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -135,6 +138,7 @@ for (var i = 0; i < xboxone_get_user_count(); i++) {
     xboxone_stats_delete_stat(user_id[i], "highScore");
 }
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -171,6 +175,7 @@ if (game_over == true) {
     }
 }
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -182,7 +187,7 @@ if (game_over == true) {
 
 > ### **Description**
 
-This function can be used to retrieve all the defined stats from the stat manager for a given user. You supply the user ID as returned by the function [`xboxone_get_user()`](#api_user/xboxone_get_user), and the function will returns an array of strings containing the statistics for the user. If an error occurs or the user has no stats the array will still be returned but will be empty.
+This function can be used to retrieve all the defined stats from the stat manager for a given user. You supply the user ID as returned by the function [`xboxone_get_user()`](api_user#xboxone_get_user), and the function will returns an array of strings containing the statistics for the user. If an error occurs or the user has no stats the array will still be returned but will be empty.
 
 > ### **Parameters**
 
@@ -205,6 +210,7 @@ This function can be used to retrieve all the defined stats from the stat manage
         xboxone_stats_delete_stat(user_id, _stat_str[i]);
     }
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -216,7 +222,7 @@ This function can be used to retrieve all the defined stats from the stat manage
 
 > ### **Description**
 
-This function can be used to add a given user to the statistics manager. This must be done before using any of the other stats functions to automatically sync the game with the xbox live server and retrieve the latest values. You supply the user ID as returned by the function [`xboxone_get_user()`](#api_user#xboxone_get_user), and the function will return -1 if there was an error or the user ID is invalid, or any other value if the function was successfully called.
+This function can be used to add a given user to the statistics manager. This must be done before using any of the other stats functions to automatically sync the game with the xbox live server and retrieve the latest values. You supply the user ID as returned by the function [`xboxone_get_user()`](api_user#xboxone_get_user), and the function will return -1 if there was an error or the user ID is invalid, or any other value if the function was successfully called.
 
 > ### **Parameters**
 
@@ -252,6 +258,7 @@ for(var i = 0; i < xboxone_get_user_count(); i++)
     xboxone_stats_add_user(user_id[i]);
 }
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -303,6 +310,7 @@ for (var i = 0; i < array_length(user_id); i++) {
     xboxone_stats_remove_user(user_id[i]);
 }
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -351,6 +359,7 @@ for (var i = 0; i < array_length(user_id); i++) {
     xboxone_stats_flush_user(user_id[i], 0);
 }
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -418,6 +427,7 @@ if (async_load[? "id"] == achievement_stat_event) {
 }
 ```
 The above code checks the returned ds_map in the Social Asynchronous Event and if its "id" matches the constant being checked, it then checks to see if the event has been triggered by returned leaderboard data before looping through the map and storing all the different values in a number of global arrays.
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 ## `xboxone_stats_get_social_leaderboard`

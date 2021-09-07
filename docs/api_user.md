@@ -41,6 +41,7 @@ This function launches the system’s account picker which will associate the se
 ```gml
 show_debug_message("Hello world!");
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -65,6 +66,7 @@ With this function you can retrieve the user ID pointer for the user that launch
 ```gml
 global.main_user = xboxone_get_activating_user();
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
@@ -91,6 +93,7 @@ for (var i = 0; i < xboxone_get_user_count(); i++) {
     user_id[i] = xboxone_get_user(i);
 }
 ```
+<hr class="delimiter">
 <div style="page-break-after: always;"></div>
 
 
