@@ -4,9 +4,11 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Get Save User";
+text = "Read Leaderboard";
 
 onClick = function() {
-	var _userId = xboxone_get_savedata_user();
-	show_message("Saving to UserID: " + string(_userId));
+	var _userId = xboxone_get_savedata_user();	
+	var _userName = xboxone_user_id_for_user(_userId);
+	
+	xboxone_read_player_leaderboard("HighScore", _userName, 5, achievement_filter_favorites_only);
 }

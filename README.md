@@ -153,8 +153,48 @@ Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.
 ---
 
 ## xboxone_fire_event - xboxone_fire_event(event_name, ...)
-## xboxone_get_stats_for_user - xboxone_get_stats_for_user(user_id, scid)
+
 ## xboxone_stats_setup - xboxone_stats_setup(user_id, scid, title_id)
+
+---
+
+## xboxone_get_stats_for_user
+
+**Usage**: xboxone_get_stats_for_user(user_id, scid, stats_name...)
+
+**Description**: This function can be used to retrieve data about specific stats from the Xbox servers. You supply the user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), then your games Service Configuration ID (as shown on the XDP console), and finally the stats required. You can request up to a maximum of 14 stats, but this does not guarantee that you will get 14 stat results, as there is a limit to the total length of the request and therefore the maximum stat count depends on the length of the names of the stats themselves.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to get the stat for.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **scid** The Service Configuration ID (SCID).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **\<stat_name\>** The stats names to get (as individual arguments)
+
+**Triggers**: System Asynchronous Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"event_type"**: Will hold the string "stat_result".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"user"**: The user ID associated with the request.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"succeeded"**: 1 if successful, some other value if there has been an error.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"\<statName\>"**: There is an extra key-value pair for each existing requested stat (values are always strings).
+
+**Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called.
+
+**Notes**: If the request fails due to the request length being to large, there should be a message in the console output stating the error code:
+
+`xboxone_get_stats_for_user - exception occurred getting results - 0x80190190`
+
+In this case the async event DS map should have a "succeeded" key with a value of "0", and in this case you should attempt to retrieve fewer stats in a single call.
+
+**Code Sample**:
+```gml
+var xbuser = xboxone_get_user(0);
+xboxone_get_stats_for_user(xbuser, "00000000-0000-0000-0000-000000000000", "GameProgress", "CurrentMode");
+```
 
 ---
 
@@ -555,15 +595,104 @@ The above code checks the returned ds_map in the Social Asynchronous Event and i
 --- 
 
 
-## xboxone_achievements_set_progress - 
+## xboxone_achievements_set_progress
 
 **Usage**: xboxone_achievements_set_progress(user_id, achievement, progress)
 
+**Description**: This function can be used to update the progress of an achievement. You supply the user ID as returned by the function [`xboxone_get_user`](#xboxone_get_user), a string containing the achievement's numeric ID (as assigned in the XDP/Windows Dev Center when it was created), and finally the progress value to set (from 0 to 100). Note that the achievement system will refuse updates that are lower than the current progress value.
+
+If the function was successful, it will return a request ID (0 or a positive number) meaning that the achievement progress/unlock request was successfully submitted to Xbox Live. This request ID can be saved to a variable and checked later when a callback is fired in the Async System event. In case of an error, it will return a negative number which can be one of the following values:
+
+* -1 if an invalid user was specified
+* -2 if the Xbox Live context could not be retrieved
+* Any other negative number as the error code, if some part of the initial unlock setup triggered an exception
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID of the user to get the leaderboard for.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **achievement** The stat (as string) to create the global leaderboard from.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **progress** The number of entries from the global leaderboard to retrieve.
+
+**Triggers**: System Asynchronous Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **"requestID"**: Will hold the constant `achievement_leaderboard_info`.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"event_type"**: Will hold the string "achievement result".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"userID"**: The user ID associated with the request.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"error"**: 0 if successful, some other value if there has been an error.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"achievement"**: The achievement ID that was passed into the original function call.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"progress"**: The progress value that was passed into the original function call.
+
+**Returns**: {*real*} negative if there was an error, any other value if the function was successfully called.
+
+**Code Sample**:
+```gml
+var _progress = (global.Level / global.LevelMax) * 100;
+requestID = xboxone_achievements_set_progress(user_id, "1", _progress);
+```
+The above code creates a percentage value based on some global variables and then uses it to set the progress for an achievement. The ID number of the achievement is passed in as a string ("1"). The request ID for the function call is then stored in "requestA", which is later used in the Async System event to identify the request:
+
+```gml
+if (async_load[? "event_type"] != "achievement result") return;
+if (async_load[? "requestID"] != requestID) return;
+
+var _error = async_load[? "error"];
+if (_error < 0) show_debug_message("Achievement error code: " + string(_error));
+
+```
+The above code checks the returned ds_map in the Social Asynchronous Event and if its "id" matches the constant being checked, it then checks to see if the event has been triggered by returned leaderboard data before looping through the map and storing all the different values in a number of global arrays.
 
 --- 
 
-## xboxone_read_player_leaderboard - xboxone_read_player_leaderboard(ident, player, numitems, friendfilter)
+## xboxone_read_player_leaderboard
+
+**Usage**: xboxone_read_player_leaderboard(ident, player, numitems, friendfilter)
+
+**Description**: Read a leaderboard starting at a specified user, regardless of the user's rank or score, and ordered by percentile rank. This function requires [`xboxone_stats_setup`](#xboxone_stats_setup) before it can be used.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **ident** The name of the leaderboard (if filter is set to `all_players`) or stats to read (configured on XDP).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **player** The name of the user to read from (as returned by [`xboxone_user_id_for_user`](#xboxone_user_id_for_user)).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **numitems** 	The number of items to retrieve.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*achievement_filter_\**} **"friendfilter"**: One of the `achievement_filter_*` constants.
+
+**Triggers**: Social Asynchronous Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **"id"**: Will hold the constant `achievement_leaderboard_info`.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"leaderboardid"**: The unique ID for the leaderboard as defined on the provider dashboard.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"numentries"**: The number of entries in the leaderboard that you have received.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"PlayerN"**: The name of the player, where "N" is an integer value corresponding to their position within the leaderboard entries list.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **"PlayeridN"**: The unique user id of the player, "N".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"RankN"**: The rank of the player "N" within the leaderboard.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"ScoreN"**: The score of the player "N".
+
+**Returns**: N/A
+
+**Code Sample**:
+```gml
+var xbuser = xboxone_user_for_pad(0);
+var tmp = xboxone_user_id_for_user(xbuser);
+xboxone_read_player_leaderboard("MyLeaderboard", tmp, 10, achievement_filter_all_players);
+```
+
 --- 
+
 ## xboxone_set_rich_presence - xboxone_set_rich_presence(user_id, is_user_active, rich_presence_string)
 --- 
 ## xboxone_check_privilege - xboxone_check_privilege(user_id, privilege_id, attempt_resolution)
@@ -642,9 +771,7 @@ then in the asynchronous Save/Load event we can check if the task was successful
 
 **Usage**: gdk_save_group_end()
 
-**Description**: This function finishes the definition of a buffer save group. You must have previously called the function [`gdk_save_group_begin()`](#gdk_save_group_begin) to initiate the group, then call the function [`gdk_save_buffer()`](#gdk_save_buffer) for each file that you wish to save out. Finally you call this function, which will start the saving of the files. ?
-
-<!-- ?? The function will return a unique ID value for the save, which can then be used in the Asynchronous Save / Load event to parse the results from the async_load DS map. ?? -->
+**Description**: This function finishes the definition of a buffer save group. You must have previously called the function [`gdk_save_group_begin()`](#gdk_save_group_begin) to initiate the group, then call the function [`gdk_save_buffer()`](#gdk_save_buffer) for each file that you wish to save out. Finally you call this function, which will start the saving of the files. The function will return a unique ID value for the save, which can then be used in the Asynchronous Save / Load event to parse the results from the async_load DS map.
 
 **Triggers**: Asynchronous Save/Load Event
 
@@ -654,18 +781,18 @@ then in the asynchronous Save/Load event we can check if the task was successful
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"status"**: 1 if successful, 0 if failed.
 
-<!-- **Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called. -->
+**Returns**: {*real*} -1 if there was an error, any other value if the function was successfully called.
 
 **Returns**: N/A
 
 **Code Sample**:
 ```gml
 	buffer_async_group_begin("SaveGame");
-	save1 = buffer_save_async(buff1, "Player_Save1.sav", 0, 16384);
-	save2 = buffer_save_async(buff2, "Player_Save2.sav", 0, 16384);
-	save3 = buffer_save_async(buff3, "Player_Save3.sav", 0, 16384);
-	save4 = buffer_save_async(buff4, "Player_Save4.sav", 0, 16384);
-	buffer_async_group_end();
+	buffer_save_async(buff1, "Player_Save1.sav", 0, 16384);
+	buffer_save_async(buff2, "Player_Save2.sav", 0, 16384);
+	buffer_save_async(buff3, "Player_Save3.sav", 0, 16384);
+	buffer_save_async(buff4, "Player_Save4.sav", 0, 16384);
+	saveGroup = buffer_async_group_end();
 ```
 --- 
 
