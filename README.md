@@ -693,9 +693,38 @@ xboxone_read_player_leaderboard("MyLeaderboard", tmp, 10, achievement_filter_all
 
 --- 
 
-## xboxone_set_rich_presence - xboxone_set_rich_presence(user_id, is_user_active, rich_presence_string)
---- 
-## xboxone_check_privilege - xboxone_check_privilege(user_id, privilege_id, attempt_resolution)
+## xboxone_set_rich_presence - xboxone_set_rich_presence(user_id, is_user_active, rich_presence_string) [TODO]
+---
+
+## xboxone_check_privilege [BUG?]
+
+**Usage**: xboxone_check_privilege(user_id, privilege_id, attempt_resolution)
+
+**Description**: With this function you can check that a given user has a chosen privilege. The function will return true or false in the System Asynchronous Event depending on whether the privilege is enabled or not, and if you set the attempt_resolution argument to true and the privilege isn't enabled, it will also open a system dialogue (suspending the game) to prompt the user to upgrade the account or whatever is required to get the privilege. If the user then enables the required option, the function will return true.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer to check for privilege.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **privilege_id** The privilege constant to check for `xboxone_privilege_`.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*boolean*} **attempt_resolution** Requests for this privilege.
+
+**Triggers**: Asynchronous System Event
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"event_type"**: Will hold the constant string "check_privilege_result".
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **"result"**: Will be one or more (in bit-wise combination) of the `xboxone_privilege_` constants.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*constant*} **"privilege"**: The privilege you have requested.
+
+**Returns**: N/A
+
+**Code Sample**:
+```gml
+var user_one = xboxone_get_activating_user();
+xboxone_check_privilege(user_one, xboxone_privilege_multiplayer_sessions, true);
+```
 
 --- 
 
