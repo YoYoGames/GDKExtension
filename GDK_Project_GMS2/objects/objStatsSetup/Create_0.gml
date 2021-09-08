@@ -4,7 +4,7 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Stats Setup";
+text = "> Stats Setup <";
 
 onClick = function() {
 	

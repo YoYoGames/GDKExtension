@@ -1,6 +1,6 @@
 # GameMaker Studio 2 - GDK Extension
 
-An Extension for GameMaker Studio 2 (GMS2) that gives GMS2 Windows Target support for the GDK allowing them to be released on the Microsoft Store and use XBox Live functionality (for those developers that have access through id@xbox, see INSERTLINK for more information on id@xbox).
+An Extension for GameMaker Studio 2 (GMS2) that gives GMS2 Windows Target support for the GDK allowing them to be released on the Microsoft Store and use XBox Live functionality (for those developers that have access through id@xbox, see [this link](https://www.xbox.com/developers/id) for more information on id@xbox).
 
 **NOTE**: Only Windows x64 Target is supported by the GDK, ensure that your GMS2 project has the x64 option selected in **Options &#8594; Windows &#8594; General**
 
@@ -82,11 +82,17 @@ Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.
 
 ---
 
-## xboxone_show_account_picker (TODO)
+## xboxone_show_account_picker
 
-**Usage**: xboxone_show_account_picker( arg0, arg1 )
+**Usage**: xboxone_show_account_picker(gamepad, allow_guests)
 
 **Description**: This function launches the system’s account picker which will associate the selected user with the specified pad. The "mode" argument is either 0 or 1 – if 0 is specified no guest accounts can be selected, while 1 allows guest accounts. This function returns an asynchronous event ID value, and when the account picker closes an **asynchronous dialog event** will be triggered with details of the result of the operation.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"gamepad"**: Not Used.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*boolean*} **"allow_guests"**: Should guest accounts be allowed?
 
 **Triggers**: Async Dialog Event
 
@@ -94,13 +100,11 @@ Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **"type"**: A string containing "xboxone_accountpicker".
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*real*} **"padindex"**: Contains the pad index passed in to the function.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*boolean*} **"succeeded"**: true if account selected, false is cancelled.    
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*id*} **"user"**: Contains the User ID (a pointer) returned by the account picker (or null pointer if cancelled).
 
 **Returns**: {*real*} The asynchronous event ID value.
-
----
 
 ## xboxone_get_user_count
 
