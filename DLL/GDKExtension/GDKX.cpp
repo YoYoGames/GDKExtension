@@ -38,6 +38,82 @@ bool YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _
 	return true;
 }
 
+/* Find any files whose name matches filename_expr (may include wildcards) in
+ * the same directory as the GDKExtension DLL.
+ *
+ * Returns a list of pathnames to any matching files.
+*/
+static std::vector<std::string> _find_packaged_files(const char *filename_expr)
+{
+	HMODULE this_dll;
+
+	if (!GetModuleHandleEx(
+		(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT),
+		(LPCWSTR)(&_find_packaged_files),
+		&this_dll))
+	{
+		DWORD err = GetLastError();
+		DebugConsoleOutput("_find_packaged_files: Cannot get handle to GDKExtension DLL! (error code %u)\n", (unsigned)(err));
+
+		return std::vector<std::string>();
+	}
+
+	char this_dll_path[MAX_PATH + 1];
+	DWORD tdp_len = GetModuleFileNameA(this_dll, this_dll_path, (MAX_PATH + 1));
+
+	if (tdp_len == 0 || tdp_len == (MAX_PATH + 1))
+	{
+		DWORD err = GetLastError();
+		DebugConsoleOutput("_find_packaged_files: Cannot get path of GDK extension DLL! (error code %u)\n", (unsigned)(err));
+
+		return std::vector<std::string>();
+	}
+
+	std::string this_dll_dir;
+
+	{
+		/* Set this_dll_dir to the directory portion of this_dll_path, including trailing slash
+		 * ready to be prefixed to filename_expr and any found files.
+		*/
+
+		char* tdp_last_slash = strrchr(this_dll_path, '\\');
+
+		if (tdp_last_slash != NULL)
+		{
+			size_t tdp_dir_len = (tdp_last_slash - this_dll_path) + 1;
+			this_dll_dir = std::string(this_dll_path, tdp_dir_len);
+		}
+		else {
+			/* Assume DLL is in current dir and no directory prefix is required... */
+			this_dll_dir = "";
+		}
+	}
+
+	std::vector<std::string> filenames;
+
+	std::string path_expr = this_dll_dir + filename_expr;
+	WIN32_FIND_DATAA ffd;
+	HANDLE ffh = FindFirstFileA(path_expr.c_str(), &ffd);
+
+	if (ffh != INVALID_HANDLE_VALUE)
+	{
+		do {
+			filenames.push_back(this_dll_dir + ffd.cFileName);
+		} while (FindNextFileA(ffh, &ffd));
+
+		FindClose(ffh);
+	}
+	else {
+		DWORD err = GetLastError();
+		if (err != ERROR_FILE_NOT_FOUND)
+		{
+			DebugConsoleOutput("_find_packaged_files: Cannot find files (error code %u)\n", (unsigned)(err));
+		}
+	}
+
+	return filenames;
+}
+
 YYEXPORT
 void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
@@ -45,6 +121,21 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	{
 		YYError("gdk_init() called with %d arguments, expected 1", argc);
 		return;
+	}
+
+	std::vector<std::string> event_manifest_names = _find_packaged_files("Events-*.man");
+
+	if (event_manifest_names.size() == 0)
+	{
+		DebugConsoleOutput("No event manifest found, event-based stats will not be available\n");
+	}
+	else if (event_manifest_names.size() > 1)
+	{
+		DebugConsoleOutput("Multiple event manifests found! Not loading any!\n");
+	}
+	else{
+		DebugConsoleOutput("Loading event manifest %s...\n", event_manifest_names[0].c_str());
+		Xbox_Stat_Load_XML(event_manifest_names[0].c_str());
 	}
 
 	YYFree(g_XboxSCID);
