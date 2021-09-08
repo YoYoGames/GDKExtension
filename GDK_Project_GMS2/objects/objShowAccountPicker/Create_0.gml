@@ -4,7 +4,7 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Account Picker"
+text = ">>> Select <<<"
 requestId = noone;
 
 onClick = function() {
