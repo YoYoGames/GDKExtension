@@ -4,9 +4,9 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Set Save User";
+text = "Rich Presence"
 requestId = noone;
 
 onClick = function() {
-	requestId = get_integer_async("User index (-1, blocks saving): ", 0);
+	requestId = get_string_async("Display string: ", "Player with GameMaker Studio");
 }

@@ -4,9 +4,10 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Set Save User";
+text = "Check Previlege"
 requestId = noone;
 
 onClick = function() {
-	requestId = get_integer_async("User index (-1, blocks saving): ", 0);
+	var _userId = xboxone_get_activating_user();
+	xboxone_check_privilege(_userId, xboxone_privilege_multiplayer_sessions, true);
 }

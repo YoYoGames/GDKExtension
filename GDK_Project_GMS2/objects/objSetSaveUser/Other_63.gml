@@ -11,9 +11,10 @@ var _userId = _userIndex;
 if (_userId != -1) {
 	_userId = xboxone_get_user(_userIndex);
 }
+else _userId = pointer_null;
 
 var _error = xboxone_set_savedata_user(_userId);
-if (_error == -1) show_debug_message("[TODO] xboxone_set_savedata_user");
-else show_debug_message("[TODO] xboxone_set_savedata_user");
+if (_error == -1) show_debug_message("[ERROR] xboxone_set_savedata_user");
+else show_debug_message("[SUCCESS] xboxone_set_savedata_user");
 
 requestId = noone;
