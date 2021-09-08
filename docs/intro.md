@@ -1,0 +1,3 @@
+An Extension for GameMaker Studio 2 (GMS2) that gives GMS2 Windows Target support for the GDK allowing them to be released on the Microsoft Store and use XBox Live functionality (for those developers that have access through id@xbox, see [this link](https://www.xbox.com/developers/id) for more information on id@xbox).
+
+!> IMPORTANT: Only Windows x64 Target is supported by the GDK, ensure that your GMS2 project has the x64 option selected in Options → Windows → General
