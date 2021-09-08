@@ -16,11 +16,7 @@ requests = [];
 onClick = function() {
 	
 	var _userId = xboxone_get_savedata_user();
-	if (_userId == pointer_null) {
-		show_debug_message("[INFO] gdk_load_buffer (null user, setting to default user)");
-		_userId = xboxone_get_activating_user();
-		xboxone_set_savedata_user(_userId);
-	}
+	show_debug_message("[INFO] gdk_load_buffer (userID: " + string(_userId) + ")");
 	
 	errorFlag = false;
 	

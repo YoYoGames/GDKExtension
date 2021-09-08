@@ -8,5 +8,5 @@ text = "Set Save User";
 requestId = noone;
 
 onClick = function() {
-	requestId = get_integer_async("User index (-1, null user): ", 0);
+	requestId = get_integer_async("User index (-1, blocks saving): ", 0);
 }
