@@ -13,6 +13,8 @@
 #include <vector>
 #include <winerror.h>
 #include <json-c/json.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 #include <xsapi-c/services_c.h>
 
 #include "GDKX.h"
@@ -92,6 +94,7 @@ void SXboxOneEventType::AddParam(int index, const char* paramName, FieldType par
 	}
 }
 
+#if 0
 /* Load Xbox stats data from STAT chunk.
  * See WADSaver.cs/WriteEventManifest in the Asset Compiler for the other side.
 */
@@ -186,6 +189,166 @@ bool Xbox_Stat_Load(uint8* _pChunk, uint32 _sz, uint8* _pBase)
 		DebugConsoleOutput("%s\n", e.what());
 	}
 	return true;
+}
+#endif
+
+/* Load Xbox stats data from a manifest. */
+void Xbox_Stat_Load_XML(const char *manifest_filename)
+{
+	xmlDocPtr xml = xmlReadFile(manifest_filename, NULL, 0);
+	if (xml == NULL)
+	{
+		throw XboxStatLoadError((std::string("Unable to parse ") + manifest_filename).c_str());
+	}
+
+	/* Find the Events node... */
+
+	xmlNodePtr root_node = xmlDocGetRootElement(xml);
+	if (root_node == NULL
+		|| root_node->type != XML_ELEMENT_NODE
+		|| strcmp((const char*)(root_node->name), "EtxManifest") != 0)
+	{
+		xmlFreeDoc(xml);
+		throw XboxStatLoadError((std::string("ExtManifest node not found in ") + manifest_filename).c_str());
+	}
+
+	xmlNodePtr events_node = root_node->children;
+	while (events_node != NULL && (events_node->type != XML_ELEMENT_NODE || strcmp((const char*)(events_node->name), "Events") != 0))
+	{
+		events_node = events_node->next;
+	}
+
+	if (events_node == NULL)
+	{
+		xmlFreeDoc(xml);
+		throw XboxStatLoadError((std::string("Events node not found in ") + manifest_filename).c_str());
+	}
+
+	/* Iterate over the Event nodes and register each one... */
+
+	auto get_attr_value = [&](xmlNodePtr node, const char* attr_name)
+	{
+		assert(node != NULL);
+		assert(node->type == XML_ELEMENT_NODE);
+
+		xmlAttrPtr attr = node->properties;
+
+		while (attr != NULL)
+		{
+			assert(attr->type == XML_ATTRIBUTE_NODE);
+
+			if (strcmp((const char*)(attr->name), attr_name) == 0)
+			{
+				xmlChar* s = xmlNodeListGetString(xml, attr->children, 1);
+				std::string s2 = (const char*)(s);
+				xmlFree(s);
+
+				return s2;
+			}
+
+			attr = attr->next;
+		}
+
+		xmlFreeDoc(xml);
+		throw XboxStatLoadError((std::string("Missing '") + attr_name + " attribute in '" + (const char*)(node->name) + "' element").c_str());
+	};
+
+	for (xmlNodePtr event_node = events_node->children; event_node != NULL; event_node = event_node->next)
+	{
+		if (event_node->type != XML_ELEMENT_NODE || strcmp((const char*)(event_node->name), "Event") != 0)
+		{
+			/* Not an Event node. Skip. */
+			continue;
+		}
+
+		std::string event_name = get_attr_value(event_node, "Name");
+
+		/* Field nodes are nested within PartB/PartC nodes within the Event, so we have iterate two
+		 * levels deep to find them...
+		*/
+
+		std::vector< std::pair< std::string, SXboxOneEventType::FieldType> > fields;
+
+		for (xmlNodePtr event_child_node = event_node->children; event_child_node != NULL; event_child_node = event_child_node->next)
+		{
+			if (event_child_node->type != XML_ELEMENT_NODE)
+			{
+				continue;
+			}
+
+			for (xmlNodePtr field_node = event_child_node->children; field_node != NULL; field_node = field_node->next)
+			{
+				if (field_node->type != XML_ELEMENT_NODE)
+				{
+					continue;
+				}
+
+				if (strcmp((const char*)(field_node->name), "Field") != 0)
+				{
+					/* Not a Field node. Skip. */
+					continue;
+				}
+
+				std::string field_name = get_attr_value(field_node, "Name");
+				std::string field_type = get_attr_value(field_node, "Type");
+
+				struct XmlFieldTypeMapping {
+					const char* xml_attr_string;
+					SXboxOneEventType::FieldType type;
+				};
+
+				static const XmlFieldTypeMapping xml_field_types[] = {
+					{ "Int32",          SXboxOneEventType::FieldType::Int32 },
+					{ "UInt32",         SXboxOneEventType::FieldType::UInt32 },
+					{ "Int64",          SXboxOneEventType::FieldType::Int64 },
+					{ "UInt64",         SXboxOneEventType::FieldType::UInt64 },
+					{ "Float",          SXboxOneEventType::FieldType::Float },
+					{ "Double",         SXboxOneEventType::FieldType::Double },
+					{ "Boolean",        SXboxOneEventType::FieldType::Boolean },
+					{ "UnicodeString",  SXboxOneEventType::FieldType::UnicodeString },
+					{ "GUID",           SXboxOneEventType::FieldType::GUID },
+				};
+
+				bool found_type = false;
+				SXboxOneEventType::FieldType mapped_field_type;
+
+				for (int i = 0; i < (sizeof(xml_field_types) / sizeof(*xml_field_types)); ++i)
+				{
+					if (field_type == xml_field_types[i].xml_attr_string)
+					{
+						mapped_field_type = xml_field_types[i].type;
+						found_type = true;
+					}
+				}
+
+				if (found_type)
+				{
+					fields.push_back(std::make_pair(field_name, mapped_field_type));
+				}
+				else {
+					DebugConsoleOutput("Unsupported field type '%s' found in event '%s', skipping event\n", field_type.c_str(), event_name.c_str());
+					goto NEXT_EVENT;
+				}
+			}
+		}
+
+		{
+			/* Register the event for F_XboxOneFireEvent() to make use of. */
+
+			DebugConsoleOutput("Loaded event '%s' with %zu fields in %s\n", event_name.c_str(), fields.size(), manifest_filename);
+
+			SXboxOneEventType* sxoet = new SXboxOneEventType(event_name.c_str(), (int)(fields.size()));
+
+			for (int i = 0; i < (int)(fields.size()); ++i)
+			{
+				sxoet->AddParam(i, fields[i].first.c_str(), fields[i].second);
+			}
+		}
+
+		NEXT_EVENT:;
+	}
+
+	xmlFreeDoc(xml);
 }
 
 std::map<uint64_t, XboxStatsManager::User> XboxStatsManager::m_users;
