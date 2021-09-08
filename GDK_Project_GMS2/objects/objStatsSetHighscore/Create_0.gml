@@ -8,5 +8,5 @@ text = "Submit";
 requestId = noone;
 
 onClick = function() {
-	requestId = get_integer_async("User index: ", 0);
+	requestId = get_integer_async("New Highscore: ", 0);
 }

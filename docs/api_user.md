@@ -1,9 +1,9 @@
 
-## `xboxone_show_account_picker` <span class="badge badge-danger">TODO</span>
+## `xboxone_show_account_picker`
 
 > ### **Usage**
 
-`xboxone_show_account_picker(arg0, arg1)`
+`xboxone_show_account_picker(arg0, guests)`
 
 > ### **Description**
 
@@ -11,35 +11,31 @@ This function launches the system’s account picker which will associate the se
 
 > ### **Parameters**
 
-|    type     | name       | description                    |
-| :---------: | ---------- | ------------------------------ |
-| *`string`*  | **param1** | This is an important parameter |
-| *`pointer`* | **param1** | This is an optional paramenter |
+|    type     | name        | description                            |
+| :---------: | ----------- | -------------------------------------- |
+|  *`real`*   | **gamepad** | ***Unused*** (Console only)            |
+| *`boolean`* | **guests**  | Whether we should allow guest accounts |
 
+> ### **Returns**
 
+|   type   | description                      |
+| :------: | -------------------------------- |
+| *`real`* | The asynchronous event ID value. |
 
 > ### **Triggers**
 > **[Async Dialog Event]**
 
-|    type     | name       | description                    |
-| :---------: | ---------- | ------------------------------ |
-| *`string`*  | **param1** | This is an important parameter |
-| *`pointer`* | **param1** | This is an optional paramenter |
-
-
-
-> ### **Returns**
-
-|    type    | description                    |
-| :--------: | ------------------------------ |
-| *`string`* | This is an important parameter |
-
-
+|    type     | name          | description                                           |
+| :---------: | ------------- | ----------------------------------------------------- |
+|  *`real`*   | **id**        | The asynchronous request id.                          |
+| *`string`*  | **type**      | A string containing `"xboxone_accountpicker"`.        |
+| *`boolean`* | **succeeded** | true if account selected, false is cancelled.         |
+| *`pointer`* | **user**      | Contains the User ID or `pointer_null` if cancelled). |
 
 > ### **Code Sample**
   
 ```gml
-show_debug_message("Hello world!");
+requestId = xboxone_show_account_picker(0, false);
 ```
 <hr class="delimiter">
 <div style="page-break-after: always;"></div>

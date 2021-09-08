@@ -1,4 +1,4 @@
 
 
 text = "Goto Main";
-target = rmMain;
+target = rmUser;
