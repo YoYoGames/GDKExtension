@@ -22,16 +22,17 @@ This repository contains the source code for the DLL that implements the GDK fun
 ## Building this Extension
 
 
-	1. Install VS2019 - https://visualstudio.microsoft.com/downloads/ 
-	2. Install see https://github.com/microsoft/GDK (clone repository then run the installer)
-	3. Install CMAKE - see https://cmake.org/download/
-	3. Clone this repository (NOTE: This repository has submodules)
-	4. Open the Visual Studio 2019
-	5. Open the Solution in DLL/GDKExtension.sln
-	6. Select the Debug|Gaming.Desktop.x64 [or Release|Gaming.Desktop.x64 configurations COMING SOON]
-	7. Build
+1. Install VS2019 - https://visualstudio.microsoft.com/downloads/ 
+2. Install see https://github.com/microsoft/GDK (clone repository, then run the installer - install **Update 1**)
+3. Install CMAKE - see https://cmake.org/download/
+4. Clone this repository (NOTE: This repository has submodules)
+5. Open the Visual Studio 2019
+6. Open the Solution in DLL/GDKExtension.sln
+7. Go to project properties (C/C++ -> General -> Additional Include Directories) and add the path to: `C:\ProgramData\GameMakerStudio2-GDK\Cache\runtimes\runtime-18.0.9.418\yyc`
+8. Select the Debug|Gaming.Desktop.x64 [or Release|Gaming.Desktop.x64 configurations COMING SOON]
+9. Build
 
-NOTE: Output from this build will be copied into the GMS2 GDK  project
+**NOTE**: Output from this build will be copied into the GMS2 GDK  project
 
 ---
 
