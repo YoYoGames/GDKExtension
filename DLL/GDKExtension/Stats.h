@@ -12,6 +12,7 @@
 
 #include <map>
 #include <mutex>
+#include <stdexcept>
 #include <string>
 #include <vector>
 #include <xsapi-c/services_c.h>
@@ -163,4 +164,10 @@ private:
 
 extern SXboxOneEventType* g_xbox_one_event_head;
 
-bool Xbox_Stat_Load(uint8* _pChunk, uint32 _sz, uint8* _pBase);
+class XboxStatLoadError : public std::runtime_error
+{
+public:
+	XboxStatLoadError(const char* what) : runtime_error(what) {}
+};
+
+void Xbox_Stat_Load_XML(const char *manifest_filename);
