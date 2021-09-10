@@ -29,8 +29,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "User Functions",
-    "path": "folders/Demo/User Functions.yy",
+    "name": "Stats Functions (Event)",
+    "path": "folders/Demo/Stats Functions (Event).yy",
   },
   "resourceVersion": "1.0",
   "name": "objSetRichPresence",

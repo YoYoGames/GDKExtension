@@ -21,7 +21,7 @@
     {"id":{"name":"objAchievementSetProgress","path":"objects/objAchievementSetProgress/objAchievementSetProgress.yy",},"order":0,},
     {"id":{"name":"objShowAccountPicker","path":"objects/objShowAccountPicker/objShowAccountPicker.yy",},"order":0,},
     {"id":{"name":"objReadLeaderboard","path":"objects/objReadLeaderboard/objReadLeaderboard.yy",},"order":1,},
-    {"id":{"name":"objSetRichPresence","path":"objects/objSetRichPresence/objSetRichPresence.yy",},"order":5,},
+    {"id":{"name":"objSetRichPresence","path":"objects/objSetRichPresence/objSetRichPresence.yy",},"order":4,},
     {"id":{"name":"objStatsGetNames","path":"objects/objStatsGetNames/objStatsGetNames.yy",},"order":5,},
     {"id":{"name":"objCheckPrivilege","path":"objects/objCheckPrivilege/objCheckPrivilege.yy",},"order":3,},
     {"id":{"name":"objGotoRoom","path":"objects/objGotoRoom/objGotoRoom.yy",},"order":4,},
