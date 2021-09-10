@@ -5,8 +5,10 @@
 event_inherited();
 
 text = "Rich Presence"
-requestId = noone;
+
+presenceId = "mainMenu";
 
 onClick = function() {
-	requestId = get_string_async("Display string: ", "Player with GameMaker Studio");
+	var _userId = xboxone_get_activating_user();
+	xboxone_set_rich_presence(_userId, true, presenceId, SCID);
 }
