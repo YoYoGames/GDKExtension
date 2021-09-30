@@ -102,7 +102,7 @@
   },
   "parent": {
     "name": "Sprites",
-    "path": "folders/Yoyo Extensions Assets/Sprites.yy",
+    "path": "folders/YoYo Shared Assets/Sprites.yy",
   },
   "resourceVersion": "1.0",
   "name": "sprYoYoButton",

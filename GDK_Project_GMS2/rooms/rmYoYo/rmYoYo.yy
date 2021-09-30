@@ -46,8 +46,8 @@
     "PhysicsWorldPixToMetres": 0.1,
   },
   "parent": {
-    "name": "Yoyo Extensions Assets",
-    "path": "folders/Yoyo Extensions Assets.yy",
+    "name": "YoYo Shared Assets",
+    "path": "folders/YoYo Shared Assets.yy",
   },
   "resourceVersion": "1.0",
   "name": "rmYoYo",

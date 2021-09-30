@@ -249,7 +249,7 @@
   "maintainGms1Font": false,
   "parent": {
     "name": "Font",
-    "path": "folders/Yoyo Extensions Assets/Font.yy",
+    "path": "folders/YoYo Shared Assets/Font.yy",
   },
   "resourceVersion": "1.0",
   "name": "fntYoYo50",

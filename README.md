@@ -22,16 +22,17 @@ This repository contains the source code for the DLL that implements the GDK fun
 ## Building this Extension
 
 
-	1. Install VS2019 - https://visualstudio.microsoft.com/downloads/ 
-	2. Install see https://github.com/microsoft/GDK (clone repository then run the installer)
-	3. Install CMAKE - see https://cmake.org/download/
-	3. Clone this repository (NOTE: This repository has submodules)
-	4. Open the Visual Studio 2019
-	5. Open the Solution in DLL/GDKExtension.sln
-	6. Select the Debug|Gaming.Desktop.x64 [or Release|Gaming.Desktop.x64 configurations COMING SOON]
-	7. Build
+1. Install VS2019 - https://visualstudio.microsoft.com/downloads/ 
+2. Install see https://github.com/microsoft/GDK (clone repository, then run the installer - install **Update 1**)
+3. Install CMAKE - see https://cmake.org/download/
+4. Clone this repository (NOTE: This repository has submodules)
+5. Open the Visual Studio 2019
+6. Open the Solution in DLL/GDKExtension.sln
+7. Go to (Project Properties --> C/C++ -> General -> Additional Include Directories) and add the path: `C:\ProgramData\GameMakerStudio2\Cache\runtimes\<current-runtime>\yyc\include\` (may be different in you system)
+8. Select the Debug|Gaming.Desktop.x64 or Release|Gaming.Desktop.x64
+9. Build
 
-NOTE: Output from this build will be copied into the GMS2 GDK  project
+**NOTE**: Output from this build will be copied into the GMS2 GDK  project
 
 ---
 
@@ -48,7 +49,7 @@ Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.
 
 ---
 
-## gdk_init  - Initialise the GDK
+## gdk_init - Initialise the GDK
 
 **Usage**: gdk_init(scid)
 
@@ -156,9 +157,42 @@ Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.
 ```
 ---
 
-## xboxone_fire_event - xboxone_fire_event(event_name, ...)
+## xboxone_fire_event
 
-## xboxone_stats_setup - xboxone_stats_setup(user_id, scid, title_id)
+**Usage**: xboxone_fire_event(event_name, ...)
+
+**Description**: This function can be used to fire a stat event. The eventname argument is the name of the event to be fired as defined in the XDP console for your game, and the following additional parameters will also depend on what you have a set up for the stat. The function will return 0 if the event was sent (and should be received/processed by the server) or -1 if there was an error (ie: your event was not setup as the event manifest file included in the project says another number).
+
+**Returns**: {*real*} -1 if there was an error, 0 if the function was successfully called.
+
+**Code Sample**:
+```gml
+var xb_user = xboxone_get_user(0);
+var uid = xboxone_user_id_for_user(xb_user);
+var result = xboxone_fire_event("PlayerSessionStart", uid, global.guid_str, 0, 42, 42);
+```
+
+---
+
+## xboxone_stats_setup
+
+**Usage**: xboxone_stats_setup(user_id, scid, title_id)
+
+**Description**: This function needs to be called before you can use any of the other Xbox stat functions, and simply initialises the required libraries on the system. The "xb_user" argument is the raw user ID as returned by the function [`xboxone_get_user()`](#xboxone_get_user), while the "service_config" and "title_id" are the unique ID's for your game on the Xbox Dev Center.
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*string*} **scid** The Service Configuration ID (SCID).
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **title_id** The title ID (as shown in *MicrosoftGame.Config*)
+
+**Code Sample**:
+```gml
+var xbuser = xboxone_get_user(0);
+xboxone_stats_setup(user_id, "00000000-0000-0000-0000-000000000000", 0xFFFFFFFF);
+```
 
 ---
 
@@ -697,10 +731,33 @@ xboxone_read_player_leaderboard("MyLeaderboard", tmp, 10, achievement_filter_all
 
 --- 
 
-## xboxone_set_rich_presence - xboxone_set_rich_presence(user_id, is_user_active, rich_presence_string) [TODO]
+## xboxone_set_rich_presence
+
+**Usage**: xboxone_set_rich_presence(user_id, is_user_active, rich_presence_string)
+
+**Description**: This function will set the rich presence string for the given user. A Rich Presence string shows a user's in-game activity after the name of the game that the user is playing, separated by a hyphen. This string is displayed under a player's Gamertag in the "Friends & Clubs" list as well as in the player's Xbox Live user profile.
+
+When using this function you need to supply the User ID pointer for the user, and then you can flag the user as currently active in the game or not (using true/false). The next argument is the rich presence string ID to show, and then finally you can (optionally) supply a service_config_id string. Note that this is an optional argument since if you have called [`xboxone_stats_setup()`](#xboxone_stats_setup) you don't need to pass the service_config_id here.
+
+?> **TIP** For more information on rich presence and how to set up the strings to use in the partner center, please see the Microsoft rich presence [documentation](https://docs.microsoft.com/en-us/gaming/xbox-live/features/social/presence/config/live-presence-config2)
+
+**Params**:
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*pointer*} **user_id** The user ID pointer.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*boolean*} **is_user_active** Flag the user as active or not.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{*integer*} **rich_presence_string** The rich presence string ID to use (as defined in the Partner Center).
+
+**Code Sample**:
+```gml
+var userId = xboxone_user_for_pad(0);
+xboxone_set_rich_presence(userId, true, "Playing_Challenge");
+```
+
 ---
 
-## xboxone_check_privilege [BUG?]
+## xboxone_check_privilege
 
 **Usage**: xboxone_check_privilege(user_id, privilege_id, attempt_resolution)
 

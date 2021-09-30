@@ -11,6 +11,6 @@
 - Compile extension from source
 - Get to know the GML API
 
-[Get Started](#extension) <!-- TODO: Use ID of your homepage heading -->
+[Get Started](intro.md) <!-- TODO: Use ID of your homepage heading -->
 
 <!-- TODO: Set your background color or image. -->
