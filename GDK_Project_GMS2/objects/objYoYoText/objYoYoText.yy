@@ -25,7 +25,7 @@
   "overriddenProperties": [],
   "parent": {
     "name": "Objects",
-    "path": "folders/Yoyo Extensions Assets/Objects.yy",
+    "path": "folders/YoYo Shared Assets/Objects.yy",
   },
   "resourceVersion": "1.0",
   "name": "objYoYoText",
