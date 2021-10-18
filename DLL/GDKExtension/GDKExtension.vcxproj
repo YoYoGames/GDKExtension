@@ -435,6 +435,7 @@ nmake /E /F Makefile.msvc install</Command>
     <ClCompile Include="AdvertiseSession.cpp" />
     <ClCompile Include="CreateSession.cpp" />
     <ClCompile Include="FindSession.cpp" />
+    <ClCompile Include="Function_IAPM.cpp" />
     <ClCompile Include="GDKX.cpp" />
     <ClCompile Include="JoinSession.cpp" />
     <ClCompile Include="LoadSave.cpp" />
