@@ -310,13 +310,20 @@ void UpdateIAPFunctionsM()
 	while (XTaskQueueDispatch(iap_background_to_main_queue, XTaskQueuePort::Completion, 0)) {}
 }
 
+static void _MS_IAP_QueueTerminated(void* context)
+{
+	*(bool*)(context) = true;
+}
+
 void QuitIAPFunctionsM()
 {
 	XTaskQueueTerminate(iap_background_queue, true, NULL, NULL);
 	XTaskQueueCloseHandle(iap_background_queue);
 	iap_background_queue = NULL;
 
-	XTaskQueueTerminate(iap_background_to_main_queue, true, NULL, NULL);
+	bool terminated = false;
+	XTaskQueueTerminate(iap_background_to_main_queue, false, &terminated, &_MS_IAP_QueueTerminated);
+	while (XTaskQueueDispatch(iap_background_to_main_queue, XTaskQueuePort::Completion, 0) || !terminated) {}
 	XTaskQueueCloseHandle(iap_background_to_main_queue);
 	iap_background_to_main_queue = NULL;
 }
