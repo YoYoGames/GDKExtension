@@ -1,4 +1,4 @@
-@echo on
+@echo off
 :: RK - this is useful for debugging what variables are being passed in from GMS2
 :: set
 :: echo #########################################################################################################################
