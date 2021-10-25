@@ -54,6 +54,9 @@
     <ClCompile Include="LoadSave.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Function_IAPM.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GDKX.h">

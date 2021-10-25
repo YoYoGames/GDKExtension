@@ -137,6 +137,39 @@ struct YYRunnerInterface
 	// variables
 	volatile bool* pLiveConnection;
 	int* pHTTP_ID;
+
+	int (*DsListCreate)();
+	void (*DsMapAddList)(int _dsMap, const char* _key, int _listIndex);
+	void (*DsListAddMap)(int _dsList, int _mapIndex);
+	void (*DsMapClear)(int _dsMap);
+	void (*DsListClear)(int _dsList);
+
+	bool (*BundleFileExists)(const char* _pszFileName);
+	bool (*BundleFileName)(char* _name, int _size, const char* _pszFileName);
+	bool (*SaveFileExists)(const char* _pszFileName);
+	bool (*SaveFileName)(char* _name, int _size, const char* _pszFileName);
+
+	bool (*Base64Encode)(const void* input_buf, size_t input_len, void* output_buf, size_t output_len);
+	
+	void (*DsListAddInt64)(int _dsList, int64 _value);
+
+	void (*AddDirectoryToBundleWhitelist)(const char* _pszFilename);
+	void (*AddFileToBundleWhitelist)(const char* _pszFilename);
+	void (*AddDirectoryToSaveWhitelist)(const char* _pszFilename);
+	void (*AddFileToSaveWhitelist)(const char* _pszFilename);
+
+	const char* (*KIND_NAME_RValue)(const RValue* _pV);
+
+	void (*DsMapAddBool)(int _index, const char* _pKey, bool value);
+	void (*DsMapAddRValue)(int _index, const char* _pKey, RValue *value);
+	void (*DestroyDsMap)(int _index);
+
+	void (*StructCreate)(RValue* _pStruct);
+	void (*StructAddBool)(RValue* _pStruct, const char* _pKey, bool _value);
+	void (*StructAddDouble)(RValue* _pStruct, const char* _pKey, double _value);
+	void (*StructAddInt)(RValue* _pStruct, const char* _pKey, int _value);
+	void (*StructAddRValue)(RValue* _pStruct, const char* _pKey, RValue* _pValue);
+	void (*StructAddString)(RValue* _pStruct, const char* _pKey, const char* _pValue);
 };
 
 
@@ -185,6 +218,7 @@ inline void COPY_RValue(RValue* _pDest, const RValue* _pSource) { g_pYYRunnerInt
 inline int KIND_RValue(const RValue* _pValue) { return g_pYYRunnerInterface->KIND_RValue(_pValue); }
 inline void FREE_RValue(RValue* _pValue) { return g_pYYRunnerInterface->FREE_RValue(_pValue); }
 inline void YYCreateString(RValue* _pVal, const char* _pS) { g_pYYRunnerInterface->YYCreateString(_pVal, _pS); }
+inline const char *KIND_NAME_RValue(const RValue *_pV) { return g_pYYRunnerInterface->KIND_NAME_RValue(_pV); }
 
 inline void YYCreateArray(RValue* pRValue, int n_values = 0, const double* values = NULL) { g_pYYRunnerInterface->YYCreateArray(pRValue, n_values, values); }
 
@@ -228,11 +262,34 @@ inline void CreateAsyncEventWithDSMapAndBuffer(int _map, int _buffer, int _event
 inline bool DsMapAddDouble(int _index, const char* _pKey, double value) { return g_pYYRunnerInterface->DsMapAddDouble(_index, _pKey, value); }
 inline bool DsMapAddString(int _index, const char* _pKey, const char* pVal) { return g_pYYRunnerInterface->DsMapAddString(_index, _pKey, pVal); }
 inline bool DsMapAddInt64(int _index, const char* _pKey, int64 value) { return g_pYYRunnerInterface->DsMapAddInt64(_index, _pKey, value); }
+inline void DsMapAddList(int _dsMap, const char* _pKey, int _listIndex) { return g_pYYRunnerInterface->DsMapAddList(_dsMap, _pKey, _listIndex); }
+inline void DsMapAddBool(int _dsMap, const char* _pKey, bool value) { return g_pYYRunnerInterface->DsMapAddBool(_dsMap, _pKey, value); }
+inline void DsMapAddRValue(int _dsMap, const char* _pKey, RValue* value) { return g_pYYRunnerInterface->DsMapAddRValue(_dsMap, _pKey, value); }
+inline void DsMapClear(int _index) { return g_pYYRunnerInterface->DsMapClear(_index); }
+inline void DestroyDsMap(int _index) { g_pYYRunnerInterface->DestroyDsMap(_index); }
+
+inline int DsListCreate() { return g_pYYRunnerInterface->DsListCreate(); }
+inline void DsListAddMap(int _dsList, int _mapIndex) { return g_pYYRunnerInterface->DsListAddMap(_dsList, _mapIndex); }
+inline void DsListClear(int _dsList) { return g_pYYRunnerInterface->DsListClear(_dsList); }
 
 // buffer access
 inline bool BufferGetContent(int _index, void **_ppData, int *_pDataSize) { return g_pYYRunnerInterface->BufferGetContent(_index, _ppData, _pDataSize); }
 inline int BufferWriteContent(int _index, int _dest_offset, const void* _pSrcMem, int _size, bool _grow = false, bool _wrap = false) { return g_pYYRunnerInterface->BufferWriteContent(_index, _dest_offset, _pSrcMem, _size, _grow, _wrap); }
 inline int CreateBuffer(int _size, enum eBuffer_Format _bf, int _alignment) { return g_pYYRunnerInterface->CreateBuffer(_size, _bf, _alignment); }
+
+inline bool Base64Encode(const void* input_buf, size_t input_len, void* output_buf, size_t output_len) { g_pYYRunnerInterface->Base64Encode(input_buf, input_len, output_buf, output_len); }
+
+inline void AddDirectoryToBundleWhitelist(const char* _pszFilename) { g_pYYRunnerInterface->AddDirectoryToBundleWhitelist(_pszFilename); }
+inline void AddFileToBundleWhitelist(const char* _pszFilename) { g_pYYRunnerInterface->AddFileToBundleWhitelist(_pszFilename); }
+inline void AddDirectoryToSaveWhitelist(const char* _pszFilename) { g_pYYRunnerInterface->AddDirectoryToSaveWhitelist(_pszFilename); }
+inline void AddFileToSaveWhitelist(const char* _pszFilename) { g_pYYRunnerInterface->AddFileToSaveWhitelist(_pszFilename); }
+
+inline void YYStructCreate(RValue* _pStruct) { g_pYYRunnerInterface->StructCreate(_pStruct); }
+inline void YYStructAddBool(RValue* _pStruct, const char* _pKey, double _value) { return g_pYYRunnerInterface->StructAddBool(_pStruct, _pKey, _value); }
+inline void YYStructAddDouble(RValue* _pStruct, const char* _pKey, double _value) { return g_pYYRunnerInterface->StructAddDouble(_pStruct, _pKey, _value); }
+inline void YYStructAddInt(RValue* _pStruct, const char* _pKey, int _value) { return g_pYYRunnerInterface->StructAddInt(_pStruct, _pKey, _value); }
+inline void YYStructAddRValue(RValue* _pStruct, const char* _pKey, RValue* _pValue) { return g_pYYRunnerInterface->StructAddRValue(_pStruct, _pKey, _pValue); }
+inline void YYStructAddString(RValue* _pStruct, const char* _pKey, const char* _pValue) { return g_pYYRunnerInterface->StructAddString(_pStruct, _pKey, _pValue); }
 
 #define g_LiveConnection	(*g_pYYRunnerInterface->pLiveConnection)
 #define g_HTTP_ID			(*g_pYYRunnerInterface->pHTTP_ID)

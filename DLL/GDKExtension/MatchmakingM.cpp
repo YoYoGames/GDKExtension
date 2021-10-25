@@ -163,6 +163,21 @@ void GUIDtoString(GUID* _guid, char* _outstring)
 		_guid->Data4[4], _guid->Data4[5], _guid->Data4[6], _guid->Data4[7]);
 }
 
+bool StringToGUID(GUID* _guid, const char* _string)
+{
+	assert(_guid != NULL);
+	assert(_string != NULL);
+
+	// https://stackoverflow.com/a/60296464
+	int r = sscanf(_string, "%08lX-%04hX-%04hX-%02hhX%02hhX-%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",
+		&_guid->Data1, &_guid->Data2, &_guid->Data3,
+		&_guid->Data4[0], &_guid->Data4[1], &_guid->Data4[2],
+		&_guid->Data4[3], &_guid->Data4[4], &_guid->Data4[5],
+		&_guid->Data4[6], &_guid->Data4[7]);
+
+	return r == 11;
+}
+
 // Matchmaking stuff
 void F_XboxOneMatchmakingCreate(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
