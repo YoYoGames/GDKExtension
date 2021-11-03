@@ -22,9 +22,12 @@ YYRunnerInterface* g_pYYRunnerInterface;
 
 char* g_XboxSCID = NULL;
 
+void InitIAPFunctionsM();
+void UpdateIAPFunctionsM();
+void QuitIAPFunctionsM();
 
 YYEXPORT
-bool YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _functions_size)
+void YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _functions_size)
 {
 	if (_functions_size < sizeof(YYRunnerInterface)) {
 		printf("ERROR : runner interface mismatch in extension DLL\n ");
@@ -33,9 +36,6 @@ bool YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _
 	// copy out all the functions 
 	memcpy(&gs_runnerInterface, _pFunctions, _functions_size);
 	g_pYYRunnerInterface = &gs_runnerInterface;
-
-
-	return true;
 }
 
 /* Find any files whose name matches filename_expr (may include wildcards) in
@@ -153,12 +153,14 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	}
 
 	XUM::Init();
+	InitIAPFunctionsM();
 }
 
 YYEXPORT
 void gdk_update(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	XUM::Update();
+	UpdateIAPFunctionsM();
 
 	// Update stats
 	XboxStatsManager::background_flush();
@@ -167,6 +169,7 @@ void gdk_update(RValue& Result, CInstance* selfinst, CInstance* otherinst, int a
 YYEXPORT
 void gdk_quit(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	QuitIAPFunctionsM();
 	XUM::Quit();
 
 	XAsyncBlock async;
