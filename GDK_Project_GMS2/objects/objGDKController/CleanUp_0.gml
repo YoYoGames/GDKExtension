@@ -5,3 +5,5 @@ show_debug_message("##### Quitting GDK #####");
 // after it, recommend using a Controller persistent object that is created or placed
 // in the first room and this call is in the destroy event.
 gdk_quit();
+
+show_debug_message("[INFO] GDK quitted successfully!");

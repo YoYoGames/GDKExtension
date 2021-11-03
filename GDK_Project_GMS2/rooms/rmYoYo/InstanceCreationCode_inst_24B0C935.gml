@@ -1,2 +1,3 @@
 
-text = "YoYo GDK Extension Demo"
+font = fntYoYo50;
+text = "GDK API Demo"

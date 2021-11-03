@@ -4,7 +4,7 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Set Save User";
+text = "Set by Index (*)";
 requestId = noone;
 
 onClick = function() {

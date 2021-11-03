@@ -1,10 +1,12 @@
 
+// This controller is resposible for: initializing; updating and quitting the GDK extension
+// and it is not required unless we are on the windows platform.
 if (os_type != os_windows) {
 	instance_destroy();
 	return;
 }
 
-#macro SCID "00000000-0000-0000-0000-00006af77944"
+#macro SCID "00000000-0000-0000-0000-00006a2a0983"
 
 show_debug_message("##### Initialising GDK #####");
 

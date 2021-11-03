@@ -8,5 +8,5 @@ text = "Activating UserID"
 
 onClick = function() {
 	var _userId = xboxone_get_activating_user();
-	show_message(_userId);
+	show_message("This ID of the user that opened the app: " + string(_userId));
 }

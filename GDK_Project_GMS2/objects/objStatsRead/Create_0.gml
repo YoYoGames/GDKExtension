@@ -4,9 +4,16 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Read";
+text = "R";
 requestId = noone;
 
+// Defined inside the creation code of each 'objStatsRead'.
+statName = "statName";
+
+// This function is called when you click the button.
 onClick = function() {
-	requestId = get_string_async("Stat Name (TestInt/TestReal/TestString): ", "TestInt");
+	var _userId = xboxone_get_user(0);
+	var _value = xboxone_stats_get_stat(_userId, statName);
+	
+	show_message("The returned value was: '" + string(_value) + "'");
 }

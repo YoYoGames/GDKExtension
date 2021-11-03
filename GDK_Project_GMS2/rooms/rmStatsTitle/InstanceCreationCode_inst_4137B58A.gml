@@ -1,2 +1,2 @@
 
-text = "Leaderboard"
+text = "Leaderboards"

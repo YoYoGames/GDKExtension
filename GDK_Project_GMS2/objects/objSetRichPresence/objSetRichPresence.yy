@@ -8,8 +8,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "objYoYoButton",
-    "path": "objects/objYoYoButton/objYoYoButton.yy",
+    "name": "objXBoxButton",
+    "path": "objects/objXBoxButton/objXBoxButton.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -29,8 +29,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Stats Functions (Event)",
-    "path": "folders/Demo/Stats Functions (Event).yy",
+    "name": "User Functions",
+    "path": "folders/Demo/User Functions.yy",
   },
   "resourceVersion": "1.0",
   "name": "objSetRichPresence",
