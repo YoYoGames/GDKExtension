@@ -8,8 +8,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "objYoYoButton",
-    "path": "objects/objYoYoButton/objYoYoButton.yy",
+    "name": "objXBoxButton",
+    "path": "objects/objXBoxButton/objXBoxButton.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -31,7 +31,7 @@
   "overriddenProperties": [],
   "parent": {
     "name": "Achievements",
-    "path": "folders/Demo/Stats Functions (Title)/Achievements.yy",
+    "path": "folders/Demo/Stats Functions/Achievements.yy",
   },
   "resourceVersion": "1.0",
   "name": "objAchievementSetProgress",

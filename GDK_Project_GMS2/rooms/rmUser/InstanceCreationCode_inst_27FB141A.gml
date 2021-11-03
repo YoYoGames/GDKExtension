@@ -1,3 +1,5 @@
 
-text = "Goto Stats (2017)";
+text = "XBox Live";
 target = rmStatsTitle;
+
+tabPriority = 91;

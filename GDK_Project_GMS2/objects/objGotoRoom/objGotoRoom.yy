@@ -8,8 +8,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "objYoYoButton",
-    "path": "objects/objYoYoButton/objYoYoButton.yy",
+    "name": "objXBoxButton",
+    "path": "objects/objXBoxButton/objXBoxButton.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -29,8 +29,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "User Functions",
-    "path": "folders/Demo/User Functions.yy",
+    "name": "Utils",
+    "path": "folders/Demo/Utils.yy",
   },
   "resourceVersion": "1.0",
   "name": "objGotoRoom",

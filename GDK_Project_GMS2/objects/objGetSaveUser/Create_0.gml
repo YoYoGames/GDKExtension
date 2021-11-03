@@ -4,7 +4,7 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Get Save User";
+text = "Get Workspace";
 
 onClick = function() {
 	var _userId = xboxone_get_savedata_user();

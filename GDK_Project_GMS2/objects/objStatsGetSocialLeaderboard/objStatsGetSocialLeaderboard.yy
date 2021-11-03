@@ -8,8 +8,8 @@
   "spriteMaskId": null,
   "persistent": false,
   "parentObjectId": {
-    "name": "objYoYoButton",
-    "path": "objects/objYoYoButton/objYoYoButton.yy",
+    "name": "objXBoxButton",
+    "path": "objects/objXBoxButton/objXBoxButton.yy",
   },
   "physicsObject": false,
   "physicsSensor": false,
@@ -30,7 +30,7 @@
   "overriddenProperties": [],
   "parent": {
     "name": "Leaderboards",
-    "path": "folders/Demo/Stats Functions (Title)/Leaderboards.yy",
+    "path": "folders/Demo/Stats Functions/Leaderboards.yy",
   },
   "resourceVersion": "1.0",
   "name": "objStatsGetSocialLeaderboard",
