@@ -17,7 +17,26 @@ onClick = function() {
 	var b1 = buffer_create(1, buffer_grow, 1);
 	buffer_write(b1, buffer_text, "foo");
 
-	requestId = gdk_save_buffer(b1, "single/b1", 0, buffer_tell(b1));
+	switch (os_type) {
+		
+		case os_windows:
+			// On Windows GDK the function used to save buffers asynchronously
+			// is 'gdk_save_buffer' it will return a requestID that can be checked
+			// during the Async Save/Load event.
+			requestId = gdk_save_buffer(b1, "single/b1", 0, buffer_tell(b1));
+			break;
+			
+		case os_xboxseriesxs:
+			// On Xbox Series X/S the function used to save buffers asynchronously
+			// is 'buffer_save_async' it will return a requestID that can be checked
+			// during the Async Save/Load event.
+			requestId = buffer_save_async(b1, "single/b1", 0, buffer_tell(b1));
+			break;
+			
+		default: throw "[ERROR] objSaveSingle, unsupported platform";
+	}
+	
+	
 	if (requestId == -1) show_debug_message("[ERROR] gdk_save_buffer");
 	
 	buffer_delete(b1);
