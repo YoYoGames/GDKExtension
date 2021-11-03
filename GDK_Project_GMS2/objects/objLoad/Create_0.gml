@@ -29,7 +29,26 @@ onClick = function() {
 function queue_load(_filename)
 {	
 	var _bufferId = buffer_create(1, buffer_grow, 1);
-	var _requestId = gdk_load_buffer(_bufferId, _filename, 0, 10);
+	
+	switch (os_type) {
+		
+		case os_windows:
+			// On Windows GDK the function used to load buffers asynchronously
+			// is 'gdk_load_buffer' it will return a requestID that can be checked
+			// during the Async Save/Load event.
+			var _requestId = gdk_load_buffer(_bufferId, _filename, 0, 10);
+			break;
+			
+		case os_xboxseriesxs:
+			// On Xbox Series X/S the function used to load buffers asynchronously
+			// is 'gdk_load_buffer' it will return a requestID that can be checked
+			// during the Async Save/Load event.
+			var _requestId = buffer_load_async(_bufferId, _filename, 0, 10);
+			break;
+			
+		default: throw "[ERROR] objLoad, unsupported platform";
+	}
 	
 	requestIds[$ _requestId] = { filename: _filename, bufferId: _bufferId };
 }
+

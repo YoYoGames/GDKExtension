@@ -6,7 +6,7 @@ event_inherited();
 
 text = "Rich Presence"
 
-presenceId = "mainMenu";
+presenceId = "presenceId";
 
 onClick = function() {
 	var _userId = xboxone_get_activating_user();

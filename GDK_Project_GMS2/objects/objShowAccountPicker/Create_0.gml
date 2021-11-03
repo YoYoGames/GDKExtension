@@ -4,7 +4,7 @@
 // Inherit the parent event
 event_inherited();
 
-text = ">>> Select <<<"
+text = "Change"
 requestId = noone;
 
 onClick = function() {

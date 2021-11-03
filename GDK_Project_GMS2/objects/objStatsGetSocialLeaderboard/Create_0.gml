@@ -4,9 +4,13 @@
 // Inherit the parent event
 event_inherited();
 
-text = "Fetch (Social)";
+text = "Fetch";
+leaderboardID = "leaderboardID";
 
 onClick = function() {
-	var _userId = xboxone_get_activating_user();
-	xboxone_stats_get_social_leaderboard(_userId, "TestInt", 10, 0, true, true, false);
+	var _userId = xboxone_get_user(0);	
+	xboxone_stats_get_social_leaderboard(_userId, leaderboardID, 10, 0, true, true, false);
+
+	// The async event for this function call is inside the 'objLeaderboardAsync'
+	// since both leaderboard queries share the same Async Social event and type.
 }
