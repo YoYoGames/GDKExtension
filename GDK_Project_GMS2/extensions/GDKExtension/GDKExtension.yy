@@ -86,6 +86,7 @@
         {"externalName":"F_MS_IAP_ShowRateAndReviewUI","kind":1,"help":"ms_iap_ShowRateAndReviewUI(user_id)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"ms_iap_ShowRateAndReviewUI","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_MS_IAP_ShowRedeemTokenUI","kind":1,"help":"ms_iap_ShowRedeemTokenUI(user_id,token,allowed_store_ids,disallow_cvs_redemption)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"ms_iap_ShowRedeemTokenUI","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_MS_IAP_UnmountPackage","kind":1,"help":"ms_iap_UnmountPackage(package_id)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"ms_iap_UnmountPackage","tags":[],"resourceType":"GMExtensionFunction",},
+        {"externalName":"F_XboxOneUserIdForUser","kind":1,"help":"xboxone_user_id_for_user(user_id)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_user_id_for_user","tags":[],"resourceType":"GMExtensionFunction",},
       ],"constants":[],"ProxyFiles":[],"copyToTargets":64,"order":[
         {"name":"gdk_init","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"gdk_update","path":"extensions/GDKExtension/GDKExtension.yy",},
@@ -94,6 +95,7 @@
         {"name":"xboxone_get_user_count","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_get_user","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_get_activating_user","path":"extensions/GDKExtension/GDKExtension.yy",},
+        {"name":"xboxone_user_id_for_user","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_fire_event","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_get_stats_for_user","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_stats_setup","path":"extensions/GDKExtension/GDKExtension.yy",},
