@@ -1,6 +1,0 @@
-
-
-Documentation (README.md)
-config file.... Title ID etc.... Do we need this???
-MS Store packaging .... we will need a HOWTO 
-Connected Storage .... we will need something to bring over (probably need a buffer_save for connected storage)
