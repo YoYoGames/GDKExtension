@@ -74,7 +74,7 @@ void F_XboxOneUserIsRemote(RValue& Result, CInstance* selfinst, CInstance* other
 void F_XboxOneGameDisplayNameForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneAppDisplayNameForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneGamerTagForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneUserIdForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
+YYEXPORT void F_XboxOneUserIdForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneGamerScoreForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneReputationForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneUserForPad(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
@@ -930,6 +930,7 @@ void F_XboxOneGamerTagForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 #endif
 }
 
+YYEXPORT
 void F_XboxOneUserIdForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	int numusers = 0;
