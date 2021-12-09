@@ -550,8 +550,8 @@ void XUM::Init()
 	// Create a task queue that will process in the background on system threads and fire callbacks on a thread we choose in a serialized order
 	HRESULT hResult = XTaskQueueCreate(XTaskQueueDispatchMode::ThreadPool, XTaskQueueDispatchMode::Manual, &m_taskQueue);
 	if (FAILED(hResult)) {
-		// error
-		throw hResult;
+		DebugConsoleOutput("XUM: XTaskQueueCreate failed (HRESULT 0x%08X)\n", (unsigned)(hResult));
+		return;
 	} // end if
 
 	// Register for any change events for user.
@@ -582,11 +582,14 @@ void XUM::Init()
 
 void XUM::Quit()
 {
-	XUserUnregisterForDeviceAssociationChanged(m_userDeviceAssociationChangedCallbackToken, false);
-	XUserUnregisterForChangeEvent(m_userChangeEventCallbackToken, false);
+	if (m_taskQueue != NULL)
+	{
+		XUserUnregisterForDeviceAssociationChanged(m_userDeviceAssociationChangedCallbackToken, false);
+		XUserUnregisterForChangeEvent(m_userChangeEventCallbackToken, false);
 
-	XTaskQueueCloseHandle(m_taskQueue);
-	m_taskQueue = NULL;
+		XTaskQueueCloseHandle(m_taskQueue);
+		m_taskQueue = NULL;
+	}
 }
 
 
@@ -609,7 +612,7 @@ void XUM::Update()
 	}
 
 	// Handle callbacks in the main thread to ensure thread safety
-	while (XTaskQueueDispatch(m_taskQueue, XTaskQueuePort::Completion, 0))
+	while (m_taskQueue != NULL && XTaskQueueDispatch(m_taskQueue, XTaskQueuePort::Completion, 0))
 	{
 	}
 }
