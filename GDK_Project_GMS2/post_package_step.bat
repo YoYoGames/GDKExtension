@@ -36,9 +36,9 @@ xcopy /s /y "%YYoutputFolder%\MSIXVC" "%directory%%filename%-pkg\"
 if ERRORLEVEL 1 goto exitError
 :: everything finished OK
 echo.
-echo ################################ Finished Creating Package ################################
-echo Output folder: %directory%%filename%-pkg
-echo NOTE: You will need both .MSIXVC and .EKB to upload the package to the MS Partner Center
+echo "################################ Finished Creating Package ################################"
+echo "Output folder: %directory%%filename%-pkg"
+echo "NOTE: You will need both .MSIXVC and .EKB to upload the package to the MS Partner Center"
 :: ----------------------------------------------------------------------------------------------------
 :: exit /b 255
 :: ----------------------------------------------------------------------------------------------------
@@ -46,17 +46,17 @@ echo NOTE: You will need both .MSIXVC and .EKB to upload the package to the MS P
 exit /b 0
 :: ----------------------------------------------------------------------------------------------------
 :exitError
-echo ERROR : Unable to complete
+echo "ERROR : Unable to complete"
 exit /b 1
 :: ----------------------------------------------------------------------------------------------------
 :: If the GDK is not installed then prompt the user to install it
 :error_install_GDK
-echo Goto https://github.com/microsoft/GDK to install the GDK
+echo "Goto https://github.com/microsoft/GDK to install the GDK"
 exit /b 1
 :: ----------------------------------------------------------------------------------------------------
 :: Ensire that windows option for copy exe to dest is enabled
 :error_ensure_windows_copy_exe_to_dest
-echo The Game Options -> Windows -> General -> Copy exe to output folder MUST be enabled.
+echo "The Game Options -> Windows -> General -> Copy exe to output folder MUST be enabled."
 exit /b 1
 :: ----------------------------------------------------------------------------------------------------
 :: Get the filename from the given parameter

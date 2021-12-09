@@ -13,13 +13,16 @@ call "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd
 
 :: ensure the runner is called the correct thing
 pushd %YYoutputFolder%
-call :getfilename %YYcompile_output_file_name%
+call :getfilename "%YYcompile_output_file_name%"
 if exist Runner.exe move Runner.exe %filename%.exe
 popd
 
 :: register the application
 wdapp register %YYoutputFolder% >"%YYtempFolderUnmapped%\wdapp.out"
-if ERRORLEVEL 1 goto exit
+if ERRORLEVEL 1 (
+  type "%YYtempFolderUnmapped%\wdapp.out"
+  goto exitError
+)
 
 :: can be useful for debugging problems
 :: type "%YYtempFolderUnmapped%\wdapp.out"
@@ -33,6 +36,7 @@ popd
 
 :: launch the application
 if not "%APPNAME%" == "" (
+	echo %APPNAME%
 	wdapp launch %APPNAME% -outputdebugstring -game %YYcompile_output_file_name% -debugoutput %YYtempFolderUnmapped%\game.out -output %YYtempFolderUnmapped%\game.out
 	powershell Get-Content "%YYtempFolderUnmapped%\game.out" -Wait -Encoding utf8 -Tail 30
 	exit /b 255
@@ -42,15 +46,20 @@ if not "%APPNAME%" == "" (
 exit /b 0
 
 :: ----------------------------------------------------------------------------------------------------
+:exitError
+echo "ERROR : Unable to complete"
+exit /b 1
+
+:: ----------------------------------------------------------------------------------------------------
 :: If the GDK is not installed then prompt the user to install it
 :error_install_GDK
-echo Goto https://github.com/microsoft/GDK to install the GDK
+echo "Goto https://github.com/microsoft/GDK to install the GDK"
 exit /b 1
 
 :: ----------------------------------------------------------------------------------------------------
 :: Ensire that windows option for copy exe to dest is enabled
 :error_ensure_windows_copy_exe_to_dest
-echo The Game Options -> Windows -> General -> Copy exe to output folder MUST be enabled.
+echo "The Game Options -> Windows -> General -> Copy exe to output folder MUST be enabled."
 exit /b 1
 
 :: ----------------------------------------------------------------------------------------------------
