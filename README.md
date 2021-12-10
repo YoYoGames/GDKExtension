@@ -22,7 +22,7 @@ This repository contains the source code for the DLL that implements the GDK fun
 
 ---
 
-## Building this Extension
+## Building this Extension (REQUIRED)
 
 
 1. Install VS2019 - https://visualstudio.microsoft.com/downloads/ 
