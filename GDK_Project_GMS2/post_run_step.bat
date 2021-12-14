@@ -6,15 +6,25 @@
 :: ensure that YYPLATFORM_option_windows_copy_exe_to_dest is set to True
 if not "%YYPLATFORM_option_windows_copy_exe_to_dest%" == "True" goto error_ensure_windows_copy_exe_to_dest
 
-:: Setup the GDK Environment
+:: Check if GDK is installed
 if not exist "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" goto error_install_GDK
-call "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" GamingDesktopVS2019
 
+:: Setup the GDK Environment (force version Update Oct 2021)
+set GRDKEDITION=211000
+call "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" GamingDesktopVS2019
+if ERRORLEVEL 1 (
+  goto error_wrong_GDK
+)
 
 :: ensure the runner is called the correct thing
 pushd %YYoutputFolder%
 call :getfilename "%YYcompile_output_file_name%"
 if exist Runner.exe move Runner.exe %filename%.exe
+
+:: Copy the required dll libraries from the user's GDK installation folder
+if not exist "Party.dll" copy "%GameDKLatest%\GRDK\ExtensionLibraries\PlayFab.Party.Cpp\Redist\CommonConfiguration\neutral\Party.dll" "Party.dll"
+if not exist "PartyXboxLive.dll" copy "%GameDKLatest%\GRDK\ExtensionLibraries\PlayFab.PartyXboxLive.Cpp\Redist\CommonConfiguration\neutral\PartyXboxLive.dll" "PartyXboxLive.dll"
+if not exist "XCurl.dll" copy "%GameDKLatest%\GRDK\ExtensionLibraries\Xbox.XCurl.API\Redist\CommonConfiguration\neutral\XCurl.dll" "XCurl.dll"
 popd
 
 :: register the application
@@ -53,7 +63,13 @@ exit /b 1
 :: ----------------------------------------------------------------------------------------------------
 :: If the GDK is not installed then prompt the user to install it
 :error_install_GDK
-echo "Goto https://github.com/microsoft/GDK to install the GDK"
+echo "Goto https://github.com/microsoft/GDK/releases/tag/October_2021_Republish to install the GDK"
+exit /b 1
+
+:: ----------------------------------------------------------------------------------------------------
+:: If the required GDK verison is not installed 
+:error_wrong_GDK
+echo "Wrong GDK version, goto https://github.com/microsoft/GDK/releases/tag/October_2021_Republish"
 exit /b 1
 
 :: ----------------------------------------------------------------------------------------------------
