@@ -48,7 +48,7 @@
     <ProjectGuid>{0fa30f26-851f-4114-bf0a-4ee7bf87c018}</ProjectGuid>
     <RootNamespace>GDKExtension</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
-    <XdkEditionTarget>210601</XdkEditionTarget>
+    <XdkEditionTarget>211000</XdkEditionTarget>
     <GDKExtLibNames>PlayFab.Party.Cpp;PlayFab.PartyXboxLive.Cpp;Xbox.Services.API.C</GDKExtLibNames>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
