@@ -25,8 +25,8 @@ This repository contains the source code for the DLL that implements the GDK fun
 ## Building this Extension (REQUIRED)
 
 
-1. Install VS2019 - https://visualstudio.microsoft.com/downloads/ 
-2. Install see https://github.com/microsoft/GDK (clone repository, then run the installer - install **Update 1**)
+1. Install VS2019 - see https://visualstudio.microsoft.com/downloads/ 
+2. Install GDK - see https://github.com/microsoft/GDK/releases/tag/October_2021_Republish
 3. Install CMAKE - see https://cmake.org/download/
 4. Clone this repository (NOTE: This repository has submodules)
 5. Open the Visual Studio 2019
@@ -35,7 +35,7 @@ This repository contains the source code for the DLL that implements the GDK fun
 8. Select the Debug|Gaming.Desktop.x64 or Release|Gaming.Desktop.x64
 9. Build
 
-**NOTE**: Output from this build will be copied into the GMS2 GDK  project
+**NOTE**: Output from this build will be copied into the GMS2 GDK project
 
 ---
 
