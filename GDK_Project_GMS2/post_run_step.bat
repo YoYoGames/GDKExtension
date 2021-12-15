@@ -16,10 +16,14 @@ if ERRORLEVEL 1 (
   goto error_wrong_GDK
 )
 
-:: ensure the runner is called the correct thing
+:: Ensure the runner is called the correct thing
 pushd %YYoutputFolder%
-call :getfilename "%YYcompile_output_file_name%"
-if exist Runner.exe move Runner.exe %filename%.exe
+
+:: Resolve {project_name.exe} if used
+call :getfilename "%YYPLATFORM_option_windows_executable_name%"
+
+:: Rename the runner to the executable name (GameOptions->Windows->Executable Name)
+if exist Runner.exe move Runner.exe "%filename%.exe"
 
 :: Copy the required dll libraries from the user's GDK installation folder
 if not exist "Party.dll" copy "%GameDKLatest%\GRDK\ExtensionLibraries\PlayFab.Party.Cpp\Redist\CommonConfiguration\neutral\Party.dll" "Party.dll"
@@ -28,7 +32,7 @@ if not exist "XCurl.dll" copy "%GameDKLatest%\GRDK\ExtensionLibraries\Xbox.XCurl
 popd
 
 :: register the application
-wdapp register %YYoutputFolder% >"%YYtempFolderUnmapped%\wdapp.out"
+wdapp register "%YYoutputFolder%" >"%YYtempFolderUnmapped%\wdapp.out"
 if ERRORLEVEL 1 (
   type "%YYtempFolderUnmapped%\wdapp.out"
   goto exitError
@@ -47,7 +51,7 @@ popd
 :: launch the application
 if not "%APPNAME%" == "" (
 	echo %APPNAME%
-	wdapp launch %APPNAME% -outputdebugstring -game %YYcompile_output_file_name% -debugoutput %YYtempFolderUnmapped%\game.out -output %YYtempFolderUnmapped%\game.out
+	wdapp launch %APPNAME% -outputdebugstring -game "%YYcompile_output_file_name%" -debugoutput %YYtempFolderUnmapped%\game.out -output %YYtempFolderUnmapped%\game.out
 	powershell Get-Content "%YYtempFolderUnmapped%\game.out" -Wait -Encoding utf8 -Tail 30
 	exit /b 255
 )
@@ -81,5 +85,8 @@ exit /b 1
 :: ----------------------------------------------------------------------------------------------------
 :: Get the filename from the given parameter
 :getfilename
+:: First we remove the extension (since dev could have missed it in the IDE)
 set filename=%~n1
+:: Resolve ${project_name} if it was used
+call set filename=%%filename:${project_name}=%YYMACROS_project_name%%%
 goto :eof
