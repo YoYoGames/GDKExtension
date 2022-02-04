@@ -34,7 +34,7 @@ void YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _
 	} // end if
 
 	// copy out all the functions 
-	memcpy(&gs_runnerInterface, _pFunctions, _functions_size);
+	memcpy(&gs_runnerInterface, _pFunctions, sizeof(YYRunnerInterface));
 	g_pYYRunnerInterface = &gs_runnerInterface;
 }
 
