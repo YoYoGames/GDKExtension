@@ -21,6 +21,7 @@ YYRunnerInterface gs_runnerInterface;
 YYRunnerInterface* g_pYYRunnerInterface;
 
 char* g_XboxSCID = NULL;
+bool g_gdk_initialised = false;
 
 void InitIAPFunctionsM();
 void UpdateIAPFunctionsM();
@@ -34,7 +35,7 @@ void YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _
 	} // end if
 
 	// copy out all the functions 
-	memcpy(&gs_runnerInterface, _pFunctions, _functions_size);
+	memcpy(&gs_runnerInterface, _pFunctions, sizeof(YYRunnerInterface));
 	g_pYYRunnerInterface = &gs_runnerInterface;
 }
 
@@ -123,6 +124,14 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 		return;
 	}
 
+	if (g_gdk_initialised)
+	{
+		DebugConsoleOutput("ERROR: gdk_init() called but GDK is already initialised!\n");
+		return;
+	}
+
+	DebugConsoleOutput("gdk_init() called - initialising the GDK extension\n");
+
 	std::vector<std::string> event_manifest_names = _find_packaged_files("Events-*.man");
 
 	if (event_manifest_names.size() == 0)
@@ -154,11 +163,19 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 
 	XUM::Init();
 	InitIAPFunctionsM();
+
+	g_gdk_initialised = true;
 }
 
 YYEXPORT
 void gdk_update(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised)
+	{
+		DebugConsoleOutput("ERROR: gdk_update() called but GDK isn't initialised! (call gdk_init() first)\n");
+		return;
+	}
+
 	XUM::Update();
 	UpdateIAPFunctionsM();
 
@@ -169,6 +186,14 @@ void gdk_update(RValue& Result, CInstance* selfinst, CInstance* otherinst, int a
 YYEXPORT
 void gdk_quit(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised)
+	{
+		DebugConsoleOutput("ERROR: gdk_quit() called but GDK isn't initialised!\n");
+		return;
+	}
+
+	DebugConsoleOutput("gdk_quit() called - shutting down the GDK extension\n");
+
 	QuitIAPFunctionsM();
 	XUM::Quit();
 
@@ -190,6 +215,8 @@ void gdk_quit(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 
 	YYFree(g_XboxSCID);
 	g_XboxSCID = NULL;
+
+	g_gdk_initialised = false;
 }
 
 YYEXPORT
