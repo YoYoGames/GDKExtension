@@ -309,6 +309,16 @@ inline void YYStructAddString(RValue* _pStruct, const char* _pKey, const char* _
 #define g_LiveConnection	(*g_pYYRunnerInterface->pLiveConnection)
 #define g_HTTP_ID			(*g_pYYRunnerInterface->pHTTP_ID)
 
+inline bool WhitelistIsDirectoryIn(const char* _pszDirectory) { return g_pYYRunnerInterface->WhitelistIsDirectoryIn(_pszDirectory); }
+inline bool WhiteListIsFilenameIn(const char* _pszFilename) { return g_pYYRunnerInterface->WhiteListIsFilenameIn(_pszFilename); }
+inline void WhiteListAddTo(const char* _pszFilename, bool _bIsDir) { g_pYYRunnerInterface->WhiteListAddTo(_pszFilename, _bIsDir); }
+inline bool DirExists(const char* _pszDirectory) { return g_pYYRunnerInterface->DirExists(_pszDirectory); }
+
+inline IBuffer* BufferGetFromGML(int _index) { return g_pYYRunnerInterface->BufferGetFromGML(_index); }
+inline int BufferTELL(IBuffer* _pBuffer) { return g_pYYRunnerInterface->BufferTELL(_pBuffer); }
+inline unsigned char* BufferGet(IBuffer* _pBuffer) { return g_pYYRunnerInterface->BufferGet(_pBuffer); }
+
+inline const char* FilePrePend() { return g_pYYRunnerInterface->FilePrePend(); }
 
 #endif
 
