@@ -12,6 +12,7 @@
 struct RValue;
 class YYObjectBase;
 class CInstance;
+class IBuffer;
 struct YYRunnerInterface;
 struct HTTP_REQ_CONTEXT;
 typedef int (*PFUNC_async)(HTTP_REQ_CONTEXT* _pContext, void* _pPayload, int* _pMap);
@@ -95,6 +96,7 @@ struct YYRunnerInterface
 
 	// finding and runnine user scripts from name
 	int (*Script_Find_Id)(const char* name);
+	// CAUTION: this pointer may be NULL
 	bool (*Script_Perform)(int ind, CInstance* selfinst, CInstance* otherinst, int argc, RValue* res, RValue* arg);
 
 	// finding builtin functions
@@ -170,6 +172,19 @@ struct YYRunnerInterface
 	void (*StructAddInt)(RValue* _pStruct, const char* _pKey, int _value);
 	void (*StructAddRValue)(RValue* _pStruct, const char* _pKey, RValue* _pValue);
 	void (*StructAddString)(RValue* _pStruct, const char* _pKey, const char* _pValue);
+	
+	// directory and whitelist management
+	bool (*WhitelistIsDirectoryIn)(const char* _pszDirectory);
+	bool (*WhiteListIsFilenameIn)(const char* _pszFilename);
+	void (*WhiteListAddTo)(const char* _pszFilename, bool _bIsDir);
+	bool (*DirExists)(const char* _pszDirectory);
+	
+	// advanced buffer management
+	IBuffer* (*BufferGetFromGML)(int _index);
+	int (*BufferTELL)(IBuffer* _pBuffer);
+	unsigned char* (*BufferGet)(IBuffer* _pBuffer);
+	
+	const char* (*FilePrePend)();
 };
 
 
