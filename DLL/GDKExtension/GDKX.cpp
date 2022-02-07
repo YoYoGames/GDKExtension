@@ -377,10 +377,7 @@ void F_XboxOneShowAccountPicker(RValue& Result, CInstance* selfinst, CInstance* 
 	if (ret < 0)
 	{
 		DebugConsoleOutput("xboxone_show_account_picker() failed\n");
-		Result.val = ret;
 	}
-	else
-	{
-		Result.val = 0;
-	}
+
+	Result.val = ret;
 }
