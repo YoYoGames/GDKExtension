@@ -237,12 +237,6 @@ void F_XboxOneGetUser(RValue& Result, CInstance* selfinst, CInstance* otherinst,
 	Result.kind = VALUE_INT64;
 	Result.v64 = 0;
 
-	if ((argc != 1) || (arg[0].kind != VALUE_REAL))
-	{
-		YYError("xboxone_get_user() - argument should be a user number but it is not.", false);
-		return;
-	}
-
 	int numusers = 0;
 	XUMuser** users = XUM::GetUsers(numusers);
 
@@ -361,13 +355,6 @@ void F_XboxOneShowAccountPicker(RValue& Result, CInstance* selfinst, CInstance* 
 	}
 	else
 	{
-		if ((argc < 2) || (arg[0].kind != VALUE_REAL) || (arg[1].kind != VALUE_REAL))
-		{
-			YYError("xboxone_show_account_picker() - invalid arguments", false);
-			Result.val = -1;
-			return;
-		}
-
 		int optionsval = YYGetInt32(arg, 1);
 		if (optionsval == 1)
 			options = XUserAddOptions::AllowGuests;
