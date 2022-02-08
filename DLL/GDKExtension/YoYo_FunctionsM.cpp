@@ -2396,11 +2396,6 @@ void F_XboxOneSetServiceConfigurationID(RValue& Result, CInstance* selfinst, CIn
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
-	if ((argc != 1) || (arg[0].kind != VALUE_STRING))
-	{
-		YYError("xboxone_set_service_configuration_id() - argument should be service_configuration_id", false);
-		return;
-	}
 #ifndef _GAMING_XBOX
 	g_PrimaryServiceConfigId = ConvertCharArrayToManagedString(YYGetString(arg, 0));	
 #endif
