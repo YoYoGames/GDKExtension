@@ -17,7 +17,7 @@ if ERRORLEVEL 1 (
 )
 
 :: Ensure the runner is called the correct thing
-pushd %YYoutputFolder%
+pushd "%YYoutputFolder%""
 
 :: Resolve {project_name.exe} if used
 call :getfilename "%YYPLATFORM_option_windows_executable_name%"
@@ -38,6 +38,7 @@ if ERRORLEVEL 1 goto exitError
 mkdir %YYoutputFolder%\MSIXVC
 makepkg pack /f %YYoutputFolder%\layout.xml /d %YYoutputFolder% /pd %YYoutputFolder%\MSIXVC -pc > "%YYtempFolderUnmapped%\makepkg.out"
 if ERRORLEVEL 1 goto exitError
+
 :: can be useful for debugging problems
 :: type "%YYtempFolderUnmapped%\makepkg.out"
 :: get the application name, this is horrible but should find the game appname to use for launching
@@ -49,6 +50,7 @@ popd
 set MSIXVC=%APPNAME:~30,-2%
 call :getfilename "%MSIXVC%"
 call :getdirectory "%YYtargetFile%"
+
 :: It will copy the entire directory 
 xcopy /s /y "%YYoutputFolder%\MSIXVC" "%directory%%filename%-pkg\"
 if ERRORLEVEL 1 goto exitError
@@ -57,11 +59,11 @@ echo.
 echo "################################ Finished Creating Package ################################"
 echo "Output folder: %directory%%filename%-pkg"
 echo "NOTE: You will need both .MSIXVC and .EKB to upload the package to the MS Partner Center"
-:: ----------------------------------------------------------------------------------------------------
-:: exit /b 255
+
 :: ----------------------------------------------------------------------------------------------------
 :exit
 exit /b 0
+
 :: ----------------------------------------------------------------------------------------------------
 :exitError
 echo "ERROR : Unable to complete"
@@ -82,19 +84,9 @@ exit /b 1
 echo "The Game Options -> Windows -> General -> Copy exe to output folder MUST be enabled."
 exit /b 1
 :: ----------------------------------------------------------------------------------------------------
-:: Get the filename from the given parameter
-:getfilename
-set filename=%~n1
-goto :eof
-:: ----------------------------------------------------------------------------------------------------
-:: Get the filename from the given parameter
-:getfilenameext
-set filenameext=%~nx1
-goto :eof
-:: ----------------------------------------------------------------------------------------------------
-:: Get the directory and filename (no extension)from the given parameter
-:getdirectoryfilename
-set directoryfilename=%~dn1
+:: Get the directory and filename (no extension) from the given parameter
+:getdirectory
+set directory=%~dp1
 goto :eof
 :: ----------------------------------------------------------------------------------------------------
 :: Get the filename from the given parameter

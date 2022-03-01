@@ -17,7 +17,7 @@ if ERRORLEVEL 1 (
 )
 
 :: Ensure the runner is called the correct thing
-pushd %YYoutputFolder%
+pushd "%YYoutputFolder%"
 
 :: Resolve {project_name.exe} if used
 call :getfilename "%YYPLATFORM_option_windows_executable_name%"
@@ -29,6 +29,14 @@ if exist Runner.exe move Runner.exe "%filename%.exe"
 if not exist "Party.dll" copy "%GRDKLatest%\ExtensionLibraries\PlayFab.Party.Cpp\Redist\CommonConfiguration\neutral\Party.dll" "Party.dll"
 if not exist "PartyXboxLive.dll" copy "%GRDKLatest%\ExtensionLibraries\PlayFab.PartyXboxLive.Cpp\Redist\CommonConfiguration\neutral\PartyXboxLive.dll" "PartyXboxLive.dll"
 if not exist "XCurl.dll" copy "%GRDKLatest%\ExtensionLibraries\Xbox.XCurl.API\Redist\CommonConfiguration\neutral\XCurl.dll" "XCurl.dll"
+
+:: Get path to the game (*.win) under YYC the output game isn't named correctly
+FOR %%F IN (*.win) DO (
+ set outputPath=%cd%\%%F
+ goto break
+)
+:break
+
 popd
 
 :: register the application
@@ -51,7 +59,7 @@ popd
 :: launch the application
 if not "%APPNAME%" == "" (
 	echo %APPNAME%
-	wdapp launch %APPNAME% -outputdebugstring -game "%YYcompile_output_file_name%" -debugoutput %YYtempFolderUnmapped%\game.out -output %YYtempFolderUnmapped%\game.out
+	wdapp launch %APPNAME% -outputdebugstring -game "%outputPath%" -debugoutput %YYtempFolderUnmapped%\game.out -output %YYtempFolderUnmapped%\game.out
 	powershell Get-Content "%YYtempFolderUnmapped%\game.out" -Wait -Encoding utf8 -Tail 30
 	exit /b 255
 )
