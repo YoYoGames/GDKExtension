@@ -32,11 +32,16 @@ if not exist "XCurl.dll" copy "%GRDKLatest%\ExtensionLibraries\Xbox.XCurl.API\Re
 popd
 
 :: generate map
-makepkg genmap /f %YYoutputFolder%\layout.xml /d %YYoutputFolder%
+makepkg genmap /f "%YYoutputFolder%\layout.xml" /d "%YYoutputFolder%"
 if ERRORLEVEL 1 goto exitError
-:: generate package
-mkdir %YYoutputFolder%\MSIXVC
-makepkg pack /f %YYoutputFolder%\layout.xml /d %YYoutputFolder% /pd %YYoutputFolder%\MSIXVC -pc > "%YYtempFolderUnmapped%\makepkg.out"
+
+:: create __temp named output folder
+call :getdirectory "%YYtargetFile%"
+set PKG_OUTPUT=%directory%__temp
+mkdir "%PKG_OUTPUT%"
+
+:: generate package inside __temp folder
+makepkg pack /f "%YYoutputFolder%\layout.xml" /d "%YYoutputFolder%" /pd "%PKG_OUTPUT%" -pc > "%YYtempFolderUnmapped%\makepkg.out"
 if ERRORLEVEL 1 goto exitError
 
 :: can be useful for debugging problems
@@ -47,13 +52,14 @@ for /f "tokens=*" %%a in (makepkg.out) do (
   (echo %%a | findstr /i /c:"Successfully created package '" >nul) && (set APPNAME=%%a) 
 )
 popd
+
+:: Rename output folder to definitive name
 set MSIXVC=%APPNAME:~30,-2%
 call :getfilename "%MSIXVC%"
-call :getdirectory "%YYtargetFile%"
 
-:: It will copy the entire directory 
-xcopy /s /y "%YYoutputFolder%\MSIXVC" "%directory%%filename%-pkg\"
+ren "%PKG_OUTPUT%" "%filename%-pkg"
 if ERRORLEVEL 1 goto exitError
+
 :: everything finished OK
 echo.
 echo "################################ Finished Creating Package ################################"
