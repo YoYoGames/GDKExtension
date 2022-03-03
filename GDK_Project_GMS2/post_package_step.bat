@@ -26,9 +26,10 @@ call :getfilename "%YYPLATFORM_option_windows_executable_name%"
 if exist Runner.exe move Runner.exe "%filename%.exe"
 
 :: Copy the required dll libraries from the user's GDK installation folder
-if not exist "Party.dll" copy "%GRDKLatest%\ExtensionLibraries\PlayFab.Party.Cpp\Redist\CommonConfiguration\neutral\Party.dll" "Party.dll"
-if not exist "PartyXboxLive.dll" copy "%GRDKLatest%\ExtensionLibraries\PlayFab.PartyXboxLive.Cpp\Redist\CommonConfiguration\neutral\PartyXboxLive.dll" "PartyXboxLive.dll"
-if not exist "XCurl.dll" copy "%GRDKLatest%\ExtensionLibraries\Xbox.XCurl.API\Redist\CommonConfiguration\neutral\XCurl.dll" "XCurl.dll"
+set GDK_PATH=%GameDK%\%GRDKEDITION%\GRDK\ExtensionLibraries
+if not exist "Party.dll" copy "%GDK_PATH%\PlayFab.Party.Cpp\Redist\CommonConfiguration\neutral\Party.dll" "Party.dll"
+if not exist "PartyXboxLive.dll" copy "%GDK_PATH%\PlayFab.PartyXboxLive.Cpp\Redist\CommonConfiguration\neutral\PartyXboxLive.dll" "PartyXboxLive.dll"
+if not exist "XCurl.dll" copy "%GDK_PATH%\Xbox.XCurl.API\Redist\CommonConfiguration\neutral\XCurl.dll" "XCurl.dll"
 popd
 
 :: generate map
@@ -46,6 +47,7 @@ if ERRORLEVEL 1 goto exitError
 
 :: can be useful for debugging problems
 :: type "%YYtempFolderUnmapped%\makepkg.out"
+
 :: get the application name, this is horrible but should find the game appname to use for launching
 pushd "%YYtempFolderUnmapped%"
 for /f "tokens=*" %%a in (makepkg.out) do (
