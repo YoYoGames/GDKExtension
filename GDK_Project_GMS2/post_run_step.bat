@@ -60,8 +60,11 @@ popd
 :: launch the application
 if not "%APPNAME%" == "" (
 	echo %APPNAME%
+
+  :: Delete older output files
+  copy NUL "%YYtempFolderUnmapped%\game.out"
 	wdapp launch %APPNAME% -outputdebugstring -game "%outputPath%" -debugoutput %YYtempFolderUnmapped%\game.out -output %YYtempFolderUnmapped%\game.out
-	powershell Get-Content "%YYtempFolderUnmapped%\game.out" -Wait -Encoding utf8 -Tail 30
+	powershell "Get-Content '%YYtempFolderUnmapped%\game.out' -Wait -Encoding utf8 -Tail 30 | ForEach-Object { $_; if($_ -match '###game_end###') { break } }"
 
 	exit /b 255
 )
