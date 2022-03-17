@@ -19,7 +19,7 @@ if ERRORLEVEL 1 (
 :: Ensure the runner is called the correct thing
 pushd "%YYoutputFolder%"
 
-:: Resolve {project_name.exe} if used
+:: Resolve ${project_name} if used
 call :getfilename "%YYPLATFORM_option_windows_executable_name%"
 
 :: Rename the runner to the executable name (GameOptions->Windows->Executable Name)
@@ -33,10 +33,11 @@ if not exist "XCurl.dll" copy "%GDK_PATH%\Xbox.XCurl.API\Redist\CommonConfigurat
 
 :: Get path to the game (*.win) under YYC the output game isn't named correctly
 FOR %%F IN (*.win) DO (
-  set outputPath=%cd%\%%F
+  set outputPath=%%F
   goto break
 )
 :break
+set outputPath=%cd%\%outputPath%
 
 popd
 

@@ -19,7 +19,7 @@ if ERRORLEVEL 1 (
 :: Ensure the runner is called the correct thing
 pushd "%YYoutputFolder%""
 
-:: Resolve {project_name.exe} if used
+:: Resolve ${project_name} if used
 call :getfilename "%YYPLATFORM_option_windows_executable_name%"
 
 :: Rename the runner to the executable name (GameOptions->Windows->Executable Name)
