@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"TabActive","path":"sprites/TabActive/TabActive.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "TabActive",
     "tags": [],
     "resourceType": "GMSequence",

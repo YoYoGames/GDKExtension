@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"XboxButtonLT","path":"sprites/XboxButtonLT/XboxButtonLT.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "XboxButtonLT",
     "tags": [],
     "resourceType": "GMSequence",

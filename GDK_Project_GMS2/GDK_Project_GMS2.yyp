@@ -85,7 +85,6 @@
   ],
   "isDnDProject": false,
   "isEcma": false,
-  "tutorialPath": "",
   "configs": {
     "name": "Default",
     "children": [],
@@ -134,9 +133,9 @@
     {"CopyToMask":0,"filePath":"datafiles","resourceVersion":"1.0","name":"GDK_Extension_Documentation.pdf","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
-    "IDEVersion": "2.3.7.606",
+    "IDEVersion": "2022.300.0.484",
   },
-  "resourceVersion": "1.4",
+  "resourceVersion": "1.5",
   "name": "GDK_Project_GMS2",
   "tags": [],
   "resourceType": "GMProject",
