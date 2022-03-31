@@ -41,6 +41,7 @@
     {"id":{"name":"rmUser","path":"rooms/rmUser/rmUser.yy",},"order":5,},
     {"id":{"name":"objSetSaveLocal","path":"objects/objSetSaveLocal/objSetSaveLocal.yy",},"order":7,},
     {"id":{"name":"objGetActivatingUser","path":"objects/objGetActivatingUser/objGetActivatingUser.yy",},"order":3,},
+    {"id":{"name":"objUserToken","path":"objects/objUserToken/objUserToken.yy",},"order":6,},
     {"id":{"name":"objStatsSetTime","path":"objects/objStatsSetTime/objStatsSetTime.yy",},"order":4,},
     {"id":{"name":"objStatsDelete","path":"objects/objStatsDelete/objStatsDelete.yy",},"order":0,},
     {"id":{"name":"objYoYoButton","path":"objects/objYoYoButton/objYoYoButton.yy",},"order":0,},

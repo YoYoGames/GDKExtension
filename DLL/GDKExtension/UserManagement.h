@@ -176,6 +176,8 @@ public:
 	static void UnlockMutex();
 
 	static int GetNextRequestID();
+	static HRESULT GetTokenAndSignatureAsync(XUserHandle User, const char* url, const char* method, size_t headerCount, const XUserGetTokenAndSignatureHttpHeader* headers, const char* bodyBuffer, size_t bodySize, bool forceRefresh);
+
 private:		
 	static std::vector<XUMuser*> cachedUsers;
 	static XUserLocalId activatingUser;

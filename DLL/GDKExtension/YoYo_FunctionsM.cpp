@@ -2408,3 +2408,75 @@ void F_XboxLiveNotAvailable(RValue& Result, CInstance* selfinst, CInstance* othe
 
 	DebugConsoleOutput("Function not available without Xbox Live\n");
 }
+
+YYEXPORT
+void F_XboxOneRequestUserToken(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
+{
+	uint64 id = (uint64)YYGetInt64(arg, 0);
+	const char* url = YYGetString(arg, 1);
+	const char* method = YYGetString(arg, 2);
+	const char* headerJsonString = YYGetString(arg, 3); /* A json string of http headers. TODO: Can we pass a GML ds_map or struct instead? */
+	const bool forceRefresh = (argc > 4) ? YYGetBool(arg, 4) : false;
+
+	/* Optional body, which should be a GML buffer. */
+	char* buffer_data = nullptr;
+	int buffer_idx = (argc > 5) ? YYGetInt32(arg, 5) : 0;
+	int buffer_size = 0;
+	if (argc > 5){
+		if (!BufferGetContent(buffer_idx, (void**)(&buffer_data), &buffer_size))
+		{
+			DebugConsoleOutput("xboxone_get_token_and_signature() - error: specified buffer not found\n");
+			Result.val = -1;
+			return;
+		}
+	}
+
+	int numusers = 0;
+	XUMuser** users = XUM::GetUsers(numusers);
+	for (int i = 0; i < numusers; i++)
+	{
+		XUMuser* user = users[i];
+		if (user->XboxUserIdInt == id)
+		{
+			/* Parse the json string into XUserGetTokenAndSignatureHttpHeader*/
+			json_object* headerObj = json_tokener_parse(headerJsonString);
+			if (headerObj != NULL) {
+				size_t headerCount = json_object_object_length(headerObj);
+				XUserGetTokenAndSignatureHttpHeader* headers = new XUserGetTokenAndSignatureHttpHeader[headerCount];
+				uint64_t i = 0;
+				json_object_object_foreach(headerObj, stats_key, stats_val)
+				{
+					const char* key = stats_key;
+					if (stats_val != NULL)
+					{
+						headers[i].name = key;
+						if (json_object_is_type(stats_val, json_type_string))
+						{
+							headers[i].value = json_object_get_string(stats_val);
+						}
+						else {
+							DebugConsoleOutput("Unexpected value type for key '%s'\n", stats_key);
+						}
+					}
+					else {
+						DebugConsoleOutput("value not found for key '%s'\n", stats_key);
+					}
+					++i;
+				}
+				Result.val = 0;
+				XUM::GetTokenAndSignatureAsync(user->user, url, method, headerCount, headers, buffer_data, buffer_size, forceRefresh);
+				delete[] headers;
+				return;
+			}
+			else {
+				Result.val = -1;
+				DebugConsoleOutput("Malformed json string for headers '%s'\n", headerJsonString);
+				return;
+			}
+		}
+	}
+	Result.val = -1;
+	DebugConsoleOutput("xboxone_get_token_and_signature() - error: user not found\n");
+	return;
+
+}

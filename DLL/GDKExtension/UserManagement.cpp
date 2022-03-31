@@ -539,7 +539,68 @@ int XUM::GetNextRequestID()
 	return id;
 }
 
+HRESULT XUM::GetTokenAndSignatureAsync(XUserHandle User, const char* url, const char* method, size_t headerCount, const XUserGetTokenAndSignatureHttpHeader* headers, const char* bodyBuffer, size_t bodySize, bool forceRefresh)
+{
+	auto asyncBlock = std::make_unique<XAsyncBlock>();
+	ZeroMemory(asyncBlock.get(), sizeof(*asyncBlock));
+	asyncBlock->queue = m_taskQueue;
+	asyncBlock->callback = [](XAsyncBlock* ab)
+	{
+		int dsMapIndex = CreateDsMap(1, "event_type", (double)0.0, "tokenandsignature_result");
+		size_t bufferSize = 0;
+		HRESULT hr = XUserGetTokenAndSignatureResultSize(ab, &bufferSize);
+		if (FAILED(hr)) {
+			DebugConsoleOutput("xboxone_get_token_and_signature - error (HRESULT 0x%08X)\n", (unsigned)(hr));
+			DsMapAddDouble(dsMapIndex, "status", -1);
+		}
+		else {
+			std::vector<uint8_t> buffer(bufferSize);
+			XUserGetTokenAndSignatureData* data;
+			HRESULT hr = XUserGetTokenAndSignatureResult(ab, buffer.size(), buffer.data(), &data, nullptr);
+			if (SUCCEEDED(hr))
+			{
+				DsMapAddDouble(dsMapIndex, "status", 0);
+				DsMapAddString(dsMapIndex, "token", data->token);
+				if (data->signature != nullptr)
+				{
+					DsMapAddString(dsMapIndex, "signature", data->signature);
+				}
+			}
+			else {
+				DebugConsoleOutput("xboxone_get_token_and_signature - error (HRESULT 0x%08X)\n", (unsigned)(hr));
+				DsMapAddDouble(dsMapIndex, "status", -1);
+			}
+		}
+		CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_SYSTEM_EVENT);
+		delete ab;
+	};
 
+	XUserGetTokenAndSignatureOptions options = forceRefresh ? XUserGetTokenAndSignatureOptions::ForceRefresh : XUserGetTokenAndSignatureOptions::None;
+
+	// DebugConsoleOutput("header name '%s'\n", headers[0].name);
+	// DebugConsoleOutput("header value'%s'\n", headers[0].value);
+	// DebugConsoleOutput("bodyBuffer '%s'\n", bodyBuffer);
+	// DebugConsoleOutput("method '%s'\n", method);
+	// DebugConsoleOutput("url '%s'\n", url);
+
+	if (SUCCEEDED(XUserGetTokenAndSignatureAsync(
+		User,
+		options,
+		method,
+		url,
+		headerCount,
+		headers,
+		bodySize,
+		bodyBuffer,
+		asyncBlock.get())))
+	{
+		// The call succeeded, so release the std::unique_ptr ownership of XAsyncBlock* since the callback will take over ownership.
+		// If the call fails, the std::unique_ptr will keep ownership and delete the XAsyncBlock*
+		asyncBlock.release();
+	}
+	
+	return S_OK;
+}
 
 void XUM::Init()
 {
