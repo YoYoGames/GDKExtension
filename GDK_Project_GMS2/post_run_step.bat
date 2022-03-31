@@ -60,8 +60,7 @@ popd
 
 :: launch the application
 if not "%APPNAME%" == "" (
-	echo %APPNAME%
-
+  
   :: Delete older output files
   copy NUL "%YYtempFolderUnmapped%\game.out"
 	wdapp launch %APPNAME% -outputdebugstring -game "%outputPath%" -debugoutput %YYtempFolderUnmapped%\game.out -output %YYtempFolderUnmapped%\game.out

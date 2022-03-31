@@ -3,6 +3,9 @@
 :: set
 :: echo #########################################################################################################################
 
+:: Early exit if we are not exporting to windows
+if not "%YYPLATFORM_name%" == "Windows" exit 0
+
 :: ensure that YYPLATFORM_option_windows_copy_exe_to_dest is set to True
 if not "%YYPLATFORM_option_windows_copy_exe_to_dest%" == "True" goto error_ensure_windows_copy_exe_to_dest
 
