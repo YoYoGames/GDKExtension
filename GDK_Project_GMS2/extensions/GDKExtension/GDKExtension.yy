@@ -87,6 +87,7 @@
         {"externalName":"F_MS_IAP_ShowRedeemTokenUI","kind":1,"help":"ms_iap_ShowRedeemTokenUI(user_id,token,allowed_store_ids,disallow_cvs_redemption)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"ms_iap_ShowRedeemTokenUI","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_MS_IAP_UnmountPackage","kind":1,"help":"ms_iap_UnmountPackage(package_id)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"ms_iap_UnmountPackage","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_XboxOneUserIdForUser","kind":1,"help":"xboxone_user_id_for_user(user_id)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_user_id_for_user","tags":[],"resourceType":"GMExtensionFunction",},
+        {"externalName":"F_XboxGetTokenAndSignature","kind":1,"help":"xboxone_get_token_and_signature( user, url, method, json_headers, body, force_refresh )","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_get_token_and_signature","tags":[],"resourceType":"GMExtensionFunction",},
       ],"constants":[],"ProxyFiles":[],"copyToTargets":64,"order":[
         {"name":"gdk_init","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"gdk_update","path":"extensions/GDKExtension/GDKExtension.yy",},
@@ -144,6 +145,7 @@
         {"name":"ms_iap_ShowRateAndReviewUI","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"ms_iap_ShowRedeemTokenUI","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"ms_iap_UnmountPackage","path":"extensions/GDKExtension/GDKExtension.yy",},
+        {"name":"xboxone_get_token_and_signature","path":"extensions/GDKExtension/GDKExtension.yy",},
       ],"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMExtensionFile",},
   ],
   "classname": "",
