@@ -176,6 +176,7 @@ public:
 	static void UnlockMutex();
 
 	static int GetNextRequestID();
+	static XTaskQueueHandle GetTaskQueue() { return m_taskQueue; }
 private:		
 	static std::vector<XUMuser*> cachedUsers;
 	static XUserLocalId activatingUser;

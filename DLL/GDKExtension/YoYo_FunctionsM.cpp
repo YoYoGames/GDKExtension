@@ -1314,6 +1314,202 @@ void F_XboxOneGetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* ot
 	Result.v64 = xuser->XboxUserIdInt;		
 }
 
+//user,url,method,headers,body
+YYEXPORT
+void F_XboxGetTokenAndSignature(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
+{
+	Result.kind = VALUE_REAL;
+	Result.val = -1;
+		
+	int i;
+	uint64 xb_user = (uint64)YYGetInt64(arg, 0);
+
+	XUM_LOCK_MUTEX;
+	XUMuser* xuser = XUM::GetUserFromId(xb_user);
+	if (xuser == NULL)
+	{
+		DebugConsoleOutput("xboxone_get_token_and_signature - error: user not found\n");
+		return;
+	}
+
+	struct GetTokenAndSigPayload
+	{
+		~GetTokenAndSigPayload()
+		{
+			YYFree(url);
+			YYFree(method);
+			YYFree(body);
+			for (int i = 0; i < headerCount; i++)
+			{
+				YYFree(headers[i].name);
+				YYFree(headers[i].value);
+			}
+			YYFree(headers);
+		}
+
+		const char* url;
+		const char* method;
+		void* body;
+		int bodysize;
+		XUserGetTokenAndSignatureHttpHeader* headers;
+		int headerCount;
+	};
+
+	GetTokenAndSigPayload* payload = new GetTokenAndSigPayload();
+
+	payload->url = YYStrDup(YYGetString(arg, 1));
+	payload->method = YYStrDup(YYGetString(arg, 2));
+	payload->body = NULL;
+	payload->bodysize = 0;
+	payload->headers = NULL;
+	payload->headerCount = 0;
+
+	const char* jsonheaders = YYGetString(arg, 3);
+
+	if (argc > 4)
+	{
+		if (KIND_RValue(&(arg[4])) != VALUE_UNDEFINED)
+		{
+			if (KIND_RValue(&(arg[4])) == VALUE_STRING)
+			{
+				payload->body = (void*)YYStrDup(YYGetString(arg, 4));
+				payload->bodysize = strlen((char*)payload->body) + 1;
+			}
+			else if (KIND_RValue(&(arg[4])) == VALUE_REAL)
+			{
+				//assuming this is a buffer index and we need to pass the array to gettoken....
+				int buffer = YYGetInt32(arg, 4);
+				if (!BufferGetContent(buffer, &(payload->body), &(payload->bodysize)))
+				{
+					DebugConsoleOutput("xboxone_get_token_and_signature - error: specified buffer %d not found\n", buffer);
+				}				
+			}
+		}
+	}
+
+	bool forceRefresh = false;
+
+	if (argc > 5)
+	{
+		forceRefresh = YYGetBool(arg, 5);
+	}
+
+	/* Parse the json string into XUserGetTokenAndSignatureHttpHeader*/
+	json_object* headerObj = json_tokener_parse(jsonheaders);
+	bool headerParseSucceeded = true;
+	if (headerObj != NULL)
+	{
+		payload->headerCount = json_object_object_length(headerObj);
+		payload->headers = (XUserGetTokenAndSignatureHttpHeader*)YYAlloc(sizeof(XUserGetTokenAndSignatureHttpHeader) * payload->headerCount);
+		uint64_t i = 0;
+		json_object_object_foreach(headerObj, stats_key, stats_val)
+		{
+			const char* key = stats_key;
+			if (stats_val != NULL)
+			{
+				payload->headers[i].name = YYStrDup(key);
+				if (json_object_is_type(stats_val, json_type_string))
+				{
+					payload->headers[i].value = YYStrDup(json_object_get_string(stats_val));
+				}
+				else
+				{
+					payload->headers[i].value = NULL;
+					DebugConsoleOutput("xboxone_get_token_and_signature - Unexpected value type for header key '%s'\n", stats_key);
+					headerParseSucceeded = false;
+				}
+			}
+			else
+			{
+				payload->headers[i].name = NULL;
+				payload->headers[i].value = NULL;
+
+				DebugConsoleOutput("xboxone_get_token_and_signature - value not found for header key '%s'\n", stats_key);
+				headerParseSucceeded = false;
+			}
+			++i;
+		}
+
+		/* Free deserialised JSON object. */
+		json_object_put(headerObj);
+	}
+	else
+	{
+		DebugConsoleOutput("xboxone_get_token_and_signature - Malformed json string for headers '%s'\n", jsonheaders);
+		headerParseSucceeded = false;
+	}	
+
+	if (!headerParseSucceeded)
+	{
+		delete payload;
+		return;
+	}
+
+	auto asyncBlock = std::make_unique<XAsyncBlock>();
+	ZeroMemory(asyncBlock.get(), sizeof(*asyncBlock));
+	asyncBlock->queue = XUM::GetTaskQueue();
+	asyncBlock->context = payload;
+	asyncBlock->callback = [](XAsyncBlock* ab)
+	{
+		int dsMapIndex = CreateDsMap(1, "event_type", (double)0.0, "tokenandsignature_result");
+		size_t bufferSize = 0;
+		HRESULT hr = XUserGetTokenAndSignatureResultSize(ab, &bufferSize);
+		if (FAILED(hr)) {
+			DebugConsoleOutput("xboxone_get_token_and_signature - error (HRESULT 0x%08X)\n", (unsigned)(hr));
+			DsMapAddDouble(dsMapIndex, "status", -1);
+		}
+		else {
+			std::vector<uint8_t> buffer(bufferSize);
+			XUserGetTokenAndSignatureData* data;
+			HRESULT hr = XUserGetTokenAndSignatureResult(ab, buffer.size(), buffer.data(), &data, nullptr);
+			if (SUCCEEDED(hr))
+			{
+				DsMapAddDouble(dsMapIndex, "status", 0);
+				DsMapAddString(dsMapIndex, "token", data->token);
+				if (data->signature != nullptr)
+				{
+					DsMapAddString(dsMapIndex, "signature", data->signature);
+				}
+			}
+			else {
+				DebugConsoleOutput("xboxone_get_token_and_signature - error (HRESULT 0x%08X)\n", (unsigned)(hr));
+				DsMapAddDouble(dsMapIndex, "status", -1);
+			}
+		}
+		CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_SYSTEM_EVENT);
+
+		GetTokenAndSigPayload* payload = (GetTokenAndSigPayload*)(ab->context);
+		delete payload;
+
+		delete ab;
+	};
+
+	XUserGetTokenAndSignatureOptions options = forceRefresh ? XUserGetTokenAndSignatureOptions::ForceRefresh : XUserGetTokenAndSignatureOptions::None;
+
+	if (SUCCEEDED(XUserGetTokenAndSignatureAsync(
+		xuser->user,
+		options,
+		payload->method,
+		payload->url,
+		payload->headerCount,
+		payload->headers,
+		payload->bodysize,
+		payload->body,
+		asyncBlock.get())))
+	{
+		// The call succeeded, so release the std::unique_ptr ownership of XAsyncBlock* since the callback will take over ownership.
+		// If the call fails, the std::unique_ptr will keep ownership and delete the XAsyncBlock*
+		asyncBlock.release();
+
+		Result.val = 0;
+	}
+	else
+	{
+		// Free the payload
+		delete payload;
+	}
+}
+
 // (user, privilege_id, attempt_resolution)
 YYEXPORT
 void F_XboxCheckPrivilege(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
