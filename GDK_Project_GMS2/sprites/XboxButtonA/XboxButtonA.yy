@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"XboxButtonA","path":"sprites/XboxButtonA/XboxButtonA.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "XboxButtonA",
     "tags": [],
     "resourceType": "GMSequence",

@@ -67,7 +67,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"sprYoYoButton","path":"sprites/sprYoYoButton/sprYoYoButton.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "sprYoYoButton",
     "tags": [],
     "resourceType": "GMSequence",
