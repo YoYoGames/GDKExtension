@@ -73,7 +73,7 @@ void F_XboxOneUserIsSigningIn(RValue& Result, CInstance* selfinst, CInstance* ot
 void F_XboxOneUserIsRemote(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneGameDisplayNameForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneAppDisplayNameForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
-void F_XboxOneGamerTagForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
+YYEXPORT void F_XboxOneGamerTagForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 YYEXPORT void F_XboxOneUserIdForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneGamerScoreForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
 void F_XboxOneReputationForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg);
@@ -844,90 +844,27 @@ void F_XboxOneAppDisplayNameForUser(RValue& Result, CInstance* selfinst, CInstan
 #endif
 }
 
+YYEXPORT
 void F_XboxOneGamerTagForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
-#ifdef WIN_UAP	
-#if defined XBOX_SERVICES
-	XUM_LOCK_MUTEX
+	int numusers = 0;
+	XUMuser** users = XUM::GetUsers(numusers);
 
-		auto users = XUM::GetUsers();
-	int size = users->Size;
-	if (size > 0)
+	uint64 id = (uint64)YYGetInt64(arg, 0);
+
+	for (int i = 0; i < numusers; i++)
 	{
-		XUMuser^ user = users->GetAt(0);
+		XUMuser* user = users[i];
 
-		char* tag = ConvertFromWideCharToUTF8((wchar_t*)(user->GameDisplayName->Data()));
-		char *new_tag = utf8_replace("#", "\\#", tag);
-		YYFree(tag);
-
-		YYCreateString(&Result, new_tag);
-		YYFree(new_tag);
-
-		return;
-	}
-	else
-	{
-		YYCreateString(&Result, "");
-		DebugConsoleOutput("xboxlive_gamertag_for_user() - user not found", false);
-	}
-#endif
-#else
-
-#if defined XBOX_SERVICES
-	XUM_LOCK_MUTEX
-		//auto users = Windows::Xbox::System::User::Users;
-		auto users = XUM::GetUsers();
-	int size = users->Size;
-
-	uint64 id = (uint64)(YYGetInt64(arg, 0));
-
-	for (int i = 0; i < size; i++)
-	{
-		auto user = users->GetAt(i);
 		if (user->XboxUserIdInt == id)
 		{
-			char* tag = ConvertFromWideCharToUTF8((wchar_t*)(user->GameDisplayName->Data()));
-			YYCreateString(&Result, tag);
-			YYFree(tag);
-
+			YYCreateString(&Result, user->ModernGamertag);
 			return;
 		}
 	}
 
-#ifdef NOV_XDK
-	// Could be a multiplayer user
-	// Check our current session list and see if we have a user matching this ID in it somewhere
-	// For multiplayer users this'll be the gamertag rather than the game display name
-	Platform::String^ xboxUserID = ui64tostring(id);
-
-	XSM_LOCK_MUTEX
-	Windows::Foundation::Collections::IVector<XSMsession^> ^sessions = XSM::GetSessions();
-	int numsessions = sessions->Size;
-	for (int i = 0; i < numsessions; i++)
-	{
-		XSMsession ^sess = sessions->GetAt(i);
-		if ((sess->session != nullptr) && (sess->session->Members != nullptr))
-		{
-			int nummembers = sess->session->Members->Size;
-			for (int j = 0; j < nummembers; j++)
-			{
-				Microsoft::Xbox::Services::Multiplayer::MultiplayerSessionMember^ member = sess->session->Members->GetAt(j);
-				if (member->XboxUserId->Equals(xboxUserID))
-				{
-					// Yay!
-					char* tag = ConvertFromWideCharToUTF8((wchar_t*)(member->Gamertag->Data()));
-					YYCreateString(&Result, tag);
-					YYFree(tag);
-					return;
-				}
-			}
-		}
-	}
-#endif
-#endif
 	YYCreateString(&Result, "");
-	DebugConsoleOutput("xboxlive_gamertag_for_user() - user not found", false);
-#endif
+	DebugConsoleOutput("xboxone_gamertag_for_user() - user not found", false);
 }
 
 YYEXPORT

@@ -56,6 +56,7 @@
     {"id":{"name":"sprYoYoButton","path":"sprites/sprYoYoButton/sprYoYoButton.yy",},"order":2,},
     {"id":{"name":"objStatsRead","path":"objects/objStatsRead/objStatsRead.yy",},"order":1,},
     {"id":{"name":"XboxButtonY","path":"sprites/XboxButtonY/XboxButtonY.yy",},"order":0,},
+    {"id":{"name":"objGetGamerTag","path":"objects/objGetGamerTag/objGetGamerTag.yy",},"order":7,},
     {"id":{"name":"objXBoxButton","path":"objects/objXBoxButton/objXBoxButton.yy",},"order":0,},
     {"id":{"name":"uuid_generate_v4","path":"scripts/uuid_generate_v4/uuid_generate_v4.yy",},"order":4,},
     {"id":{"name":"sprYoYoBackgroundGM2","path":"sprites/sprYoYoBackgroundGM2/sprYoYoBackgroundGM2.yy",},"order":1,},

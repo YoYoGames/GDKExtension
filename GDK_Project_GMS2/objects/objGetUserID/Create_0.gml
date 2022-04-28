@@ -4,7 +4,8 @@
 // Inherit the parent event
 event_inherited();
 
-text = "ID from Index (*)";
+
+text = os_type == os_windows ? "ID from Index" :  "ID from Index (*)";
 requestId = noone;
 
 onClick = function() {

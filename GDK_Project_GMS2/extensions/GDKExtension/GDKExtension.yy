@@ -95,6 +95,9 @@
             1,
             1,
           ],"resourceVersion":"1.0","name":"xboxone_get_token_and_signature","tags":[],"resourceType":"GMExtensionFunction",},
+        {"externalName":"F_XboxOneGamerTagForUser","kind":1,"help":"xboxone_gamertag_for_user(user_id)","hidden":false,"returnType":1,"argCount":0,"args":[
+            2,
+          ],"resourceVersion":"1.0","name":"xboxone_gamertag_for_user","tags":[],"resourceType":"GMExtensionFunction",},
       ],"constants":[],"ProxyFiles":[],"copyToTargets":64,"order":[
         {"name":"gdk_init","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"gdk_update","path":"extensions/GDKExtension/GDKExtension.yy",},
@@ -153,6 +156,7 @@
         {"name":"ms_iap_ShowRedeemTokenUI","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"ms_iap_UnmountPackage","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_get_token_and_signature","path":"extensions/GDKExtension/GDKExtension.yy",},
+        {"name":"xboxone_gamertag_for_user","path":"extensions/GDKExtension/GDKExtension.yy",},
       ],"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMExtensionFile",},
   ],
   "classname": "",
