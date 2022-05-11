@@ -155,6 +155,7 @@ void InitYoYoFunctionsM( void )
 	Function_Add( "xboxone_set_savedata_user", F_XboxOneSetSaveDataUser, 1, true);
 	Function_Add( "xboxone_get_savedata_user", F_XboxOneGetSaveDataUser, 0, true);
 	Function_Add( "xboxone_get_file_error", F_XboxOneGetFileError, 0, true);
+	Function_Add( "xboxone_get_token_and_signature", F_XboxGetTokenAndSignature, 5, true);
 
 	Function_Add( "xboxone_set_service_configuration_id", F_XboxOneSetServiceConfigurationID, 1, true);
 #endif
