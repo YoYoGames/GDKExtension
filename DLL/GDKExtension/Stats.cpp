@@ -276,58 +276,73 @@ void Xbox_Stat_Load_XML(const char *manifest_filename)
 				continue;
 			}
 
-			for (xmlNodePtr field_node = event_child_node->children; field_node != NULL; field_node = field_node->next)
+			for (xmlNodePtr fields_node = event_child_node->children; fields_node != NULL; fields_node = fields_node->next)
 			{
-				if (field_node->type != XML_ELEMENT_NODE)
+				if (fields_node->type != XML_ELEMENT_NODE)
 				{
 					continue;
 				}
 
-				if (strcmp((const char*)(field_node->name), "Field") != 0)
+				if (strcmp((const char*)(fields_node->name), "Fields") != 0)
 				{
-					/* Not a Field node. Skip. */
+					/* Not the Fields. Skip. */
 					continue;
 				}
 
-				std::string field_name = get_attr_value(field_node, "Name");
-				std::string field_type = get_attr_value(field_node, "Type");
-
-				struct XmlFieldTypeMapping {
-					const char* xml_attr_string;
-					SXboxOneEventType::FieldType type;
-				};
-
-				static const XmlFieldTypeMapping xml_field_types[] = {
-					{ "Int32",          SXboxOneEventType::FieldType::Int32 },
-					{ "UInt32",         SXboxOneEventType::FieldType::UInt32 },
-					{ "Int64",          SXboxOneEventType::FieldType::Int64 },
-					{ "UInt64",         SXboxOneEventType::FieldType::UInt64 },
-					{ "Float",          SXboxOneEventType::FieldType::Float },
-					{ "Double",         SXboxOneEventType::FieldType::Double },
-					{ "Boolean",        SXboxOneEventType::FieldType::Boolean },
-					{ "UnicodeString",  SXboxOneEventType::FieldType::UnicodeString },
-					{ "GUID",           SXboxOneEventType::FieldType::GUID },
-				};
-
-				bool found_type = false;
-				SXboxOneEventType::FieldType mapped_field_type;
-
-				for (int i = 0; i < (sizeof(xml_field_types) / sizeof(*xml_field_types)); ++i)
+				for (xmlNodePtr field_node = fields_node->children; field_node != NULL; field_node = field_node->next)
 				{
-					if (field_type == xml_field_types[i].xml_attr_string)
+					if (field_node->type != XML_ELEMENT_NODE)
 					{
-						mapped_field_type = xml_field_types[i].type;
-						found_type = true;
+						continue;
 					}
-				}
 
-				if (found_type)
-				{
-					fields.push_back(std::make_pair(field_name, mapped_field_type));
-				}
-				else {
-					DebugConsoleOutput("Unsupported field type '%s' found in event '%s', skipping event\n", field_type.c_str(), event_name.c_str());
-					goto NEXT_EVENT;
+					if (strcmp((const char*)(field_node->name), "Field") != 0)
+					{
+						/* Not a Field node. Skip. */
+						continue;
+					}
+
+					std::string field_name = get_attr_value(field_node, "Name");
+					std::string field_type = get_attr_value(field_node, "Type");
+
+					struct XmlFieldTypeMapping {
+						const char* xml_attr_string;
+						SXboxOneEventType::FieldType type;
+					};
+
+					static const XmlFieldTypeMapping xml_field_types[] = {
+						{ "Int32",          SXboxOneEventType::FieldType::Int32 },
+						{ "UInt32",         SXboxOneEventType::FieldType::UInt32 },
+						{ "Int64",          SXboxOneEventType::FieldType::Int64 },
+						{ "UInt64",         SXboxOneEventType::FieldType::UInt64 },
+						{ "Float",          SXboxOneEventType::FieldType::Float },
+						{ "Double",         SXboxOneEventType::FieldType::Double },
+						{ "Boolean",        SXboxOneEventType::FieldType::Boolean },
+						{ "UnicodeString",  SXboxOneEventType::FieldType::UnicodeString },
+						{ "GUID",           SXboxOneEventType::FieldType::GUID },
+					};
+
+					bool found_type = false;
+					SXboxOneEventType::FieldType mapped_field_type;
+
+					for (int i = 0; i < (sizeof(xml_field_types) / sizeof(*xml_field_types)); ++i)
+					{
+						if (field_type == xml_field_types[i].xml_attr_string)
+						{
+							mapped_field_type = xml_field_types[i].type;
+							found_type = true;
+							break;
+						}
+					}
+
+					if (found_type)
+					{
+						fields.push_back(std::make_pair(field_name, mapped_field_type));
+					}
+					else {
+						DebugConsoleOutput("Unsupported field type '%s' found in event '%s', skipping event\n", field_type.c_str(), event_name.c_str());
+						goto NEXT_EVENT;
+					}
 				}
 			}
 		}
