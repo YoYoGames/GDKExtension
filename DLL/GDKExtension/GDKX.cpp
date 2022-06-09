@@ -23,6 +23,28 @@ YYRunnerInterface* g_pYYRunnerInterface;
 char* g_XboxSCID = NULL;
 bool g_gdk_initialised = false;
 
+
+XTaskQueueHandle m_taskQueue;
+XTaskQueueRegistrationToken m_networkingConnectivityHintChangedCallbackToken;
+void CALLBACK NetworkConnectivityHintChangedCallback(_In_opt_ void* context, _In_ const XNetworkingConnectivityHint* connectivityHint)
+{
+	bool isConnected = false;
+	if ((connectivityHint->networkInitialized) && ((connectivityHint->connectivityLevel == XNetworkingConnectivityLevelHint::InternetAccess) || (connectivityHint->connectivityLevel == XNetworkingConnectivityLevelHint::ConstrainedInternetAccess)))
+	{
+		isConnected = true;
+	}
+
+	if (isConnected != g_LiveConnection)
+	{
+		g_LiveConnection = isConnected; // Update global state (avoid false re-triggers, the runner does it too)
+		if (isConnected)
+		{
+			XUM::UpdateUserProfiles(true);	// try loading any failed profiles
+		}
+	}
+}
+
+
 void InitIAPFunctionsM();
 void UpdateIAPFunctionsM();
 void QuitIAPFunctionsM();
@@ -164,6 +186,16 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	XUM::Init();
 	InitIAPFunctionsM();
 
+	// CALLBACKS (Register)
+	// 
+	// Register a callback that will listen for changes in network connectivity
+	XNetworkingRegisterConnectivityHintChanged(
+		m_taskQueue,
+		NULL,
+		&NetworkConnectivityHintChangedCallback,
+		&m_networkingConnectivityHintChangedCallbackToken
+	);
+
 	g_gdk_initialised = true;
 }
 
@@ -178,6 +210,9 @@ void gdk_update(RValue& Result, CInstance* selfinst, CInstance* otherinst, int a
 
 	XUM::Update();
 	UpdateIAPFunctionsM();
+
+	// Handle network connection changed callback
+	while (m_taskQueue != NULL && XTaskQueueDispatch(m_taskQueue, XTaskQueuePort::Completion, 0)) { }
 
 	// Update stats
 	XboxStatsManager::background_flush();
@@ -210,6 +245,9 @@ void gdk_quit(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	{
 		DebugConsoleOutput("XblCleanupAsync failed (HRESULT 0x%08X)\n", (unsigned)(status));
 	}
+
+	// CALLBACKS (unregister)
+	XNetworkingUnregisterConnectivityHintChanged(m_networkingConnectivityHintChangedCallbackToken, false);
 
 	XGameRuntimeUninitialize();
 

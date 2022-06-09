@@ -97,7 +97,9 @@ public:
 	XblContextHandle GetXboxLiveContext();
 	XblContextHandle GetCurrentXboxLiveContext();
 	void SetCurrentXboxLiveContext(XblContextHandle _context);
+	
 	bool ProfileLoaded;
+	bool ProfileLoading;
 
 	// PlayFab Party stuff
 	Party::PartyXblLocalChatUser* playfabLocalChatUser;
@@ -160,7 +162,7 @@ public:
 	static void Update();	
 	
 	static int AddUser(XUserAddOptions _options, bool _fromManualAccountPicker);
-	static void UpdateUserProfileData(uint64_t user_id);
+	static void UpdateUserProfileData(uint64_t user_id, bool _newUser);
 	static XUMuser** GetUsers(int &out_numusers);
 	static XUserLocalId GetActivatingUser();
 	static void SetSaveDataUser(XUserLocalId _user);
@@ -170,6 +172,8 @@ public:
 
 	static void RemoveUserChatPermissions(uint64_t _user_id);				// removes the chat permissions for this user from all cached users
 
+	static void UpdateUserProfiles(bool _onlyLoadFailed);
+
 	static void RefreshCachedUsers(bool PreserveOldUsers = true);
 
 	static void LockMutex();
@@ -177,7 +181,7 @@ public:
 
 	static int GetNextRequestID();
 	static XTaskQueueHandle GetTaskQueue() { return m_taskQueue; }
-private:		
+private:
 	static std::vector<XUMuser*> cachedUsers;
 	static XUserLocalId activatingUser;
 	static XUserLocalId saveDataUser;		// the user that is currently associated with save data handling

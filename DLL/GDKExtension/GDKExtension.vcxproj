@@ -278,6 +278,7 @@ nmake /E /F Makefile.msvc install</Command>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\ProgramData\GameMakerStudio2-Dev\Cache\runtimes\runtime-9.9.1.22\yyc\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
