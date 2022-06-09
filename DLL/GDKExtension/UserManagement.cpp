@@ -10,6 +10,7 @@
 #include <assert.h>
 #include <xsapi-c/services_c.h>
 #include <inttypes.h>
+#include <XGameRuntime.h>
 
 #include "PlayFabPartyManagement.h"
 #include "SessionManagement.h"
@@ -110,6 +111,7 @@ XUMuser::XUMuser()
 	GamerScore = 0;
 	
 	ProfileLoaded = false;
+	ProfileLoading = false;
 
 	Storage = NULL;
 
@@ -539,8 +541,6 @@ int XUM::GetNextRequestID()
 	return id;
 }
 
-
-
 void XUM::Init()
 {
 	mutex = YYMutexCreate("XUM");
@@ -707,7 +707,8 @@ int XUM::AddUser(XUserAddOptions _options, bool _fromManualAccountPicker)
 					activatingUser = newXUMuser->LocalId;
 				}
 
-				UpdateUserProfileData(newXUMuser->XboxUserIdInt);
+				newXUMuser->ProfileLoading = true;
+				UpdateUserProfileData(newXUMuser->XboxUserIdInt, true);
 
 				xboxuserIDint = newXUMuser->XboxUserIdInt;
 			}
@@ -780,7 +781,7 @@ int XUM::AddUser(XUserAddOptions _options, bool _fromManualAccountPicker)
 	return XUMADDUSER_ADD_FAILED;
 }
 
-void XUM::UpdateUserProfileData(uint64_t user_id)
+void XUM::UpdateUserProfileData(uint64_t user_id, bool _newUser)
 {
 	XUMuser* user = GetUserFromId(user_id);
 	if (user == NULL)
@@ -802,9 +803,10 @@ void XUM::UpdateUserProfileData(uint64_t user_id)
 	{
 		uint64_t user_id;
 		XblContextHandle xbl_ctx;
+		bool new_user;
 
-		UpdateUserProfileDataContext(uint64_t user_id, XblContextHandle xbl_ctx) :
-			user_id(user_id), xbl_ctx(xbl_ctx) {}
+		UpdateUserProfileDataContext(uint64_t user_id, XblContextHandle xbl_ctx, bool _newUser) :
+			user_id(user_id), xbl_ctx(xbl_ctx), new_user(_newUser) {}
 
 		~UpdateUserProfileDataContext()
 		{
@@ -812,7 +814,7 @@ void XUM::UpdateUserProfileData(uint64_t user_id)
 		}
 	};
 
-	UpdateUserProfileDataContext* ctx = new UpdateUserProfileDataContext(user_id, xbl_ctx);
+	UpdateUserProfileDataContext* ctx = new UpdateUserProfileDataContext(user_id, xbl_ctx, _newUser);
 
 	XAsyncBlock* async = new XAsyncBlock;
 	async->queue = m_taskQueue;
@@ -821,8 +823,7 @@ void XUM::UpdateUserProfileData(uint64_t user_id)
 	{
 		UpdateUserProfileDataContext* ctx = (UpdateUserProfileDataContext*)(async->context);
 
-		uint64_t user_id;
-		bool profile_loaded = true;
+		bool profile_loaded = false;
 
 		{
 			XUM_LOCK_MUTEX
@@ -848,17 +849,16 @@ void XUM::UpdateUserProfileData(uint64_t user_id)
 
 				user->GamerScore = strtoul(profile->gamerscore, NULL, 10);
 
-				user_id = user->XboxUserIdInt;
-				profile_loaded = user->ProfileLoaded;
-
 				user->ProfileLoaded = true;
+				profile_loaded = true;
 			}
 			else {
 				DebugConsoleOutput("XUM::UpdateUserProfileData() - XblProfileGetUserProfileAsync failed (HRESULT 0x%08X)\n", (unsigned)(hr));
 			}
 		}
 
-		if (!profile_loaded)
+		// always report sign-in for new users regardless of whether we managed to load the profile (we need to do this for offline scenarios)
+		if (ctx->new_user)
 		{
 			/* First fetch of profile data since user was cached. Fire the user sign in event.
 			 *
@@ -866,14 +866,28 @@ void XUM::UpdateUserProfileData(uint64_t user_id)
 			 * GamerScore. There doesn't seem to be a profile update event we can react to.
 			*/
 
-			DebugConsoleOutput("User %" PRIu64 " signed in\n", user_id);
+			DebugConsoleOutput("User %" PRIu64 " signed in\n", ctx->user_id);
 
 			// DS_LOCK_MUTEX;
 
 			int dsMapIndex = CreateDsMap(1,
 				"event_type", (double)0.0, "user signed in");
 
-			DsMapAddInt64(dsMapIndex, "user", user_id);
+			DsMapAddInt64(dsMapIndex, "user", ctx->user_id);
+
+			CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_SYSTEM_EVENT);
+		}
+
+		if (profile_loaded)
+		{
+			DebugConsoleOutput("User %" PRIu64 " profile loaded\n", ctx->user_id);
+
+			// DS_LOCK_MUTEX;
+
+			int dsMapIndex = CreateDsMap(1,
+				"event_type", (double)0.0, "user profile updated");
+
+			DsMapAddInt64(dsMapIndex, "user", ctx->user_id);
 
 			CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_SYSTEM_EVENT);
 		}
@@ -886,6 +900,9 @@ void XUM::UpdateUserProfileData(uint64_t user_id)
 	if (!SUCCEEDED(hr))
 	{
 		DebugConsoleOutput("XUM::UpdateUserProfileData() - XblProfileGetUserProfileAsync failed (HRESULT 0x%08X)\n", (unsigned)(hr));
+	
+		delete ctx;
+		delete async;
 	}
 }
 
@@ -958,6 +975,27 @@ void XUM::RemoveUserChatPermissions(uint64_t _user_id)
 			cachedUser->RemoveUserChatPermissions(_user_id);
 		}
 	}
+}
+
+void XUM::UpdateUserProfiles(bool _onlyLoadFailed)
+{
+	XUM_LOCK_MUTEX
+
+		int numCachedUsers = cachedUsers.size();
+		for (int i = 0; i < numCachedUsers; i++)
+		{
+			if (cachedUsers[i] != NULL)
+			{
+				XUMuser* user = cachedUsers[i];
+				if (user->ProfileLoading)
+					continue;	// if we're already trying to load this profile then don't try again just now
+
+				if (_onlyLoadFailed && (user->ProfileLoaded))
+					continue;	// if we're only trying to load the profiles which failed, bail on this one that has previously succeeded
+
+				UpdateUserProfileData(user->XboxUserIdInt, false);
+			}
+		}
 }
 
 void XUM::RefreshCachedUsers(bool PreserveOldUsers)

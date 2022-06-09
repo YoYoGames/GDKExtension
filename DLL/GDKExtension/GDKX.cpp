@@ -23,6 +23,28 @@ YYRunnerInterface* g_pYYRunnerInterface;
 char* g_XboxSCID = NULL;
 bool g_gdk_initialised = false;
 
+
+XTaskQueueHandle g_taskQueue;
+XTaskQueueRegistrationToken m_networkingConnectivityHintChangedCallbackToken;
+void CALLBACK NetworkConnectivityHintChangedCallback(_In_opt_ void* context, _In_ const XNetworkingConnectivityHint* connectivityHint)
+{
+	bool isConnected = false;
+	if ((connectivityHint->networkInitialized) && ((connectivityHint->connectivityLevel == XNetworkingConnectivityLevelHint::InternetAccess) || (connectivityHint->connectivityLevel == XNetworkingConnectivityLevelHint::ConstrainedInternetAccess)))
+	{
+		isConnected = true;
+	}
+
+	if (isConnected != g_LiveConnection)
+	{
+		g_LiveConnection = isConnected; // Update global state (avoid false re-triggers, the runner does it too)
+		if (isConnected)
+		{
+			XUM::UpdateUserProfiles(true);	// try loading any failed profiles
+		}
+	}
+}
+
+
 void InitIAPFunctionsM();
 void UpdateIAPFunctionsM();
 void QuitIAPFunctionsM();
@@ -147,6 +169,13 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 		Xbox_Stat_Load_XML(event_manifest_names[0].c_str());
 	}
 
+	// Create task queue
+	HRESULT hr = XTaskQueueCreate(XTaskQueueDispatchMode::ThreadPool, XTaskQueueDispatchMode::Manual, &g_taskQueue);
+	if (FAILED(hr))
+	{
+		YYError("XTaskQueueCreate failed (HRESULT 0x%08X)\n", (unsigned)(hr));
+	}
+
 	YYFree(g_XboxSCID);
 	g_XboxSCID = (char*)(YYStrDup(YYGetString(arg, 0)));
 
@@ -155,7 +184,7 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	XblInitArgs xblArgs = {};
 	xblArgs.scid = g_XboxSCID;
 
-	HRESULT hr = XblInitialize(&xblArgs);
+	hr = XblInitialize(&xblArgs);
 	if (FAILED(hr))
 	{
 		DebugConsoleOutput("Unable to initialize XSAPI (HRESULT 0x%08X)\n", (unsigned)(hr));
@@ -163,6 +192,15 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 
 	XUM::Init();
 	InitIAPFunctionsM();
+
+	// CALLBACKS (Register)
+	// Register a callback that will listen for changes in network connectivity
+	XNetworkingRegisterConnectivityHintChanged(
+		g_taskQueue,
+		NULL,
+		&NetworkConnectivityHintChangedCallback,
+		&m_networkingConnectivityHintChangedCallbackToken
+	);
 
 	g_gdk_initialised = true;
 }
@@ -178,6 +216,9 @@ void gdk_update(RValue& Result, CInstance* selfinst, CInstance* otherinst, int a
 
 	XUM::Update();
 	UpdateIAPFunctionsM();
+
+	// Handle network connection changed callback
+	while (g_taskQueue != NULL && XTaskQueueDispatch(g_taskQueue, XTaskQueuePort::Completion, 0)) { }
 
 	// Update stats
 	XboxStatsManager::background_flush();
@@ -210,6 +251,16 @@ void gdk_quit(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	{
 		DebugConsoleOutput("XblCleanupAsync failed (HRESULT 0x%08X)\n", (unsigned)(status));
 	}
+
+	// CALLBACKS (unregister)
+	XNetworkingUnregisterConnectivityHintChanged(m_networkingConnectivityHintChangedCallbackToken, false);
+
+	// Destroy task queue
+	bool terminated = false;
+	XTaskQueueTerminate(g_taskQueue, false, &terminated, NULL);
+	while (XTaskQueueDispatch(g_taskQueue, XTaskQueuePort::Completion, 0) || !terminated) {}
+	XTaskQueueCloseHandle(g_taskQueue);
+	g_taskQueue = NULL;
 
 	XGameRuntimeUninitialize();
 
