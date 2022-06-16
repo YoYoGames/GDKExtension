@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"XboxButtonSelect","path":"sprites/XboxButtonSelect/XboxButtonSelect.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "XboxButtonSelect",
     "tags": [],
     "resourceType": "GMSequence",

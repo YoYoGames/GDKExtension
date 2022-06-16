@@ -59,7 +59,7 @@
     "eventToFunction": {},
     "eventStubScript": null,
     "parent": {"name":"sprYoYoBackground","path":"sprites/sprYoYoBackground/sprYoYoBackground.yy",},
-    "resourceVersion": "1.3",
+    "resourceVersion": "1.4",
     "name": "sprYoYoBackground",
     "tags": [],
     "resourceType": "GMSequence",

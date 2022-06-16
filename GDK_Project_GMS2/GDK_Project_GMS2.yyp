@@ -56,6 +56,7 @@
     {"id":{"name":"sprYoYoButton","path":"sprites/sprYoYoButton/sprYoYoButton.yy",},"order":2,},
     {"id":{"name":"objStatsRead","path":"objects/objStatsRead/objStatsRead.yy",},"order":1,},
     {"id":{"name":"XboxButtonY","path":"sprites/XboxButtonY/XboxButtonY.yy",},"order":0,},
+    {"id":{"name":"objGetGamerTag","path":"objects/objGetGamerTag/objGetGamerTag.yy",},"order":7,},
     {"id":{"name":"objXBoxButton","path":"objects/objXBoxButton/objXBoxButton.yy",},"order":0,},
     {"id":{"name":"uuid_generate_v4","path":"scripts/uuid_generate_v4/uuid_generate_v4.yy",},"order":4,},
     {"id":{"name":"sprYoYoBackgroundGM2","path":"sprites/sprYoYoBackgroundGM2/sprYoYoBackgroundGM2.yy",},"order":1,},
@@ -84,9 +85,8 @@
     {"name":"Xbox Series XS","path":"options/xboxseriesxs/options_xboxseriesxs.yy",},
     {"name":"operagx","path":"options/operagx/options_operagx.yy",},
   ],
-  "isDnDProject": false,
+  "defaultScriptType": 1,
   "isEcma": false,
-  "tutorialPath": "",
   "configs": {
     "name": "Default",
     "children": [],
@@ -121,7 +121,7 @@
     {"targets":-1,"resourceVersion":"1.3","name":"audiogroup_default","resourceType":"GMAudioGroup",},
   ],
   "TextureGroups": [
-    {"isScaled":true,"autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"Default","resourceType":"GMTextureGroup",},
+    {"isScaled":true,"compressFormat":"bz2","autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,"resourceVersion":"1.3","name":"Default","resourceType":"GMTextureGroup",},
   ],
   "IncludedFiles": [
     {"CopyToMask":64,"filePath":"datafiles","resourceVersion":"1.0","name":"default480x480.png","resourceType":"GMIncludedFile",},
@@ -135,9 +135,9 @@
     {"CopyToMask":0,"filePath":"datafiles","resourceVersion":"1.0","name":"GDK_Extension_Documentation.pdf","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
-    "IDEVersion": "2.3.7.606",
+    "IDEVersion": "2022.3.0.625",
   },
-  "resourceVersion": "1.4",
+  "resourceVersion": "1.5",
   "name": "GDK_Project_GMS2",
   "tags": [],
   "resourceType": "GMProject",
