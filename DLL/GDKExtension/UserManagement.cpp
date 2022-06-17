@@ -133,6 +133,12 @@ XUMuser::~XUMuser()
 		DecRefGameSaveProvider(Storage);
 		//XGameSaveCloseProvider(Storage);
 	}
+
+	if (_XboxLiveContext != NULL)
+	{
+		XblContextCloseHandle(_XboxLiveContext);
+	}
+
 	XUserCloseHandle(user);
 }
 
@@ -1172,7 +1178,7 @@ void CALLBACK XUM::UserChangeEventCallback(
 	if (cachedUser_i == cachedUsers.end())
 	{
 		// User not found, so something has gone wrong
-		DebugConsoleOutput("State change detected on user %uld but we are not tracking this user\n", userLocalId.value);
+		DebugConsoleOutput("State change detected on user %ull but we are not tracking this user\n", userLocalId.value);
 	}
 	else
 	{
