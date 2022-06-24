@@ -167,19 +167,19 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	else{
 		DebugConsoleOutput("Loading event manifest %s...\n", event_manifest_names[0].c_str());
 		Xbox_Stat_Load_XML(event_manifest_names[0].c_str());
-	}
-
-	// Create task queue
-	HRESULT hr = XTaskQueueCreate(XTaskQueueDispatchMode::ThreadPool, XTaskQueueDispatchMode::Manual, &g_taskQueue);
-	if (FAILED(hr))
-	{
-		YYError("XTaskQueueCreate failed (HRESULT 0x%08X)\n", (unsigned)(hr));
-	}
+	}	
 
 	YYFree(g_XboxSCID);
 	g_XboxSCID = (char*)(YYStrDup(YYGetString(arg, 0)));
 
 	XGameRuntimeInitialize();
+
+	// Create task queue (has to be done after XGameRuntimeInitialize() )
+	HRESULT hr = XTaskQueueCreate(XTaskQueueDispatchMode::ThreadPool, XTaskQueueDispatchMode::Manual, &g_taskQueue);
+	if (FAILED(hr))
+	{
+		YYError("XTaskQueueCreate failed (HRESULT 0x%08X)\n", (unsigned)(hr));
+	}
 	
 	XblInitArgs xblArgs = {};
 	xblArgs.scid = g_XboxSCID;
