@@ -38,6 +38,7 @@
     {"id":{"name":"objUserCount","path":"objects/objUserCount/objUserCount.yy",},"order":1,},
     {"id":{"name":"objYoYoTextbox","path":"objects/objYoYoTextbox/objYoYoTextbox.yy",},"order":2,},
     {"id":{"name":"objStatsGetValues","path":"objects/objStatsGetValues/objStatsGetValues.yy",},"order":6,},
+    {"id":{"name":"objAchievementGet","path":"objects/objAchievementGet/objAchievementGet.yy",},"order":1,},
     {"id":{"name":"rmUser","path":"rooms/rmUser/rmUser.yy",},"order":5,},
     {"id":{"name":"objSetSaveLocal","path":"objects/objSetSaveLocal/objSetSaveLocal.yy",},"order":7,},
     {"id":{"name":"objGetActivatingUser","path":"objects/objGetActivatingUser/objGetActivatingUser.yy",},"order":3,},
@@ -135,7 +136,7 @@
     {"CopyToMask":0,"filePath":"datafiles","resourceVersion":"1.0","name":"GDK_Extension_Documentation.pdf","resourceType":"GMIncludedFile",},
   ],
   "MetaData": {
-    "IDEVersion": "2022.3.0.625",
+    "IDEVersion": "2022.5.1.16",
   },
   "resourceVersion": "1.5",
   "name": "GDK_Project_GMS2",
