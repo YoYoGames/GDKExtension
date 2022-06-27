@@ -14,5 +14,4 @@ onClick = function() {
 	
 	// This call triggers an Async System call (check event for more info)
 	requestId = xboxone_get_achievement(_userId, achievementId);
-	show_message(requestId);
 }
