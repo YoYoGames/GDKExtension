@@ -257,7 +257,7 @@ void gdk_quit(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 
 	// Destroy task queue
 	bool terminated = false;
-	XTaskQueueTerminate(g_taskQueue, false, &terminated, NULL);
+	XTaskQueueTerminate(g_taskQueue, false, &terminated, [](void* context) { *(bool*)(context) = true; });
 	while (XTaskQueueDispatch(g_taskQueue, XTaskQueuePort::Completion, 0) || !terminated) {}
 	XTaskQueueCloseHandle(g_taskQueue);
 	g_taskQueue = NULL;
