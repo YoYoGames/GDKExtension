@@ -45,6 +45,7 @@
         {"externalName":"F_XboxOneGetStatSocialLeaderboard","kind":1,"help":"xboxone_stats_get_social_leaderboard(user_id, stat, num_entries, start_rank, start_at_user, ascending, favourites_only)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_stats_get_social_leaderboard","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_XboxOneSetAchievementProgress","kind":1,"help":"xboxone_achievements_set_progress(user_id, achievement, progress)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_achievements_set_progress","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_XboxReadPlayerLeaderboard","kind":1,"help":"xboxone_read_player_leaderboard(ident, player, numitems, friendfilter)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_read_player_leaderboard","tags":[],"resourceType":"GMExtensionFunction",},
+        {"externalName":"F_XboxOneUpdateRecentPlayers","kind":1,"help":"xboxone_update_recent_players(user_id, user_id_recent)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_update_recent_players","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_XboxOneSetRichPresence","kind":1,"help":"xboxone_set_rich_presence(user_id, is_user_active, rich_presence_string)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_set_rich_presence","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"F_XboxCheckPrivilege","kind":1,"help":"xboxone_check_privilege(user_id, privilege_id, attempt_resolution)","hidden":false,"returnType":1,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_check_privilege","tags":[],"resourceType":"GMExtensionFunction",},
         {"externalName":"gdk_save_group_begin","kind":1,"help":"gdk_save_group_begin(container_name)","hidden":false,"returnType":1,"argCount":0,"args":[
@@ -128,6 +129,7 @@
         {"name":"xboxone_achievements_set_progress","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_get_achievement","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_read_player_leaderboard","path":"extensions/GDKExtension/GDKExtension.yy",},
+        {"name":"xboxone_update_recent_players","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_set_rich_presence","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_check_privilege","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"gdk_save_group_begin","path":"extensions/GDKExtension/GDKExtension.yy",},

@@ -2709,3 +2709,36 @@ void F_XboxLiveNotAvailable(RValue& Result, CInstance* selfinst, CInstance* othe
 
 	DebugConsoleOutput("Function not available without Xbox Live\n");
 }
+
+YYEXPORT
+void F_XboxOneUpdateRecentPlayers(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
+{
+	XblContextHandle xbl_ctx;
+	uint64 user_id = (uint64)YYGetInt64(arg, 0);
+	uint64 user_id_recent = (uint64)YYGetInt64(arg, 1);
+
+	{
+		XUM_LOCK_MUTEX;
+		XUMuser* user = XUM::GetUserFromId(user_id);
+
+		if (user == NULL)
+		{
+			DebugConsoleOutput("xboxone_update_recent_players - couldn't find user_id\n");
+
+			Result.val = -1;
+			return;
+		}
+
+		HRESULT hr = XblContextCreateHandle(user->user, &xbl_ctx);
+		if (!SUCCEEDED(hr))
+		{
+			DebugConsoleOutput("xboxone_update_recent_players - couldn't create xbl handle (HRESULT 0x%08X)\n", (unsigned)(hr));
+
+			Result.val = -2;
+			return;
+		}
+	}
+
+	XblMultiplayerActivityRecentPlayerUpdate update{ user_id_recent };
+	HRESULT results = XblMultiplayerActivityUpdateRecentPlayers(xbl_ctx, &update, 1);
+}
