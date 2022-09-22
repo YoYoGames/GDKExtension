@@ -1,2 +1,2 @@
 
-text = "Achievements (+10%)";
+text = "Achievements";
