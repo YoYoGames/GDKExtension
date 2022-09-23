@@ -2692,6 +2692,81 @@ void F_XboxOneSetRichPresence(RValue& Result, CInstance* selfinst, CInstance* ot
 	Result.val = 0;
 }
 
+YYEXPORT
+void F_XboxOneUpdateRecentPlayers(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
+{
+	Result.kind = VALUE_REAL;
+	Result.val = -1;
+
+#if defined(_GAMING_XBOX)
+	uint64 user_id = (uint64)YYGetInt64(arg, 0); // don't do any rounding on this
+	XblContextHandle xbl_ctx;
+
+	{
+		XUM_LOCK_MUTEX;
+		XUMuser* user = XUM::GetUserFromId(user_id);
+
+		if (user == NULL)
+		{
+			DebugConsoleOutput("xboxone_update_recent_players - couldn't find user_id\n");
+			return;
+		}
+
+		xbl_ctx = user->GetXboxLiveContext();
+
+		if (xbl_ctx == nullptr)
+		{
+			DebugConsoleOutput("xboxone_update_recent_players - couldn't get xbl handle\n");
+			return;
+		}
+	}
+
+	if (argc < 2)
+	{
+		DebugConsoleOutput("xboxone_update_recent_players - no recent users specified\n");
+		return;
+	}
+
+	std::vector<XblMultiplayerActivityRecentPlayerUpdate> recentPlayers;
+	if (KIND_RValue(&(arg[1])) == VALUE_ARRAY)
+	{
+		// Write this in a slightly crazy way that can also be used in the GDK extension
+		RValue elem;
+		for (int i = 0; GET_RValue(&elem, &arg[1], NULL, i); ++i)
+		{
+			uint64 recent_user_id = (uint64)YYGetInt64(&elem, 0); // don't do any rounding on this
+			XblMultiplayerActivityRecentPlayerUpdate update{ recent_user_id, XblMultiplayerActivityEncounterType::Default };
+
+			recentPlayers.push_back(update);
+		}
+
+		if (recentPlayers.size() == 0)
+		{
+			DebugConsoleOutput("xboxone_update_recent_players - recent users array is empty\n");
+			return;
+		}
+	}
+	else
+	{
+		uint64 recent_user_id = (uint64)YYGetInt64(arg, 1); // don't do any rounding on this
+		XblMultiplayerActivityRecentPlayerUpdate update{ recent_user_id, XblMultiplayerActivityEncounterType::Default };
+
+		recentPlayers.push_back(update);
+	}
+
+	HRESULT hr = XblMultiplayerActivityUpdateRecentPlayers(xbl_ctx, recentPlayers.data(), recentPlayers.size());
+	if (!SUCCEEDED(hr))
+	{
+		DebugConsoleOutput("xboxone_update_recent_players - couldn't update recent players info (HRESULT 0x%08X)\n", (unsigned)(hr));
+
+		Result.val = hr;
+		return;
+	}
+
+	Result.val = 0;
+#endif
+}
+
 void F_XboxOneSetServiceConfigurationID(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;

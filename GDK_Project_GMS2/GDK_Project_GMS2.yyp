@@ -41,6 +41,7 @@
     {"id":{"name":"objAchievementGet","path":"objects/objAchievementGet/objAchievementGet.yy",},"order":1,},
     {"id":{"name":"rmUser","path":"rooms/rmUser/rmUser.yy",},"order":5,},
     {"id":{"name":"objSetSaveLocal","path":"objects/objSetSaveLocal/objSetSaveLocal.yy",},"order":7,},
+    {"id":{"name":"objUpdateRecentPlayers","path":"objects/objUpdateRecentPlayers/objUpdateRecentPlayers.yy",},"order":8,},
     {"id":{"name":"objGetActivatingUser","path":"objects/objGetActivatingUser/objGetActivatingUser.yy",},"order":3,},
     {"id":{"name":"objStatsSetTime","path":"objects/objStatsSetTime/objStatsSetTime.yy",},"order":4,},
     {"id":{"name":"objStatsDelete","path":"objects/objStatsDelete/objStatsDelete.yy",},"order":0,},

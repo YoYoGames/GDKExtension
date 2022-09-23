@@ -102,6 +102,7 @@
             2,
             1,
           ],"resourceVersion":"1.0","name":"xboxone_get_achievement","tags":[],"resourceType":"GMExtensionFunction",},
+        {"externalName":"F_XboxOneUpdateRecentPlayers","kind":1,"help":"xboxone_update_recent_players(user_id,recent_user_id)","hidden":false,"returnType":2,"argCount":0,"args":[],"resourceVersion":"1.0","name":"xboxone_update_recent_players","tags":[],"resourceType":"GMExtensionFunction",},
       ],"constants":[],"ProxyFiles":[],"copyToTargets":64,"order":[
         {"name":"gdk_init","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"gdk_update","path":"extensions/GDKExtension/GDKExtension.yy",},
@@ -162,6 +163,7 @@
         {"name":"ms_iap_UnmountPackage","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_get_token_and_signature","path":"extensions/GDKExtension/GDKExtension.yy",},
         {"name":"xboxone_gamertag_for_user","path":"extensions/GDKExtension/GDKExtension.yy",},
+        {"name":"xboxone_update_recent_players","path":"extensions/GDKExtension/GDKExtension.yy",},
       ],"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMExtensionFile",},
   ],
   "classname": "",
