@@ -43,6 +43,10 @@ This repository contains the source code for the DLL that implements the GDK fun
 
 Open the GMS2 Project in this repository from GDK_Project_GMS2/GDK_Project_GMS2.yyp file.
 
-> **NOTE**: Full documentation is in the project included files.
+---
+
+## Documentation
+
+We provide both a PDF version of the documentation included with the extension and inside the demo project (datafiles) and a fully converted version to the [Github Wiki](https://github.com/YoYoGames/GDKExtension/wiki) format (the latter will be the most up-to-date version, the other will follow shortly after). *If there are any PR requests with new feature implementation please make sure you also provide the documentation for the implemented features.*
 
 ---
