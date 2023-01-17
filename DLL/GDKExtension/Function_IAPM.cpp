@@ -2628,9 +2628,13 @@ static std::vector<const char*> _MS_IAP_GetArrayOfStrings(RValue* arg, int arg_i
 
 	if (KIND_RValue(pV) == VALUE_ARRAY)
 	{
+		int arraylength = YYArrayGetLength(pV);
 		RValue elem;
-		for(int i = 0; GET_RValue(&elem, pV, NULL, i); ++i)
+		for (int i = 0; i < arraylength; ++i)
 		{
+			if (GET_RValue(&elem, pV, NULL, i) == false)
+				break;
+		
 			if (KIND_RValue(&elem) != VALUE_STRING)
 			{
 				YYError("%s argument %d [array element %d] incorrect type (%s) expecting a String", func, (arg_idx + 1), i, KIND_NAME_RValue(pV));

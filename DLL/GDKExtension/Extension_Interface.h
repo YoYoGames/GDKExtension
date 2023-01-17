@@ -9,6 +9,8 @@
 
 #include <stdint.h>
 
+class IBuffer;
+
 struct RValue;
 class YYObjectBase;
 class CInstance;
@@ -108,7 +110,7 @@ struct YYRunnerInterface
 	// sprite loading helper functions
 	int (*ASYNCFunc_SpriteAdd)(HTTP_REQ_CONTEXT* _pContext, void* _p, int* _pMap);
 	void (*ASYNCFunc_SpriteCleanup)(HTTP_REQ_CONTEXT* _pContext);
-	HSPRITEASYNC (*CreateSpriteAsync)(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags);
+	HSPRITEASYNC(*CreateSpriteAsync)(int* _pSpriteIndex, int _xOrig, int _yOrig, int _numImages, int _flags);
 
 	// timing
 	int64(*Timing_Time)(void);
@@ -130,7 +132,7 @@ struct YYRunnerInterface
 	bool (*DsMapAddInt64)(int _index, const char* _pKey, int64 value);
 
 	// buffer access
-	bool (*BufferGetContent)(int _index, void **_ppData, int *_pDataSize);
+	bool (*BufferGetContent)(int _index, void** _ppData, int* _pDataSize);
 	int (*BufferWriteContent)(int _index, int _dest_offset, const void* _pSrcMem, int _size, bool _grow, bool _wrap);
 	int (*CreateBuffer)(int _size, enum eBuffer_Format _bf, int _alignment);
 
@@ -150,7 +152,7 @@ struct YYRunnerInterface
 	bool (*SaveFileName)(char* _name, int _size, const char* _pszFileName);
 
 	bool (*Base64Encode)(const void* input_buf, size_t input_len, void* output_buf, size_t output_len);
-	
+
 	void (*DsListAddInt64)(int _dsList, int64 _value);
 
 	void (*AddDirectoryToBundleWhitelist)(const char* _pszFilename);
@@ -161,7 +163,7 @@ struct YYRunnerInterface
 	const char* (*KIND_NAME_RValue)(const RValue* _pV);
 
 	void (*DsMapAddBool)(int _index, const char* _pKey, bool value);
-	void (*DsMapAddRValue)(int _index, const char* _pKey, RValue *value);
+	void (*DsMapAddRValue)(int _index, const char* _pKey, RValue* value);
 	void (*DestroyDsMap)(int _index);
 
 	void (*StructCreate)(RValue* _pStruct);
@@ -170,6 +172,62 @@ struct YYRunnerInterface
 	void (*StructAddInt)(RValue* _pStruct, const char* _pKey, int _value);
 	void (*StructAddRValue)(RValue* _pStruct, const char* _pKey, RValue* _pValue);
 	void (*StructAddString)(RValue* _pStruct, const char* _pKey, const char* _pValue);
+
+	bool (*WhitelistIsDirectoryIn)(const char* _pszDirectory);
+	bool (*WhiteListIsFilenameIn)(const char* _pszFilename);
+	void (*WhiteListAddTo)(const char* _pszFilename, bool _bIsDir);
+	bool (*DirExists)(const char* filename);
+	IBuffer* (*BufferGetFromGML)(int ind);
+	int (*BufferTELL)(IBuffer* buff);
+	unsigned char* (*BufferGet)(IBuffer* buff);
+	const char* (*FilePrePend)(void);
+
+	void (*StructAddInt32)(RValue* _pStruct, const char* _pKey, int32 _value);
+	void (*StructAddInt64)(RValue* _pStruct, const char* _pKey, int64 _value);
+	RValue* (*StructGetMember)(RValue* _pStruct, const char* _pKey);
+
+	/**
+	 * @brief Query the keys in a struct.
+	 *
+	 * @param _pStruct  Pointer to a VALUE_OBJECT RValue.
+	 * @param _keys     Pointer to an array of const char* pointers to receive the names.
+	 * @param _count    Length of _keys (in elements) on input, number filled on output.
+	 *
+	 * @return Total number of keys in the struct.
+	 *
+	 * NOTE: The strings in _keys are owned by the runner. You do not need to free them, however
+	 * you should make a copy if you intend to keep them around as the runner may invalidate them
+	 * in the future when performing variable modifications.
+	 *
+	 * Usage example:
+	 *
+	 *    // Get total number of keys in struct
+	 *    int num_keys = YYRunnerInterface_p->StructGetKeys(struct_rvalue, NULL, NULL);
+	 *
+	 *    // Fetch keys from struct
+	 *    std::vector<const char*> keys(num_keys);
+	 *    YYRunnerInterface_p->StructGetKeys(struct_rvalue, keys.data(), &num_keys);
+	 *
+	 *    // Loop over struct members
+	 *    for(int i = 0; i < num_keys; ++i)
+	 *    {
+	 *        RValue *member = YYRunnerInterface_p->StructGetMember(struct_rvalue, keys[i]);
+	 *        ...
+	 *    }
+	*/
+	int (*StructGetKeys)(RValue* _pStruct, const char** _keys, int* _count);
+
+	RValue* (*YYGetStruct)(RValue* _pBase, int _index);
+
+
+
+	void (*extOptGetRValue)(RValue& result, const char* _ext, const  char* _opt);
+	const char* (*extOptGetString)(const char* _ext, const  char* _opt);
+	double (*extOptGetReal)(const char* _ext, const char* _opt);
+
+	bool (*isRunningFromIDE)();
+	
+	int (*YYArrayGetLength)(RValue* pRValue);
 };
 
 
@@ -290,6 +348,8 @@ inline void YYStructAddDouble(RValue* _pStruct, const char* _pKey, double _value
 inline void YYStructAddInt(RValue* _pStruct, const char* _pKey, int _value) { return g_pYYRunnerInterface->StructAddInt(_pStruct, _pKey, _value); }
 inline void YYStructAddRValue(RValue* _pStruct, const char* _pKey, RValue* _pValue) { return g_pYYRunnerInterface->StructAddRValue(_pStruct, _pKey, _pValue); }
 inline void YYStructAddString(RValue* _pStruct, const char* _pKey, const char* _pValue) { return g_pYYRunnerInterface->StructAddString(_pStruct, _pKey, _pValue); }
+
+inline int YYArrayGetLength(RValue* pRValue) { return g_pYYRunnerInterface->YYArrayGetLength(pRValue); }
 
 #define g_LiveConnection	(*g_pYYRunnerInterface->pLiveConnection)
 #define g_HTTP_ID			(*g_pYYRunnerInterface->pHTTP_ID)

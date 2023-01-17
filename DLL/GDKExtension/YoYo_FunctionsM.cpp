@@ -2730,10 +2730,13 @@ void F_XboxOneUpdateRecentPlayers(RValue& Result, CInstance* selfinst, CInstance
 	std::vector<XblMultiplayerActivityRecentPlayerUpdate> recentPlayers;
 	if (KIND_RValue(&(arg[1])) == VALUE_ARRAY)
 	{
-		// Write this in a slightly crazy way that can also be used in the GDK extension
+		int arraylength = YYArrayGetLength(&(arg[1]));
 		RValue elem;
-		for (int i = 0; GET_RValue(&elem, &arg[1], NULL, i); ++i)
+		for (int i = 0; i < arraylength; ++i)
 		{
+			if (GET_RValue(&elem, &(arg[1]), NULL, i) == false)
+				break;
+
 			uint64 recent_user_id = (uint64)YYGetInt64(&elem, 0); // don't do any rounding on this
 			XblMultiplayerActivityRecentPlayerUpdate update{ recent_user_id, XblMultiplayerActivityEncounterType::Default };
 
