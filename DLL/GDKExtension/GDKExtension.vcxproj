@@ -48,7 +48,7 @@
     <ProjectGuid>{0fa30f26-851f-4114-bf0a-4ee7bf87c018}</ProjectGuid>
     <RootNamespace>GDKExtension</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
-    <XdkEditionTarget>211000</XdkEditionTarget>
+    <XdkEditionTarget>230600</XdkEditionTarget>
     <GDKExtLibNames>PlayFab.Party.Cpp;PlayFab.PartyXboxLive.Cpp;Xbox.Services.API.C</GDKExtLibNames>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -355,11 +355,11 @@ nmake /E /F Makefile.msvc install</Command>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Gaming.Desktop.x64'">
-    <IncludePath>.\include\;$(OutDir)json-c-install\include;$(OutDir)libxml2-install\include\libxml2;c:\programdata\GameMakerStudio2-Dev\Cache\runtimes\runtime-9.9.1.2159\yyc\include;C:\ProgramData\GameMakerStudio2-Dev\Cache\runtimes\runtime-9.9.1.2123\yyc\include;$(IncludePath)</IncludePath>
+    <IncludePath>.\include\;$(OutDir)json-c-install\include;$(OutDir)libxml2-install\include\libxml2;C:\ProgramData\GameMakerStudio2\Cache\runtimes\runtime-2023.6.0.137\yyc\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir)json-c-install\lib;$(OutDir)libxml2-install\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Gaming.Desktop.x64'">
-    <IncludePath>.\include\;$(OutDir)json-c-install\include;$(OutDir)libxml2-install\include\libxml2;c:\programdata\GameMakerStudio2-Dev\Cache\runtimes\runtime-9.9.1.2159\yyc\include;C:\ProgramData\GameMakerStudio2-Dev\Cache\runtimes\runtime-9.9.1.2123\yyc\include;$(IncludePath)</IncludePath>
+    <IncludePath>.\include\;$(OutDir)json-c-install\include;$(OutDir)libxml2-install\include\libxml2;C:\ProgramData\GameMakerStudio2\Cache\runtimes\runtime-2023.6.0.137\yyc\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(OutDir)json-c-install\lib;$(OutDir)libxml2-install\lib;$(Console_SdkLibPath);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Gaming.Xbox.XboxOne.x64'">
