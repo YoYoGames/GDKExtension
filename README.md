@@ -26,7 +26,7 @@ This repository contains the source code for the DLL that implements the GDK fun
 
 
 1. Install VS2019 - see https://visualstudio.microsoft.com/downloads/ 
-2. Install GDK - see https://github.com/microsoft/GDK/releases/tag/October_2021_Republish
+2. Install GDK - see https://github.com/microsoft/GDK/releases/tag/June_2023
 3. Install CMAKE - see https://cmake.org/download/
 4. Clone this repository (NOTE: This repository has submodules)
 5. Open the Visual Studio 2019

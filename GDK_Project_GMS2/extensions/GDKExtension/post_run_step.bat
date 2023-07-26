@@ -10,7 +10,7 @@ if not "%YYPLATFORM_option_windows_copy_exe_to_dest%" == "True" goto error_ensur
 if not exist "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" goto error_install_GDK
 
 :: Setup the GDK Environment (force version Update Oct 2021)
-set GRDKEDITION=211000
+set GRDKEDITION=230600
 call "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" GamingDesktopVS2019
 if ERRORLEVEL 1 (
   goto error_wrong_GDK

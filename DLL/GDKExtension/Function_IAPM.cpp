@@ -1271,99 +1271,18 @@ struct MountPackageContext
 {
 	unsigned int async_id;
 	std::string package_id;
+	XAsyncBlock async;
 
 	HRESULT error;
 	XPackageMountHandle mount_handle;
 	std::string mount_path;
 
 	MountPackageContext(const std::string& package_id);
-
-	static void work_callback(void* context, bool canceled);
-	static void completion_callback(void* context, bool canceled);
 };
 
 MountPackageContext::MountPackageContext(const std::string& package_id) :
 	async_id(next_iap_id++),
 	package_id(package_id) {}
-
-void MountPackageContext::work_callback(void* context, bool canceled)
-{
-	MountPackageContext* ctx = (MountPackageContext*)(context);
-
-	HRESULT hr = XPackageMount(ctx->package_id.c_str(), &(ctx->mount_handle));
-	if (SUCCEEDED(hr))
-	{
-		size_t mount_path_size;
-		hr = XPackageGetMountPathSize(ctx->mount_handle, &mount_path_size);
-		if (SUCCEEDED(hr))
-		{
-			std::vector<char> mount_path(mount_path_size);
-
-			hr = XPackageGetMountPath(ctx->mount_handle, mount_path_size, mount_path.data());
-			if (SUCCEEDED(hr))
-			{
-				ctx->mount_path = mount_path.data();
-			}
-		}
-
-		if (FAILED(hr))
-		{
-			XPackageCloseMountHandle(ctx->mount_handle);
-		}
-	}
-
-	ctx->error = hr;
-
-	hr = XTaskQueueSubmitCallback(iap_background_to_main_queue, XTaskQueuePort::Completion, ctx, &MountPackageContext::completion_callback);
-	if (FAILED(hr))
-	{
-		DebugConsoleOutput("MountPackageContext::WorkCallback - unable to queue completion_callback (HRESULT 0x%08X)\n", (unsigned)(hr));
-		delete ctx;
-	}
-}
-
-void MountPackageContext::completion_callback(void* context, bool canceled)
-{
-	MountPackageContext* ctx = (MountPackageContext*)(context);
-	std::unique_ptr<MountPackageContext> ctx_guard(ctx);
-
-	auto mp = mounted_packages.find(ctx->package_id);
-	assert(mp != mounted_packages.end());
-	assert(mp->second == NULL);
-
-	DS_LOCK_MUTEX;
-
-	int dsMapIndex = CreateDsMap(3,
-		"id", (double)(ctx->async_id), NULL,
-		"type", (double)(0.0), "ms_iap_MountPackage_result",
-		"package_id", (double)(0.0), ctx->package_id.c_str());
-
-	DsMapAddBool(dsMapIndex, "status", SUCCEEDED(ctx->error));
-
-	if (SUCCEEDED(ctx->error))
-	{
-		mp->second = new MS_IAP_MountedPackage(ctx->package_id, ctx->mount_handle, ctx->mount_path);
-		DsMapAddString(dsMapIndex, "mount_path", ctx->mount_path.c_str());
-
-		/* DLC content is mounted outside of the sandbox, so allow loading from the mount point. */
-#ifdef GDKEXTENSION_EXPORTS
-		AddDirectoryToBundleWhitelist(ctx->mount_path.c_str());
-#else
-		if (!IsDirectoryInWhitelist(g_pLoadWhitelist, ctx->mount_path.c_str()))
-		{
-			AddToWhiteList(&g_pLoadWhitelist, ctx->mount_path.c_str(), true);
-		}
-#endif
-	}
-	else {
-		DebugConsoleOutput("ms_iap_MountPackage - error mounting package %s (HRESULT 0x%08X)\n", ctx->package_id.c_str(), (unsigned)(ctx->error));
-		DsMapAddDouble(dsMapIndex, "error", (double)(ctx->error));
-
-		mounted_packages.erase(mp);
-	}
-
-	CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_WEB_IAP);
-}
 
 YYEXPORT void F_MS_IAP_MountPackage(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
@@ -1380,14 +1299,84 @@ YYEXPORT void F_MS_IAP_MountPackage(RValue& Result, CInstance* selfinst, CInstan
 
 	struct MountPackageContext* ctx = new MountPackageContext(package_id);
 
-	HRESULT hr = XTaskQueueSubmitCallback(iap_background_to_main_queue, XTaskQueuePort::Work, ctx, &MountPackageContext::work_callback);
+	ctx->async.queue = iap_background_to_main_queue;
+	ctx->async.context = ctx;
+	ctx->async.callback = [](XAsyncBlock* async)
+	{
+		struct MountPackageContext* ctx = (struct MountPackageContext*)(async->context);
+		std::unique_ptr<MountPackageContext> ctx_guard(ctx);
+
+		HRESULT hr = XPackageMountWithUiResult(async, &(ctx->mount_handle));
+
+		if (SUCCEEDED(hr))
+		{
+			size_t mount_path_size;
+			hr = XPackageGetMountPathSize(ctx->mount_handle, &mount_path_size);
+			if (SUCCEEDED(hr))
+			{
+				std::vector<char> mount_path(mount_path_size);
+
+				hr = XPackageGetMountPath(ctx->mount_handle, mount_path_size, mount_path.data());
+				if (SUCCEEDED(hr))
+				{
+					ctx->mount_path = mount_path.data();
+				}
+			}
+
+			if (FAILED(hr))
+			{
+				XPackageCloseMountHandle(ctx->mount_handle);
+			}
+		}
+
+		ctx->error = hr;
+
+		auto mp = mounted_packages.find(ctx->package_id);
+		assert(mp != mounted_packages.end());
+		assert(mp->second == NULL);
+
+		DS_LOCK_MUTEX;
+
+		int dsMapIndex = CreateDsMap(3,
+			"id", (double)(ctx->async_id), NULL,
+			"type", (double)(0.0), "ms_iap_MountPackage_result",
+			"package_id", (double)(0.0), ctx->package_id.c_str());
+
+		DsMapAddBool(dsMapIndex, "status", SUCCEEDED(ctx->error));
+
+		if (SUCCEEDED(ctx->error))
+		{
+			mp->second = new MS_IAP_MountedPackage(ctx->package_id, ctx->mount_handle, ctx->mount_path);
+			DsMapAddString(dsMapIndex, "mount_path", ctx->mount_path.c_str());
+
+			/* DLC content is mounted outside of the sandbox, so allow loading from the mount point. */
+#ifdef GDKEXTENSION_EXPORTS
+			AddDirectoryToBundleWhitelist(ctx->mount_path.c_str());
+#else
+			if (!IsDirectoryInWhitelist(g_pLoadWhitelist, ctx->mount_path.c_str()))
+			{
+				AddToWhiteList(&g_pLoadWhitelist, ctx->mount_path.c_str(), true);
+			}
+#endif
+		}
+		else {
+			DebugConsoleOutput("ms_iap_MountPackage - error mounting package %s (HRESULT 0x%08X)\n", ctx->package_id.c_str(), (unsigned)(ctx->error));
+			DsMapAddDouble(dsMapIndex, "error", (double)(ctx->error));
+
+			mounted_packages.erase(mp);
+		}
+
+		CreateAsyncEventWithDSMap(dsMapIndex, EVENT_OTHER_WEB_IAP);
+	};
+
+	HRESULT hr = XPackageMountWithUiAsync(package_id, &(ctx->async));
 	if (SUCCEEDED(hr))
 	{
 		mounted_packages[package_id] = NULL; /* Reserve slot. */
 		Result.val = ctx->async_id;
 	}
 	else {
-		DebugConsoleOutput("ms_iap_MountPackage - Unable to queue work (HRESULT 0x%08X)\n", (unsigned)(hr));
+		DebugConsoleOutput("ms_iap_MountPackage - Unable to mount package (HRESULT 0x%08X)\n", (unsigned)(hr));
 		delete ctx;
 	}
 }
