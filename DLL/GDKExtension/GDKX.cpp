@@ -23,7 +23,6 @@ YYRunnerInterface* g_pYYRunnerInterface;
 char* g_XboxSCID = NULL;
 bool g_gdk_initialised = false;
 
-
 XTaskQueueHandle g_taskQueue;
 XTaskQueueRegistrationToken m_networkingConnectivityHintChangedCallbackToken;
 void CALLBACK NetworkConnectivityHintChangedCallback(_In_opt_ void* context, _In_ const XNetworkingConnectivityHint* connectivityHint)
@@ -49,24 +48,12 @@ void InitIAPFunctionsM();
 void UpdateIAPFunctionsM();
 void QuitIAPFunctionsM();
 
-YYEXPORT
-void YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _functions_size)
-{
-	if (_functions_size < sizeof(YYRunnerInterface)) {
-		printf("ERROR : runner interface mismatch in extension DLL\n ");
-	} // end if
-
-	// copy out all the functions 
-	memcpy(&gs_runnerInterface, _pFunctions, sizeof(YYRunnerInterface));
-	g_pYYRunnerInterface = &gs_runnerInterface;
-}
-
 /* Find any files whose name matches filename_expr (may include wildcards) in
  * the same directory as the GDKExtension DLL.
  *
  * Returns a list of pathnames to any matching files.
 */
-static std::vector<std::string> _find_packaged_files(const char *filename_expr)
+static std::vector<std::string> _find_packaged_files(const char* filename_expr)
 {
 	HMODULE this_dll;
 
@@ -137,20 +124,7 @@ static std::vector<std::string> _find_packaged_files(const char *filename_expr)
 	return filenames;
 }
 
-YYEXPORT
-void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
-{
-	if (argc != 1)
-	{
-		YYError("gdk_init() called with %d arguments, expected 1", argc);
-		return;
-	}
-
-	if (g_gdk_initialised)
-	{
-		DebugConsoleOutput("ERROR: gdk_init() called but GDK is already initialised!\n");
-		return;
-	}
+void GDKInit(const char* scid) {
 
 	DebugConsoleOutput("gdk_init() called - initialising the GDK extension\n");
 
@@ -164,13 +138,13 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	{
 		DebugConsoleOutput("Multiple event manifests found! Not loading any!\n");
 	}
-	else{
+	else {
 		DebugConsoleOutput("Loading event manifest %s...\n", event_manifest_names[0].c_str());
 		Xbox_Stat_Load_XML(event_manifest_names[0].c_str());
-	}	
+	}
 
 	YYFree(g_XboxSCID);
-	g_XboxSCID = (char*)(YYStrDup(YYGetString(arg, 0)));
+	g_XboxSCID = (char*)(YYStrDup(scid));
 
 	XGameRuntimeInitialize();
 
@@ -180,7 +154,7 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	{
 		YYError("XTaskQueueCreate failed (HRESULT 0x%08X)\n", (unsigned)(hr));
 	}
-	
+
 	XblInitArgs xblArgs = {};
 	xblArgs.scid = g_XboxSCID;
 
@@ -203,6 +177,43 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 	);
 
 	g_gdk_initialised = true;
+
+}
+
+YYEXPORT
+void YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _functions_size)
+{
+	if (_functions_size < sizeof(YYRunnerInterface)) {
+		printf("ERROR : runner interface mismatch in extension DLL\n ");
+	} // end if
+
+	// copy out all the functions 
+	memcpy(&gs_runnerInterface, _pFunctions, sizeof(YYRunnerInterface));
+	g_pYYRunnerInterface = &gs_runnerInterface;
+
+
+	const char* scid = extOptGetString("GDKExtension", "scid");
+	if (scid != nullptr && strcmp(scid, "") != 0) {
+		GDKInit(scid);
+	}
+}
+
+YYEXPORT
+void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
+{
+	if (argc != 1)
+	{
+		YYError("gdk_init() called with %d arguments, expected 1", argc);
+		return;
+	}
+
+	if (g_gdk_initialised)
+	{
+		DebugConsoleOutput("ERROR: gdk_init() called but GDK is already initialised!\n");
+		return;
+	}
+
+	GDKInit(YYGetString(arg, 0));
 }
 
 YYEXPORT
@@ -273,6 +284,8 @@ void gdk_quit(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 YYEXPORT
 void F_XboxOneGetUserCount(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_get_user_count :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = 0;
 
@@ -285,6 +298,8 @@ void F_XboxOneGetUserCount(RValue& Result, CInstance* selfinst, CInstance* other
 YYEXPORT
 void F_XboxOneGetUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_get_user :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_INT64;
 	Result.v64 = 0;
 
@@ -308,6 +323,8 @@ void F_XboxOneGetUser(RValue& Result, CInstance* selfinst, CInstance* otherinst,
 YYEXPORT
 void F_XboxOneGetActivatingUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_get_activating_user :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_INT64;
 	Result.v64 = 0;
 
@@ -328,6 +345,8 @@ void F_XboxOneGetActivatingUser(RValue& Result, CInstance* selfinst, CInstance* 
 YYEXPORT
 void F_XboxOneAgeGroupForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_agegroup_for_user :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -351,6 +370,8 @@ void F_XboxOneAgeGroupForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 YYEXPORT
 void F_XboxOnePadForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_pad_for_user :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -396,6 +417,8 @@ void F_XboxOnePadForUser(RValue& Result, CInstance* selfinst, CInstance* otherin
 YYEXPORT
 void F_XboxOneShowAccountPicker(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_show_account_picker :: GDK Extension was not initialized!");
+	
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 

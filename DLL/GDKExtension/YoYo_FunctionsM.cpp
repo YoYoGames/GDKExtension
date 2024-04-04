@@ -586,6 +586,8 @@ static void DoLeaderboardQuery(const char* leaderboard_or_stat_name, uint64 base
 YYEXPORT
 void F_XboxReadPlayerLeaderboard(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_read_player_leaderboard :: GDK Extension was not initialized!");
+
 	const char* ident = YYGetString(arg, 0);
 	uint64 player = (uint64)(YYGetInt64(arg, 1));
 	int numitems = YYGetInt32(arg, 2);
@@ -847,6 +849,8 @@ void F_XboxOneAppDisplayNameForUser(RValue& Result, CInstance* selfinst, CInstan
 YYEXPORT
 void F_XboxOneGamerTagForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_gamertag_for_user :: GDK Extension was not initialized!");
+
 	int numusers = 0;
 	XUMuser** users = XUM::GetUsers(numusers);
 
@@ -870,6 +874,8 @@ void F_XboxOneGamerTagForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 YYEXPORT
 void F_XboxOneUserIdForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_user_id_for_user :: GDK Extension was not initialized!");
+
 	int numusers = 0;
 	XUMuser** users = XUM::GetUsers(numusers);
 
@@ -1034,7 +1040,7 @@ void F_XboxOneUserIsSignedIn(RValue& Result, CInstance* selfinst, CInstance* oth
 		DebugConsoleOutput("xboxone_user_is_signed_in() - user not found\n");
 	}
 }
-
+/*
 void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
 	Result.kind = VALUE_REAL;
@@ -1151,7 +1157,7 @@ void F_XboxOneSpriteAddFromGamerPicture(RValue& Result, CInstance* selfinst, CIn
 
 	Result.val = sprite_idx;
 }
-
+*/
 static bool g_XboxProfileCardLaunching = false;
 
 void F_XboxOneShowProfileCardForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
@@ -1205,6 +1211,8 @@ void F_XboxOneShowProfileCardForUser(RValue& Result, CInstance* selfinst, CInsta
 YYEXPORT
 void F_XboxOneSetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_set_savedata_user :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;	
 
@@ -1233,6 +1241,8 @@ void F_XboxOneSetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* ot
 YYEXPORT
 void F_XboxOneGetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_get_savedata_user :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_INT64;
 	Result.v64 = 0;
 
@@ -1255,10 +1265,11 @@ void F_XboxOneGetSaveDataUser(RValue& Result, CInstance* selfinst, CInstance* ot
 YYEXPORT
 void F_XboxGetTokenAndSignature(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_get_token_and_signature :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
-		
-	int i;
+
 	uint64 xb_user = (uint64)YYGetInt64(arg, 0);
 
 	XUM_LOCK_MUTEX;
@@ -1451,7 +1462,7 @@ void F_XboxGetTokenAndSignature(RValue& Result, CInstance* selfinst, CInstance* 
 YYEXPORT
 void F_XboxCheckPrivilege(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
-
+	if (!g_gdk_initialised) YYError("xboxone_check_privilege :: GDK Extension was not initialized!");
 
 	Result.kind = VALUE_REAL;
 	Result.val = 0;	
@@ -1599,6 +1610,8 @@ SXboxOneEventType *findXboxOneEvent(const char *name)
 YYEXPORT
 void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_fire_event :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	const char* pEventName = YYGetString(arg, 0);
@@ -1776,6 +1789,8 @@ void F_XboxOneFireEvent(RValue& Result, CInstance* selfinst, CInstance* otherins
 YYEXPORT
 void F_XboxOneGetStatsForUser(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_get_stats_for_user :: GDK Extension was not initialized!");
+
 	// user, service config id, list of stat names to read	
 
 	uint64 user_id = (uint64)YYGetInt64(arg, 0); // don't do any rounding on this
@@ -1955,6 +1970,8 @@ void F_XboxOneGetStatsForUser(RValue& Result, CInstance* selfinst, CInstance* ot
 YYEXPORT
 void F_XboxOneStatsSetup(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_setup :: GDK Extension was not initialized!");
+
 	if (arg[2].kind == VALUE_STRING)
 	{
 		YYError("xboxone_stats_setup - argument 3 should be a number, e.g. $1234AB66 or 0x1234AB66, not '1234AB66'\n");
@@ -1973,6 +1990,8 @@ void F_XboxOneStatsSetup(RValue& Result, CInstance* selfinst, CInstance* otherin
 YYEXPORT
 void F_XboxOneSetUserStatReal(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_set_stat_real :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 
 	const char* stat = YYGetString(arg, 1);
@@ -1987,6 +2006,8 @@ void F_XboxOneSetUserStatReal(RValue& Result, CInstance* selfinst, CInstance* ot
 YYEXPORT
 void F_XboxOneSetUserStatInt(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_set_stat_int :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 
 	const char* stat = YYGetString(arg, 1);
@@ -2001,6 +2022,8 @@ void F_XboxOneSetUserStatInt(RValue& Result, CInstance* selfinst, CInstance* oth
 YYEXPORT
 void F_XboxOneSetUserStatString(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_set_stat_string :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 
 	const char* stat = YYGetString(arg, 1);
@@ -2015,6 +2038,8 @@ void F_XboxOneSetUserStatString(RValue& Result, CInstance* selfinst, CInstance* 
 YYEXPORT
 void F_XboxOneDeleteUserStat(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_delete_stat :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 
 	const char* stat = YYGetString(arg, 1);
@@ -2028,6 +2053,8 @@ void F_XboxOneDeleteUserStat(RValue& Result, CInstance* selfinst, CInstance* oth
 YYEXPORT
 void F_XboxOneGetUserStat(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_get_stat :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 	const char* stat = YYGetString(arg, 1);
 
@@ -2058,6 +2085,8 @@ void F_XboxOneGetUserStat(RValue& Result, CInstance* selfinst, CInstance* otheri
 YYEXPORT
 void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_get_stat_names :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 
 	std::vector<std::string> stat_names = XboxStatsManager::get_stat_names(user_id, "xboxone_stats_get_stat_names");
@@ -2084,6 +2113,8 @@ void F_XboxOneGetUserStatNames(RValue& Result, CInstance* selfinst, CInstance* o
 YYEXPORT
 void F_XboxOneAddUserToStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_add_user :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 
 	Result.kind = VALUE_REAL;
@@ -2095,6 +2126,8 @@ void F_XboxOneAddUserToStats(RValue& Result, CInstance* selfinst, CInstance* oth
 YYEXPORT
 void F_XboxOneRemoveUserFromStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_remove_user :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 
 	Result.kind = VALUE_REAL;
@@ -2106,6 +2139,8 @@ void F_XboxOneRemoveUserFromStats(RValue& Result, CInstance* selfinst, CInstance
 YYEXPORT
 void F_XboxOneFlushUserStats(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_flush_user :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 	bool high_priority = YYGetBool(arg, 1);
 
@@ -2248,6 +2283,7 @@ static void DoTitleManagedLeaderboardQuery(uint64 user_id, XblLeaderboardQuery q
 YYEXPORT
 void F_XboxOneGetStatLeaderboard(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_get_leaderboard :: GDK Extension was not initialized!");
 
 	Result.kind = VALUE_REAL;
 	Result.val = 0;
@@ -2285,6 +2321,8 @@ void F_XboxOneGetStatLeaderboard(RValue& Result, CInstance* selfinst, CInstance*
 YYEXPORT
 void F_XboxOneGetStatSocialLeaderboard(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_stats_get_social_leaderboard :: GDK Extension was not initialized!");
+
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
 	const char* stat = YYGetString(arg, 1);
 	int num_entries = YYGetInt32(arg, 2);
@@ -2326,6 +2364,8 @@ int g_currXBLAchievementRequestID = 0;
 YYEXPORT
 void F_XboxOneSetAchievementProgress(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_achievements_set_progress :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = 0;
 
@@ -2444,6 +2484,8 @@ void F_XboxOneSetAchievementProgress(RValue& Result, CInstance* selfinst, CInsta
 YYEXPORT
 void F_XboxOneGetAchievement(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxlive_get_achievement :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -2612,6 +2654,8 @@ void F_XboxOneGetAchievement(RValue& Result, CInstance* selfinst, CInstance* oth
 YYEXPORT
 void F_XboxOneSetRichPresence(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_set_rich_presence :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	uint64 user_id = (uint64)YYGetInt64(arg, 0);
@@ -2695,6 +2739,8 @@ void F_XboxOneSetRichPresence(RValue& Result, CInstance* selfinst, CInstance* ot
 YYEXPORT
 void F_XboxOneUpdateRecentPlayers(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("xboxone_update_recent_players :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 

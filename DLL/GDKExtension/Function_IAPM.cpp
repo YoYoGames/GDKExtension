@@ -335,6 +335,8 @@ static void MS_IAP_GameLicenseChanged(void* context)
 
 YYEXPORT void F_MS_IAP_AcquireLicenseForDurables(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_AcquireLicenseForDurables :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	std::lock_guard<std::mutex> l(licenses_lock);
@@ -468,6 +470,8 @@ YYEXPORT void F_MS_IAP_AcquireLicenseForDurables(RValue& Result, CInstance* self
 
 YYEXPORT void F_MS_IAP_ReleaseLicenseForDurables(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_ReleaseLicenseForDurables :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	const char* store_id = YYGetString(arg, 0);
@@ -523,6 +527,8 @@ static void _MS_IAP_DurableLicenseLost(void* context)
 
 YYEXPORT void F_MS_IAP_AcquireLicenseForPackage(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_AcquireLicenseForPackage :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	std::lock_guard<std::mutex> l(licenses_lock);
@@ -656,6 +662,8 @@ YYEXPORT void F_MS_IAP_AcquireLicenseForPackage(RValue& Result, CInstance* selfi
 
 YYEXPORT void F_MS_IAP_ReleaseLicenseForPackage(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_ReleaseLicenseForPackage :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	const char* package_id = YYGetString(arg, 0);
@@ -728,6 +736,8 @@ static void _MS_IAP_CloseLicense(MS_IAP_LicenseHandle *license)
 
 YYEXPORT void F_MS_IAP_CanAcquireLicenseForPackage(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_CanAcquireLicenseForPackage :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -814,6 +824,8 @@ YYEXPORT void F_MS_IAP_CanAcquireLicenseForPackage(RValue& Result, CInstance* se
 
 YYEXPORT void F_MS_IAP_CanAcquireLicenseForStoreId(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_CanAcquireLicenseForStoreId :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1133,6 +1145,8 @@ void DownloadAndInstallPackagesContext::destroy_self(void* context, bool cancele
 
 YYEXPORT void F_MS_IAP_DownloadAndInstallPackages(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_DownloadAndInstallPackages :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	std::vector<const char*> store_ids = _MS_IAP_GetArrayOfStrings(arg, 1, "ms_iap_DownloadAndInstallPackages");
@@ -1243,6 +1257,8 @@ void EnumeratePackagesContext::completion_callback(void* context, bool canceled)
 
 YYEXPORT void F_MS_IAP_EnumeratePackages(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_EnumeratePackages :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1286,6 +1302,8 @@ MountPackageContext::MountPackageContext(const std::string& package_id) :
 
 YYEXPORT void F_MS_IAP_MountPackage(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_MountPackage :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1383,6 +1401,8 @@ YYEXPORT void F_MS_IAP_MountPackage(RValue& Result, CInstance* selfinst, CInstan
 
 YYEXPORT void F_MS_IAP_QueryAddOnLicenses(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_QueryAddOnLicenses :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1481,6 +1501,8 @@ YYEXPORT void F_MS_IAP_QueryAddOnLicenses(RValue& Result, CInstance* selfinst, C
 
 YYEXPORT void F_MS_IAP_QueryAssociatedProducts(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_QueryAssociatedProducts :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1515,6 +1537,8 @@ YYEXPORT void F_MS_IAP_QueryAssociatedProducts(RValue& Result, CInstance* selfin
 
 YYEXPORT void F_MS_IAP_QueryConsumableBalanceRemaining(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_QueryConsumableBalanceRemaining :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1591,6 +1615,8 @@ YYEXPORT void F_MS_IAP_QueryConsumableBalanceRemaining(RValue& Result, CInstance
 
 YYEXPORT void F_MS_IAP_QueryEntitledProducts(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_QueryEntitledProducts :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1625,6 +1651,8 @@ YYEXPORT void F_MS_IAP_QueryEntitledProducts(RValue& Result, CInstance* selfinst
 
 YYEXPORT void F_MS_IAP_QueryGameLicense(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_QueryGameLicense :: GDK Extension was not initialized!");
+	
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1706,6 +1734,8 @@ YYEXPORT void F_MS_IAP_QueryGameLicense(RValue& Result, CInstance* selfinst, CIn
 
 YYEXPORT void F_MS_IAP_QueryProductForCurrentGame(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_QueryProductForCurrentGame :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1734,6 +1764,8 @@ YYEXPORT void F_MS_IAP_QueryProductForCurrentGame(RValue& Result, CInstance* sel
 
 YYEXPORT void F_MS_IAP_QueryProductForPackage(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_QueryProductForPackage :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1770,6 +1802,8 @@ YYEXPORT void F_MS_IAP_QueryProductForPackage(RValue& Result, CInstance* selfins
 
 YYEXPORT void F_MS_IAP_QueryProducts(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_QueryProducts :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1906,6 +1940,8 @@ bool ProductQueryContext::_ProductQueryCallback(const XStoreProduct* product, vo
 
 YYEXPORT void F_MS_IAP_ReportConsumableFulfillment(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_ReportConsumableFulfillment :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = -1;
 
@@ -1994,6 +2030,8 @@ YYEXPORT void F_MS_IAP_ReportConsumableFulfillment(RValue& Result, CInstance* se
 
 YYEXPORT void F_MS_IAP_ShowAssociatedProductsUI(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_ShowAssociatedProductsUI :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = 0;
 
@@ -2051,6 +2089,8 @@ YYEXPORT void F_MS_IAP_ShowAssociatedProductsUI(RValue& Result, CInstance* selfi
 
 YYEXPORT void F_MS_IAP_ShowProductPageUI(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_ShowProductPageUI :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = 0;
 
@@ -2102,6 +2142,8 @@ YYEXPORT void F_MS_IAP_ShowProductPageUI(RValue& Result, CInstance* selfinst, CI
 
 YYEXPORT void F_MS_IAP_ShowPurchaseUI(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_ShowPurchaseUI :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 	Result.val = 0;
 
@@ -2155,6 +2197,8 @@ YYEXPORT void F_MS_IAP_ShowPurchaseUI(RValue& Result, CInstance* selfinst, CInst
 
 YYEXPORT void F_MS_IAP_ShowRateAndReviewUI(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_ShowRateAndReviewUI :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	XStoreContextHandle store_ctx = _MS_IAP_GetStoreHandle(arg, 0, "ms_iap_ShowRateAndReviewUI");
@@ -2236,6 +2280,8 @@ YYEXPORT void F_MS_IAP_ShowRateAndReviewUI(RValue& Result, CInstance* selfinst, 
 
 YYEXPORT void F_MS_IAP_ShowRedeemTokenUI(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("ms_iap_ShowRedeemTokenUI :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	const char* token = YYGetString(arg, 1);

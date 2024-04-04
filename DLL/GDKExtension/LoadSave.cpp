@@ -147,6 +147,8 @@ std::pair<std::string, std::string> _SplitPathAndName(const std::string &filenam
 YYEXPORT
 void gdk_save_group_begin(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("gdk_save_group_begin :: GDK Extension was not initialized!");
+
 	if (argc != 1)
 	{
 		DebugConsoleOutput("gdk_save_group_begin() - error: expected 1 argument (container_name)\n");
@@ -170,6 +172,8 @@ void gdk_save_group_begin(RValue& Result, CInstance* selfinst, CInstance* otheri
 YYEXPORT
 void gdk_save_group_end(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("gdk_save_group_end :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	if (!save_group_open)
@@ -194,6 +198,8 @@ void gdk_save_group_end(RValue& Result, CInstance* selfinst, CInstance* otherins
 YYEXPORT
 void gdk_save_buffer(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("gdk_save_buffer :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	if (argc != 4)
@@ -402,6 +408,8 @@ static bool _XGameSaveBlobInfoCallbackWrapper(const XGameSaveBlobInfo* info, voi
 YYEXPORT
 void gdk_load_buffer(RValue& Result, CInstance* selfinst, CInstance* otherinst, int argc, RValue* arg)
 {
+	if (!g_gdk_initialised) YYError("gdk_load_buffer :: GDK Extension was not initialized!");
+
 	Result.kind = VALUE_REAL;
 
 	if (argc != 4)

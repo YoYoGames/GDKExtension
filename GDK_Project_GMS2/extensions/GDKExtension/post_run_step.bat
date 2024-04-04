@@ -1,105 +1,140 @@
 @echo off
-:: RK - this is useful for debugging what variables are being passed in from GMS2
-:: set
-:: echo #########################################################################################################################
+set Utils="%~dp0scriptUtils.bat"
+
+:: ######################################################################################
+:: Script Logic
+
+:: Always init the script
+call %Utils% scriptInit
 
 :: ensure that YYPLATFORM_option_windows_copy_exe_to_dest is set to True
-if not "%YYPLATFORM_option_windows_copy_exe_to_dest%" == "True" goto error_ensure_windows_copy_exe_to_dest
+if not "%YYPLATFORM_option_windows_copy_exe_to_dest%" == "True" (
+	call %Utils% logError "The Game Options -> Windows -> General -> Copy exe to output folder MUST be enabled."
+)
 
 :: Check if GDK is installed
-if not exist "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" goto error_install_GDK
+if not exist "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" (
+	call %Utils% logError "Goto https://github.com/microsoft/GDK/releases/tag/June_2023_Update_2 to install the GDK"
+)
 
-:: Setup the GDK Environment (force version Update Oct 2021)
-set GRDKEDITION=230600
-call "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" GamingDesktopVS2019
+:: Check if GDK version is correct
+call %Utils% optionGetValue "gdkVersion" GDK_VERSION
+set GDK_PATH=%GameDK%%GDK_VERSION%\GRDK\ExtensionLibraries
+if not exist "%GDK_PATH%" (
+	call %Utils% logError "Wrong GDK version, goto https://github.com/microsoft/GDK/releases/tag/June_2023_Update_2"
+)
+
+:: Setup the GDK Environment (force version Update Jun 2023)
+call "C:\Program Files (x86)\Microsoft GDK\Command Prompts\GamingDesktopVars.cmd" GamingDesktopVS2022
 if ERRORLEVEL 1 (
-  goto error_wrong_GDK
+	call %Utils% logError "Failed to setup GDK Environment (using GamingDesktopVS2022)"
 )
 
 :: Ensure the runner is called the correct thing
 pushd "%YYoutputFolder%"
 
 :: Resolve ${project_name} if used
-call :getfilename "%YYPLATFORM_option_windows_executable_name%"
+call :expandFilename "%YYPLATFORM_option_windows_executable_name%" FILENAME
+
+if not defined FILENAME (
+	call %Utils% logError "Unable to expand the executable filename"
+)
 
 :: Rename the runner to the executable name (GameOptions->Windows->Executable Name)
-if exist Runner.exe move Runner.exe "%filename%.exe"
+if exist Runner.exe move Runner.exe "%FILENAME%.exe" >nul 2>&1
 
 :: Copy the required dll libraries from the user's GDK installation folder
-set GDK_PATH=%GameDK%\%GRDKEDITION%\GRDK\ExtensionLibraries
-if not exist "Party.dll" copy "%GDK_PATH%\PlayFab.Party.Cpp\Redist\CommonConfiguration\neutral\Party.dll" "Party.dll"
-if not exist "PartyXboxLive.dll" copy "%GDK_PATH%\PlayFab.PartyXboxLive.Cpp\Redist\CommonConfiguration\neutral\PartyXboxLive.dll" "PartyXboxLive.dll"
-if not exist "XCurl.dll" copy "%GDK_PATH%\Xbox.XCurl.API\Redist\CommonConfiguration\neutral\XCurl.dll" "XCurl.dll"
+call %Utils% itemCopyTo "%GDK_PATH%\PlayFab.Party.Cpp\Redist\CommonConfiguration\neutral\Party.dll" "Party.dll"
+call %Utils% itemCopyTo "%GDK_PATH%\PlayFab.PartyXboxLive.Cpp\Redist\CommonConfiguration\neutral\PartyXboxLive.dll" "PartyXboxLive.dll"
+call %Utils% itemCopyTo "%GDK_PATH%\Xbox.XCurl.API\Redist\CommonConfiguration\neutral\XCurl.dll" "XCurl.dll"
 
 :: Get path to the game (*.win) under YYC the output game isn't named correctly
-FOR %%F IN (*.win) DO (
-  set outputPath=%%F
-  goto break
+for %%f in (*.win) do (
+	set outputPath=%%f
+	goto extractPathdone
 )
-:break
+:extractPathdone
 set outputPath=%cd%\%outputPath%
 
 popd
 
-:: register the application
-wdapp register "%YYoutputFolder%" >"%YYtempFolderUnmapped%\wdapp.out"
+:: Register the application (capture output)
+set "tempOut=%YYtempFolderUnmapped%\wdapp.out"
+wdapp register "%YYoutputFolder%" > "%tempOut%"
 if ERRORLEVEL 1 (
-  type "%YYtempFolderUnmapped%\wdapp.out"
-  goto exitError
+	:: Print the 'wdapp register' output
+	type %tempOut%
+	call %Utils% logError "Unable to complete 'wdapp register'."
 )
 
-:: can be useful for debugging problems
-:: type "%YYtempFolderUnmapped%\wdapp.out"
-
-:: get the application name, this is horrible but should find the game appname to use for launching
-pushd "%YYtempFolderUnmapped%"
-for /f "tokens=*" %%a in (wdapp.out) do (
-  (echo %%a | findstr /i /c:"!Game" >nul) && (set APPNAME=%%a) 
+:: Use %%a directly after 'tokens=2' to capture the PFN correctly (leave on match)
+for /f "tokens=2*" %%a in ('type "%tempOut%" ^| findstr /C:"Registered "') do (
+    set "PFN=%%a"
+    goto extractPFNdone
 )
-popd
+
+:: Check if PFN was extracted
+:extractPFNdone
+if not defined PFN (
+	call %Utils% logError "Unable to find the Package Family Name (PFN)"
+)
+
+:: Prepare to read the wdapp list
+set "tempList=%YYtempFolderUnmapped%\wdapp.list"
+call %Utils% itemDelete "%tempList%"
+wdapp list > "%tempList%"
+
+:: Switching to EnableDelayedExpansion to properly handle the 'found' flag
+setlocal enabledelayedexpansion
+
+:: Initialize control variable
+set found=0
+
+:: Try to extract appname from registered app list
+for /f "delims=" %%a in ('type "%tempList%"') do (
+    if "!found!"=="1" (
+		:: End local here so the extracted value keeps the "!" character
+		endlocal
+		:: Trim the matches line
+		for /f "tokens=*" %%i in ("%%a") do set "APPNAME=%%i"
+        goto extractAPPNAMEdone
+    )
+	:: Check if we found the Package Family Name
+    if "%%a"=="!PFN!" set found=1
+)
+
+:extractAPPNAMEdone
+if not defined APPNAME (
+	call %Utils% logError "Unable to find the App Name (AUMID)"
+)
+
+:: Cleanup
+call %Utils% itemDelete "%tempList%"
 
 :: launch the application
 if not "%APPNAME%" == "" (
-  
   :: Delete older output files
-  copy NUL "%YYtempFolderUnmapped%\game.out"
+  type nul > "%YYtempFolderUnmapped%\game.out"
 	wdapp launch %APPNAME% -outputdebugstring -game "%outputPath%" -debugoutput %YYtempFolderUnmapped%\game.out -output %YYtempFolderUnmapped%\game.out
 	powershell "Get-Content '%YYtempFolderUnmapped%\game.out' -Wait -Encoding utf8 -Tail 30 | ForEach-Object { $_; if($_ -match '###game_end###') { break } }"
 
-	exit /b 255
+	exit 255
 )
 
-:exit
-exit /b 0
-
-:: ----------------------------------------------------------------------------------------------------
-:exitError
-echo "ERROR : Unable to complete"
-exit /b 1
-
-:: ----------------------------------------------------------------------------------------------------
-:: If the GDK is not installed then prompt the user to install it
-:error_install_GDK
-echo "Goto https://github.com/microsoft/GDK/releases/tag/October_2021_Republish to install the GDK"
-exit /b 1
-
-:: ----------------------------------------------------------------------------------------------------
-:: If the required GDK verison is not installed 
-:error_wrong_GDK
-echo "Wrong GDK version, goto https://github.com/microsoft/GDK/releases/tag/October_2021_Republish"
-exit /b 1
-
-:: ----------------------------------------------------------------------------------------------------
-:: Ensire that windows option for copy exe to dest is enabled
-:error_ensure_windows_copy_exe_to_dest
-echo "The Game Options -> Windows -> General -> Copy exe to output folder MUST be enabled."
-exit /b 1
+call %Utils% logError "Unknown error found!"
 
 :: ----------------------------------------------------------------------------------------------------
 :: Get the filename from the given parameter
-:getfilename
-:: First we remove the extension (since dev could have missed it in the IDE)
-set filename=%~n1
-:: Resolve ${project_name} if it was used
-call set filename=%%filename:${project_name}=%YYMACROS_project_name%%%
-goto :eof
+:expandFilename
+	:: Fetch the value of the input filename variable
+	set "input=%~n1"
+
+	:: Need to enabled delayed expansion
+    setlocal enabledelayedexpansion
+
+	:: Replace ${project_name} with the actual project name (requires delayed expansion)
+	set "output=!input:${project_name}=%YYMACROS_project_name%!"
+
+	:: Update the caller's variable to hold the output filename
+	endlocal & set "%~2=%output%"
+exit /b 0

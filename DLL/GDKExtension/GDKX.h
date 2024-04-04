@@ -14,6 +14,8 @@
 #include "Ref.h"
 #include "YYRValue.h"
 
+extern bool g_gdk_initialised;
+
 #define YYEXPORT __declspec(dllexport)
 
 #define stricmp	_stricmp
