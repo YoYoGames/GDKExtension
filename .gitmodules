@@ -1,6 +1,6 @@
-[submodule "DLL/json-c"]
-	path = DLL/json-c
-	url = https://github.com/json-c/json-c.git
-[submodule "DLL/libxml2"]
-	path = DLL/libxml2
+[submodule "source/GDKExtension_vs/libxml2"]
+	path = source/GDKExtension_vs/libxml2
 	url = https://gitlab.gnome.org/GNOME/libxml2.git
+[submodule "source/GDKExtension_vs/json-c"]
+	path = source/GDKExtension_vs/json-c
+	url = https://github.com/json-c/json-c.git
