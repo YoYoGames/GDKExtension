@@ -1,0 +1,19 @@
+{
+    "gitHubUrl": "https://github.com/YoYoGames/GDKExtension",
+    "projectFile": "source/GDKExtension_gml/GDKExtension.yyp",
+    "projectVersion": "LTS22",
+    "releaseTemplate": "templates/release_body.md",
+    "extensionMetaData": [
+        {
+            "extensionFile": "source/GDKExtension_gml/extensions/GDKExtension/GDKExtension.yy",
+            "packageId": "com.yoyogames.windowsgdkext",
+            "packageName": "WindowsGDK Ext",
+            "packageVersion": "1.0.7",
+            "packageFormat": "LTS22",
+            "includeFolders": null,
+            "includeResources": null,
+            "excludeFolders": null,
+            "excludeResources": null
+        }
+    ]
+}
