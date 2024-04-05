@@ -32,8 +32,9 @@ This repository contains the source code for the DLL that implements the GDK fun
 
    * `C:\ProgramData\GameMakerStudio2\Cache\runtimes\<current-runtime>\yyc\include\`
 
-8. Select the Debug|Gaming.Desktop.x64 or Release|Gaming.Desktop.x64
-9. Build
+8. Select solution platform - **Gaming.Desktop.x64**
+9. Select solution configuration - **Release** or **Debug**
+10. Build
 
 > [!TIP]
 > After building the output `.dll` will be copied into the extension folder.
