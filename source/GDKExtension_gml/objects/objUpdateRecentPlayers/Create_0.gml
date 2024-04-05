@@ -6,7 +6,7 @@ event_inherited();
 
 recent_players = 0123456789012345;
 
-text = "Update recent players (one ID)";
+text = "Update recent (single)";
 
 onClick = function() {	
 	

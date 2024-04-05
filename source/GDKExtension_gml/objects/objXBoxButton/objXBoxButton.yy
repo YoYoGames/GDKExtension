@@ -12,8 +12,8 @@
     "path":"folders/Demo/Utils.yy",
   },
   "parentObjectId":{
-    "name":"objYoYoButton",
-    "path":"objects/objYoYoButton/objYoYoButton.yy",
+    "name":"obj_gm_button",
+    "path":"objects/obj_gm_button/obj_gm_button.yy",
   },
   "persistent":false,
   "physicsAngularDamping":0.1,
@@ -33,8 +33,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"sprYoYoButton",
-    "path":"sprites/sprYoYoButton/sprYoYoButton.yy",
+    "name":"spr_gm_button",
+    "path":"sprites/spr_gm_button/spr_gm_button.yy",
   },
   "spriteMaskId":null,
   "visible":true,

@@ -1,3 +1,3 @@
 
-font = fntYoYo20;
+font = fnt_gm_20;
 text = "Get";

@@ -7,8 +7,8 @@ var pad_index = xboxone_pad_for_user(user_id, 0);
 var at_y = y;
 var at_x = x;
 
-var _font = fntYoYo14;
-var _descriptionFont = fntYoYo14;
+var _font = fnt_gm_15;
+var _descriptionFont = fnt_gm_15;
 
 draw_set_halign(fa_left);
 draw_set_valign(fa_top);

@@ -1,5 +1,5 @@
 
-font = fntYoYo20;
+font = fnt_gm_20;
 v_align = fa_top;
 h_align = fa_left;
 

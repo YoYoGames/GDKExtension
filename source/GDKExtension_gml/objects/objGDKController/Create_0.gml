@@ -6,13 +6,9 @@ if (os_type != os_windows) {
 	return;
 }
 
-#macro SCID "00000000-0000-0000-0000-00006a2a0983"
-
-show_debug_message("##### Initialising GDK #####");
-
-// Must be called before any other GDK extension function, recommend using a
-// Controller persistent object that is created or placed in the first room
-// and this call is in the create event.
+// This function is required to be called before using any other GDK Extension functions,
+// failing to do so will result in errors to every extension call.
+// If auto initialise is enabled you are not required to use this function.
 //
 // This function must be passed in the SCID present in the MicrosoftGame.config file.
-gdk_init(SCID);
+//gdk_init(SCID);

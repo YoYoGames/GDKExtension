@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
 #include <windows.h>
 #include <XGameRuntime.h>
@@ -124,12 +126,100 @@ static std::vector<std::string> _find_packaged_files(const char* filename_expr)
 	return filenames;
 }
 
+/// <summary>
+/// Function to find and return the SCID from the MicrosoftGame.Config document
+/// </summary>
+/// <param name="filePath">The path to the MicrosoftGame.Config file</param>
+/// <param name="scidValue">The scid of the game (output)</param>
+/// <returns>Returns 'true' if successful, 'false' otherwise.</returns>
+bool tryExtractSCID(const char* filePath, char** scidValue) {
+	xmlDoc* doc = NULL;
+	xmlNode* rootElement = NULL;
+
+	// Parse the XML file
+	doc = xmlReadFile(filePath, NULL, 0);
+	if (doc == NULL) {
+		printf("Failed to parse the XML file.\n");
+		return false;
+	}
+
+	// Get the root element of the XML
+	rootElement = xmlDocGetRootElement(doc);
+
+	// Iterate through the XML tree
+	for (xmlNode* node = rootElement->children; node; node = node->next) {
+		if (node->type == XML_ELEMENT_NODE && strcmp((const char*)node->name, "ExtendedAttributeList") == 0) {
+			// Iterate through each ExtendedAttribute in the list
+			for (xmlNode* childNode = node->children; childNode; childNode = childNode->next) {
+				if (childNode->type == XML_ELEMENT_NODE && strcmp((const char*)childNode->name, "ExtendedAttribute") == 0) {
+					// Get the 'Name' attribute
+					xmlChar* name = xmlGetProp(childNode, (const xmlChar*)"Name");
+
+					// Check if this is the 'Scid' attribute
+					if (name && stricmp((const char*)name, "Scid") == 0) {
+						// Get the 'Value' attribute, which contains the SCID
+						xmlChar* value = xmlGetProp(childNode, (const xmlChar*)"Value");
+						if (value) {
+							*scidValue = (char*)YYStrDup((const char*)value); // Allocate memory and copy the value
+							xmlFree(value);
+							xmlFree(name);
+							xmlFreeDoc(doc);
+							xmlCleanupParser();
+							return true; // Successfully found the SCID
+						}
+					}
+					xmlFree(name);
+				}
+			}
+		}
+	}
+
+	// Free the document if not freed earlier
+	xmlFreeDoc(doc);
+
+	// Cleanup function for the XML library
+	xmlCleanupParser();
+
+	return false; // SCID not found
+}
+
 void GDKInit(const char* scid) {
 
-	DebugConsoleOutput("gdk_init() called - initialising the GDK extension\n");
+	// Setup SCID
+	YYFree(g_XboxSCID); // Free prev value
+	// Try to get find MicrosoftGame.Config
+	std::vector<std::string> config_file = _find_packaged_files("MicrosoftGame.Config");
+	if (config_file.size() == 0)
+	{
+		// File not found (this is very unlikely you cannot build your GDK game without it)
+		DebugConsoleOutput("No config file found, manual initialization is necessary\n");
+	}
+	else if (config_file.size() > 1)
+	{
+		// Too many files found (this is very unlikely you cannot build your GDK game like this)
+		DebugConsoleOutput("Multiple config files found! Not loading any !\n");
+	}
+	else
+	{
+		// Try to exract the SCID from the config file
+		DebugConsoleOutput("Loading config file...\n");
+		if (!tryExtractSCID(config_file[0].c_str(), &g_XboxSCID))
+		{
+			// Failed to extract the SCID
 
+			// If we are in autoload mode, bail
+			if (scid == nullptr) {
+				DebugConsoleOutput("GDK Extension :: initialization failed invalid scid\n");
+				return;
+			}
+
+			// We are in manual mode, trust the user
+			g_XboxSCID = (char*)(YYStrDup(scid));
+		}
+	}
+
+	// Setup Events
 	std::vector<std::string> event_manifest_names = _find_packaged_files("Events-*.man");
-
 	if (event_manifest_names.size() == 0)
 	{
 		DebugConsoleOutput("No event manifest found, event-based stats will not be available\n");
@@ -142,9 +232,6 @@ void GDKInit(const char* scid) {
 		DebugConsoleOutput("Loading event manifest %s...\n", event_manifest_names[0].c_str());
 		Xbox_Stat_Load_XML(event_manifest_names[0].c_str());
 	}
-
-	YYFree(g_XboxSCID);
-	g_XboxSCID = (char*)(YYStrDup(scid));
 
 	XGameRuntimeInitialize();
 
@@ -191,10 +278,10 @@ void YYExtensionInitialise(const struct YYRunnerInterface* _pFunctions, size_t _
 	memcpy(&gs_runnerInterface, _pFunctions, sizeof(YYRunnerInterface));
 	g_pYYRunnerInterface = &gs_runnerInterface;
 
-
-	const char* scid = extOptGetString("GDKExtension", "scid");
-	if (scid != nullptr && strcmp(scid, "") != 0) {
-		GDKInit(scid);
+	int autoInit = extOptGetReal("GDKExtension", "autoInit");
+	if (autoInit > 0) {
+		DebugConsoleOutput("GDK Extension :: auto init enabled, trying to initialise the extension\n");
+		GDKInit(nullptr); // We pass nullptr (we will use the MicrosoftGame.Config file)
 	}
 }
 
@@ -213,6 +300,7 @@ void gdk_init(RValue& Result, CInstance* selfinst, CInstance* otherinst, int arg
 		return;
 	}
 
+	DebugConsoleOutput("gdk_init() called - Initialising the GDK Extension\n");
 	GDKInit(YYGetString(arg, 0));
 }
 
