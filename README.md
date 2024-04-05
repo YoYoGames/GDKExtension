@@ -30,7 +30,7 @@ This repository contains the source code for the DLL that implements the GDK fun
 6. Open the Solution in `<project_root>/extensions/GDKExtension/gdkextension_windows/GDKExtension.sln`
 7. Go to - **Project Properties → C/C++ → General → Additional Include Directories** - and change the path there to:
 
-   * `C:\ProgramData\GameMakerStudio2\Cache\runtimes\<current-runtime>\yyc\include\` (replace with runtime version)
+   * `C:\ProgramData\GameMakerStudio2\Cache\runtimes\<current-runtime>\yyc\include\`
 
 8. Select the Debug|Gaming.Desktop.x64 or Release|Gaming.Desktop.x64
 9. Build
