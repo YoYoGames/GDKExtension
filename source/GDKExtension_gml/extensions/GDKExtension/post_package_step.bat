@@ -48,6 +48,14 @@ call %Utils% itemCopyTo "%GDK_PATH%\PlayFab.PartyXboxLive.Cpp\Redist\CommonConfi
 call %Utils% itemCopyTo "%GDK_PATH%\Xbox.XCurl.API\Redist\CommonConfiguration\neutral\XCurl.dll" "XCurl.dll"
 popd
 
+:: Generate localisation data (if appropriate)
+if exist "%YYoutputFolder%\GDKExtensionStrings" (
+	makepkg localize /d "%YYoutputFolder%" /resw GDKExtensionStrings
+	if ERRORLEVEL 1 (
+		call %Utils% logError "Unable to complete 'makepkg localize'."
+	)
+)
+
 :: Generate map
 makepkg genmap /f "%YYoutputFolder%\layout.xml" /d "%YYoutputFolder%"
 if ERRORLEVEL 1 (

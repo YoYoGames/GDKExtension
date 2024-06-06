@@ -58,6 +58,14 @@ set outputPath=%cd%\%outputPath%
 
 popd
 
+:: Generate localisation data (if appropriate)
+if exist "%YYoutputFolder%\GDKExtensionStrings" (
+	makepkg localize /d "%YYoutputFolder%" /resw GDKExtensionStrings
+	if ERRORLEVEL 1 (
+		call %Utils% logError "Unable to complete 'makepkg localize'."
+	)
+)
+
 :: Register the application (capture output)
 set "tempOut=%YYtempFolderUnmapped%\wdapp.out"
 wdapp register "%YYoutputFolder%" > "%tempOut%"
