@@ -349,3 +349,5 @@ healthchecksdb
 MigrationBackup/
 
 output/
+
+source/GDKExtension_gml/extensions/GDKExtension/scriptUtils.bat.bak

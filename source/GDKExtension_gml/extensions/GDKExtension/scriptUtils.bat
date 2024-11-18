@@ -58,7 +58,7 @@ exit /b 0
 
     set "result=!YYEXTOPT_%EXTENSION_NAME%_%~1!"
     call :logInformation "Accessed extension option '%~1' with value '%result%'."
-    
+
     :: Need to end local (to push into main scope)
     endlocal & set "%~2=%result%"
 exit /b 0
@@ -126,78 +126,72 @@ exit /b 0
     call :pathResolve "%cd%" "%~2" destination
 
     if not exist "%~1" (
-        call :logError "Failed to copy '%~1' to '%destination%' (source doesn't exist)."
+        call :logError "Failed to copy "%~1" to "%destination%" (source doesn't exist)."
         exit /b 1
     )
 
-    if exist "%~1\" (
-        powershell -NoLogo -NoProfile -Command "Copy-Item -Path '%~1' -Destination '%destination%' -Recurse -Force"
+    if exist "%~1\*" (
+        xcopy "%~1" "%destination%" /E /I /H /Y
     ) else (
-        powershell -NoLogo -NoProfile -Command "Copy-Item -Path '%~1' -Destination '%destination%' -Force"
+        for %%I in ("%destination%") do set "destDir=%%~dpI"
+
+        if not exist "%destDir%" (
+            call :logInformation "Destination directory "%destDir%" does not exist. Creating it."
+            mkdir "%destDir%"
+            if %errorlevel% neq 0 (
+                call :logError "Failed to create destination directory ""%destDir%""."
+                exit /b 1
+            )
+        )
+
+        echo Copying file "%source%" to "%destination%"
+        copy /Y "%source%" "%destination%"
     )
 
     if %errorlevel% neq 0 (
-        call :logError "Failed to copy '%~1' to '%destination%'."
+        call :logError "Failed to copy "%~1" to "%destination%"."
         exit /b 1
     )
 
-    call :logInformation "Copied '%~1' to '%destination%'."
+    call :logInformation "Copied "%~1" to "%destination%"."
 exit /b 0
 
 
 :: Deletes a file or folder at the specified path (displays log messages)
 :itemDelete targetPath
 
-    :: Resolve the full path to the target
     call :pathResolve "%cd%" "%~1" target
 
-    :: Ensure target is defined
-    if not defined target (
-        call :logWarning "Unable to resolve the path."
-        exit /b 0
-    )
-
-    :: Extract the directory from the target and the file/folder name
-    for %%i in ("%target%") do (
-        set "targetDir=%%~dpi"
-        set "targetName=%%~nxi"
-    )
-
-    :: Navigate to the target's directory
-    pushd "%targetDir%" || (
-        call :logError "Failed to navigate to directory '%targetDir%'."
-        exit /b 1
-    )
-
-    :: Check if the target exists in its directory
-    if not exist "%targetName%" (
+    if not exist "%~1" (
         call :logWarning "Path '%target%' does not exist. Skipping deletion."
-        popd
         exit /b 0
     )
 
-    :: Attempt to delete directory if it exists
-    if exist "%targetName%\*" (
-        rmdir /s /q "%targetName%"
-        goto checkDeletion
+    :: Set environment variables for target
+    set "PS_TARGET=%target%"
+
+    for /f "delims=" %%a in ('dir /b /a:d "%~1" 2^>nul') do (
+        if "%%~a" == "%~nx1" (
+            powershell -NoLogo -NoProfile -Command "Remove-Item -Path $env:PS_TARGET -Recurse -Force"
+        )
     )
 
-    :: Attempt to delete file if it exists
-    if exist "%targetName%" (
-        del /f /q "%targetName%"
-        goto checkDeletion
+    for /f "delims=" %%a in ('dir /b /a:-d "%~1" 2^>nul') do (
+        if "%%~a" == "%~nx1" (
+            powershell -NoLogo -NoProfile -Command "Remove-Item -Path $env:PS_TARGET -Force"
+        )
     )
 
-    :checkDeletion
+    :: Clean up environment variables
+    set "PS_TARGET="
+    
     :: Check if the deletion operation succeeded
     if %errorlevel% neq 0 (
         call :logError "Failed to delete '%target%'."
-    ) else (
-        call :logInformation "Deleted '%target%'."
+        exit /b 1
     )
 
-    :: Return to the original directory
-    popd
+    call :logInformation "Deleted '%target%'."
 exit /b 0
 
 :: Generates the SHA256 hash of a file and stores it into a variable (displays log messages)
